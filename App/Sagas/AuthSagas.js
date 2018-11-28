@@ -37,6 +37,7 @@ export function* getAuth(api, action) {
 	}
 }
 
+
 export function* userUpdate(api, action) {
 	const { data } = action;
 	const response = yield call(api.userUpdate, { userProfileDTO: data });
