@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text } from 'react-native';
-
 import Colors from '../../Constant/Colors'
-import FindingNavigator from './FindingNavigator'
+import FindingTabNavigator from './FindingTabNavigator'
 
 export default class FindingScreen extends Component {
-
+  static router = FindingTabNavigator.router;
   static navigationOptions = {
     headerStyle: {
       backgroundColor: Colors.tintColor
@@ -38,11 +37,7 @@ export default class FindingScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {/* <Image source={require('../../assets/image/coming_soon.png')} /> */}
-        {/* <View>
-          <Text>Testing</Text>
-        </View> */}
-        <FindingNavigator />
+        <FindingTabNavigator navigation={this.props.navigation} />
       </View >
     )
   }
@@ -51,7 +46,6 @@ export default class FindingScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    padding: 16,
     flex: 1
   }
 });

@@ -7,8 +7,7 @@ import FindingScreen from '../Finding/FindingScreen';
 import InspectionScreen from '../Inspeksi/InspectionScreen';
 import EbccValidationScreen from '../Ebcc/EbccValidationScreen';
 import MoreScreen from '../More/MoreScreen';
-
-
+import FindingTabNavigator from '../Finding/FindingTabNavigator'
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -59,7 +58,6 @@ export default (
     EbccValidationStack,
     MoreStack
   }, {
-      headerMode: 'none',
       navigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, horizontal, tintColor }) => {
           const { routeName } = navigation.state;

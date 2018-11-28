@@ -45,7 +45,7 @@ export default class FindingScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:'#fff',
+    backgroundColor: '#fff',
     padding: 16,
     flex: 1,
     alignItems: 'center',

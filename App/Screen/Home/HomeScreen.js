@@ -2,12 +2,15 @@ import React from 'react';
 import { View, StatusBar, Image, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
 
 import Colors from '../../Constant/Colors'
-// import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'native-base';
 import CardView from 'react-native-cardview';
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 class HomeScreen extends React.Component {
+
+  constructor(props) {
+    super(props);
+  }
 
   static navigationOptions = ({ navigation }) => ({
     headerStyle: {
@@ -68,7 +71,7 @@ class HomeScreen extends React.Component {
             </View>
           </CardView>
         </View>
-        
+
       </ScrollView>
     )
   }
