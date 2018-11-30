@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
 import {
-    Text, FlatList, TextInput, StyleSheet, TouchableOpacity, View, Image, StatusBar,
-    Button,
+    Text, FlatList, ScrollView, TouchableOpacity, View, Image
 } from 'react-native';
 import {
     Container,
     Content,
     Card,
-    CardItem,
 } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import R from 'ramda'
 
 class FormFinding extends Component {
 
     constructor(props) {
         super(props);
-
+        var data = [1, 2, 3, 4, 5]
         this.state = {
+            data,
             stepper: [
                 { step: '1', title: 'Pilih Lokasi' },
                 { step: '2', title: 'Kondisi Baris' }
@@ -43,6 +43,18 @@ class FormFinding extends Component {
         this.props.navigation.navigate('KondisiBarisMain');
     }
 
+    renderImage() {
+        const Row = item => (
+            <TouchableOpacity	>
+                <View style={{ height: 120, width: 120, marginLeft: 10 }}>
+                    <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/forest.jpg')}></Image>
+                </View>
+            </TouchableOpacity>
+        );
+
+        return R.map(Row, this.state.data)
+    }
+
     render() {
 
         const initialPage = '1';
@@ -51,7 +63,7 @@ class FormFinding extends Component {
                 <Content style={{ flex: 1 }}>
                     {/* STEPPER */}
                     <FlatList
-                        style={[style.stepperContainer, { margin: 15 }]}
+                        style={[style.stepperContainer, { margin: 15, alignSelf: 'center' }]}
                         horizontal
                         data={this.state.stepper}
                         getItemLayout={this.getItemLayout}
@@ -63,7 +75,7 @@ class FormFinding extends Component {
                                     <View
                                         style={[
                                             style.stepperListContainer,
-                                            { paddingRight: rowData.step === '3' ? 16 : 0 }
+                                            { paddingRight: rowData.step === '2' ? 16 : 0 }
                                         ]}
                                     >
                                         <View
@@ -87,7 +99,7 @@ class FormFinding extends Component {
                                         >
                                             {rowData.title}
                                         </Text>
-                                        {rowData.step !== '3' && (
+                                        {rowData.step !== '2' && (
                                             <View style={{ flex: 1 }}>
                                                 <Icon
                                                     name="chevron-right"
@@ -104,28 +116,23 @@ class FormFinding extends Component {
                         keyExtractor={(item, index) => index.toString()}
                     />
 
-                    <Card style={[style.cardContainer, { marginTop: 20 }]}>
-                        <CardItem>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#696969' }}>Blok</Text>
-                                <TextInput
-                                    underlineColorAndroid={'transparent'}
-                                    style={[style.searchInput]} />
-                            </View>
-                        </CardItem>
-                        <CardItem>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#696969' }}>Baris</Text>
-                                <TextInput
-                                    underlineColorAndroid={'transparent'}
-                                    style={[style.searchInput, { flex: 1 }]} />
-                            </View>
-                        </CardItem>
+                    <Card style={[style.cardContainer]}>
+                        <TouchableOpacity style={{ padding: 70 }}>
+                            <Image style={{
+                                alignSelf: 'center', alignItems: 'stretch',
+                                width: 55, height: 55
+                            }}
+                                source={require('../../Images/icon/ic_camera_big.png')}></Image>
+                        </TouchableOpacity>
                     </Card>
 
-                    <Text style={style.txtLabel}>Pastikan kamu telah berada dilokasi yang benar</Text>
+                    <View style={{ marginTop: 16, height: 120 }}>
+                        <ScrollView contentContainerStyle={{ paddingRight: 16, paddingLeft:6 }} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            {this.renderImage()}
+                        </ScrollView >
+                    </View>
 
-                    <TouchableOpacity style={[style.button, { marginTop: 180 }]}
+                    <TouchableOpacity style={[style.button, { marginTop: 16 }]}
                         onPress={() => this.onBtnClick()}>
                         <Text style={style.buttonText}>Mulai Inspeksi</Text>
                     </TouchableOpacity>
@@ -203,11 +210,9 @@ const style = {
         flex: 1,
         marginRight: 16,
         marginLeft: 16,
-        marginTop: 10,
-        paddingTop: 10,
-        paddingBottom: 10,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#fff'
+        backgroundColor: '#eee',
+        borderColor: '#ddd'
     }
 };
