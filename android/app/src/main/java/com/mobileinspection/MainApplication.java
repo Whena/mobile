@@ -3,6 +3,13 @@ package com.mobileinspection;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import io.realm.react.RealmReactPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import org.reactnative.camera.RNCameraPackage;
 import codes.simen.IMEI.IMEI;
 import com.kishanjvaghela.cardview.RNCardViewPackage;
 import io.realm.react.RealmReactPackage;
@@ -27,10 +34,14 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new IMEI(),
-            new RNCardViewPackage(),
+            new RNFSPackage(),
             new RealmReactPackage(),
-            new VectorIconsPackage()
+            new VectorIconsPackage(),
+            new RNDeviceInfo(),
+            new ReactNativeConfigPackage(),
+            new RNCardViewPackage(),
+            new RNCameraPackage(),
+            new IMEI()
       );
     }
 

@@ -6,7 +6,8 @@ import {
     StatusBar,
     ImageBackground,
     KeyboardAvoidingView,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 
 import FormLogin from '../Component/FormLogin'
@@ -16,9 +17,9 @@ import { ProgressDialog } from 'react-native-simple-dialogs';
 import { NavigationActions, StackActions  } from 'react-navigation';
 import Colors from '../Constant/Colors';
 import {isNil } from 'ramda';
+import TaskServices from '../Database/TaskServices';
+const IMEI = require('react-native-imei');  
 
-var Realm = require('realm'); 
-let realm ;
 
 class LoginScreen extends React.Component {
 
@@ -29,44 +30,34 @@ class LoginScreen extends React.Component {
             user_id:'',
             user_name:'',
             token:'',
-            imei: require('react-native-imei')
+            imei: IMEI.getImei()
         }
+    }
 
-        realm = new Realm({
-            schema: [{name: 'trn_login', 
-            primaryKey:'NIK',
-            properties: 
-            {
-                NIK: 'string',
-                ACCESS_TOKEN: 'string',
-                JOB_CODE: 'string', 
-                LOCATION_CODE: 'string',
-                REFFERENCE_ROLE: 'string',
-                USERNAME: 'string', 
-                USER_AUTH_CODE: 'string',
-                USER_ROLE: 'string', 
-            }}]
-        });
+    get_IMEI_Number(){ 
+        var IMEI_2 = IMEI.getImei(); 
+        this.setState({ imei : IMEI_2 });   
+        return IMEI_2;     
     }
 
     static navigationOptions = {
         header: null,        
     }
 
-    // insertUser=()=>{
-    //     realm.write(() => {    
-    //         realm.create('trn_login', {
-    //             NIK: 'string',
-    //             ACCESS_TOKEN: 'string',
-    //             JOB_CODE: 'string', 
-    //             LOCATION_CODE: 'string',
-    //             REFFERENCE_ROLE: 'string',
-    //             USERNAME: 'string', 
-    //             USER_AUTH_CODE: 'string',
-    //             USER_ROLE: 'string', 
-    //         });          
-    //     });     
-    //   }
+    insertUser(user){
+        var data = {
+            NIK: user.NIK,
+            ACCESS_TOKEN: user.ACCESS_TOKEN,
+            JOB_CODE: user.JOB_CODE,
+            LOCATION_CODE: user.LOCATION_CODE,
+            REFFERENCE_ROLE: user.REFFERENCE_ROLE,
+            USERNAME: user.USERNAME,
+            USER_AUTH_CODE: user.USER_AUTH_CODE,
+            USER_ROLE: user.USER_ROLE
+        };
+
+        TaskServices.saveData('TR_LOGIN', data);
+    }
 
     componentWillReceiveProps(newProps) {
 		if (!isNil(newProps.auth)) {
@@ -76,11 +67,12 @@ class LoginScreen extends React.Component {
             // console.log(newProps.auth.user);
             // console.log(newProps.auth.user.ACCESS_TOKEN);
             // this.setState({token:newProps.auth.user.ACCESS_TOKEN});
-            // this.insertUser;
+
+            this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
-            // var ID = realm.objects('trn_login').length + 1;
-            // Alert.alert(ID+'');
-            // console.log(ID);
+
+            // const sdasd = LoginTaskService.findAll();
+            // Alert.alert(JSON.stringify(sdasd));
 
 		}
     }
@@ -96,19 +88,28 @@ class LoginScreen extends React.Component {
 
     onLogin(username, password) {
         Keyboard.dismiss();
+        // this.insertUser(null);
+        // this.navigateScreen('MainMenu');
+
+        //usefetch
+        // this.useFetch();
+        // this.executeTest()
+
+        //redux-sagas
+        var Imei = this.get_IMEI_Number();
 		this.props.authRequest({
             username: username,
-            password: password
+            password: password,
+            imei:Imei
         });
-        
-        // this.navigateScreen('MainMenu');
 	}
 
     render() {
+
         return (
             <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
                 <KeyboardAvoidingView behavior="padding">
-                    <StatusBar hidden={true} backgroundColor={Colors.tintColor}  barStyle="light-content" />
+                    <StatusBar hidden={false} backgroundColor={Colors.tintColor}  barStyle="light-content" />
                     {/* <FormLogin
                         onBtnClick={data => {
                             console.log(data)

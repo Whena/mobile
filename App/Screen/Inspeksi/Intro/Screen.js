@@ -9,7 +9,7 @@ import {
 
 import Swiper from "./Swiper";
 import KondisiBaris1 from '../KondisiBaris1'
-import KondisiBaris2 from '../KondisiBaris2'
+import KondisiBaris2 from '../KondisiBaris2Redesign'
 
 export default class Screen extends Component {
   render() {

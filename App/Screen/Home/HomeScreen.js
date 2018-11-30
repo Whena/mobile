@@ -1,16 +1,13 @@
 import React from 'react';
-import { View, StatusBar, Image, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StatusBar, Image, TouchableOpacity, StyleSheet, Text, ScrollView, Alert } from 'react-native';
 
 import Colors from '../../Constant/Colors'
+// import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'native-base';
 import CardView from 'react-native-cardview';
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 class HomeScreen extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
 
   static navigationOptions = ({ navigation }) => ({
     headerStyle: {
@@ -39,9 +36,34 @@ class HomeScreen extends React.Component {
         </View>
       </TouchableOpacity>
     )
-  })
+  });
+
+  // constructor(props){
+  //   super(props);
+  //   const params = props.navigation.state.params;
+    // if(params != null){
+    //   Alert.alert(params.logout);
+    // }
+    
+    // Alert.alert('params');
+  // }
+
+  // componentWillReceiveProps(newProps){
+  //   // const { navigation } = this.newProps;
+  //   const itemId = newProps.getParam('logout', 'N');
+  //   Alert.alert(itemId)
+  // }
+
+  // componentDidMount(){
+  //   const { navigation } = this.props;
+  //   const itemId = navigation.getParam('logout', 'N');
+  //   Alert.alert(itemId)
+  // }
 
   render() {
+    
+    // var A = realm.objects('test'); 
+    // var myJSON = JSON.stringify(A);
     return (
       <ScrollView style={styles.container}>
         <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
@@ -71,7 +93,7 @@ class HomeScreen extends React.Component {
             </View>
           </CardView>
         </View>
-
+        
       </ScrollView>
     )
   }

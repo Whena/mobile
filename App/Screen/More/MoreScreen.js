@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Text, ScrollView, Alert, Button } from 'react-native';
 
 import Colors from '../../Constant/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CardView from 'react-native-cardview';
+import TaskServices from '../../Database/TaskServices'
+import { NavigationActions, StackActions  } from 'react-navigation';
+import ModalConfirmation from '../../Component/ModalConfirmation'
 
 export default class MoreScreen extends Component {
 
@@ -35,107 +38,155 @@ export default class MoreScreen extends Component {
       </TouchableOpacity>
     )
   };
+
+  constructor(props){
+    super(props);
+    this.state={
+      showConfirm: false
+    }
+  }
+
+  navigateScreen(screenName) {
+    const navigation = this.props.navigation;
+    const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: screenName })],
+    });
+    navigation.dispatch(resetAction);
+}
+
+  logout(){
+    TaskServices.deleteData('TR_LOGIN', {});
+    this.setState({showConfirm:false})
+    this.navigateScreen('Login')
+    // this.props.navigation.navigate('HomeStack', {logout:'Y'});
+    // this.props.navigation.navigator.pop()
+
+
+  }
+
   render() {
     return (
       <ScrollView style={styles.container}>
         <View style={{ padding: 6 }} >
-          <View style={styles.marginCard}>
-            <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_profile_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Profile</Text>
-                </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
-            </CardView>
-          </View>
 
-          <View style={styles.marginCard}>
-            <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_games_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Games</Text>
-                </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
-            </CardView>
-          </View>
+          <ModalConfirmation
+            visible={this.state.showConfirm}
+            onPressCancel={() => 
+              this.setState({showConfirm:false})}
+            onPressSubmit={() => {
+              this.logout();
+            }}
+            title={'Konfirmasi'}
+            message={`Apakah anda ingin keluar dari aplikasi ?`}
+            btnCancelText={'Tidak'}
+            btnSubmitText={'Ya'}
+          />
 
-          <View style={styles.marginCard}>
+          {/*Profile*/}
+          <TouchableOpacity style={styles.marginCard}>
             <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_ranking_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Ranking</Text>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_profile_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Profile</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
                 </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
             </CardView>
-          </View>
+          </TouchableOpacity>
 
-          <View style={styles.marginCard}>
+          {/*Games*/}
+          <TouchableOpacity style={styles.marginCard}>
             <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_minidashboard_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Mini Dashboard</Text>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_games_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Games</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
                 </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
             </CardView>
-          </View>
+          </TouchableOpacity>
 
-          <View style={styles.marginCard}>
+          {/*Rangking*/}
+          <TouchableOpacity style={styles.marginCard}>
             <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_help_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Help</Text>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_ranking_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Ranking</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
                 </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
             </CardView>
-          </View>
+          </TouchableOpacity>
+          
+          {/*Mini Dashboard*/}
+          <TouchableOpacity style={styles.marginCard}>
+            <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_minidashboard_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Mini Dashboard</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
+                </View>
+            </CardView>
+          </TouchableOpacity>
 
-          <View style={styles.marginCard}>
+          {/*Help*/}
+          <TouchableOpacity style={styles.marginCard}>
             <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_contactcenter_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Contact Center</Text>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_help_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Help</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
                 </View>
-                <View style={{ marginRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
             </CardView>
-          </View>
+          </TouchableOpacity>
 
-          <View style={styles.marginCard}>
+          {/*Contact Center*/}
+          <TouchableOpacity style={styles.marginCard}>
             <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
-              <View style={styles.sectionCardView}>
-                <View style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center' }} >
-                  <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_signout_menu.png')}></Image>
-                  <Text style={styles.textTitle}>Sign Out</Text>
+                <View style={styles.sectionCardView}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_contactcenter_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Contact Center</Text>
+                  </View>
+                  <View style={{ marginRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
                 </View>
-                <View style={{ backgroundColor: 'white', paddingRight: 24 }}>
-                  <Icon size={32} name='ios-arrow-round-forward' color='grey' />
-                </View>
-              </View>
             </CardView>
-          </View>
+          </TouchableOpacity>
+
+          {/*Sign Out*/}
+          <TouchableOpacity style={styles.marginCard} onPress={()=>{this.setState({showConfirm:true})}}>
+            <CardView cardElevation={2} cardMaxElevation={2} cornerRadius={10}>
+                <View style={styles.sectionCardView}>
+                  <View style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center' }} >
+                    <Image style={{ height: 40, width: 40, borderRadius: 50, marginLeft: 24, marginRight: 16 }} source={require('../../Images/icon/menu/ic_signout_menu.png')}></Image>
+                    <Text style={styles.textTitle}>Sign Out</Text>
+                  </View>
+                  <View style={{ backgroundColor: 'white', paddingRight: 24 }}>
+                    <Icon size={32} name='ios-arrow-round-forward' color='grey' />
+                  </View>
+                </View>
+            </CardView>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     )

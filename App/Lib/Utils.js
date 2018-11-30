@@ -1,7 +1,9 @@
 import { isNil, isEmpty } from 'ramda';
 // import API from '../Services/Api'
 import DeviceInfo from 'react-native-device-info';
-import { Platform, PixelRatio, Dimensions } from 'react-native';
+import { Platform, PixelRatio, Dimensions, PermissionsAndroid, Alert } from 'react-native';
+const moment = require('moment');
+var uuid = require('react-native-uuid');
 
 // export function formatRp(num, fixed = 0) {
 // 	num = parseFloat(num);
@@ -17,6 +19,104 @@ import { Platform, PixelRatio, Dimensions } from 'react-native';
 // 		(isNil(p[1]) ? '' : '.' + p[1])
 // 	);
 // }
+
+export async function getPermission(){
+	try{
+		const phone =  await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE ,
+			{
+			  'title': 'ReactNativeCode wants to READ_PHONE_STATE',
+			  'message': 'ReactNativeCode App needs access to your personal data. '
+			}
+		);
+		const camera =  await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.CAMERA ,
+			{
+			  'title': 'ReactNativeCode wants to CAMERA',
+			  'message': 'ReactNativeCode App needs access to your personal data. '
+			}
+		);
+		const storage =  await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE ,
+			{
+			  'title': 'ReactNativeCode wants to READ_EXTERNAL_STORAGE',
+			  'message': 'ReactNativeCode App needs access to your personal data. '
+			}
+		);
+		const location = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION ,
+			{
+			  'title': 'ReactNativeCode wants to ACCESS_FINE_LOCATION',
+			  'message': 'ReactNativeCode App needs access to your personal data. '
+			}
+		);
+	
+		if(phone === PermissionsAndroid.RESULTS.GRANTED && camera === PermissionsAndroid.RESULTS.GRANTED && 
+			storage === PermissionsAndroid.RESULTS.GRANTED && location === PermissionsAndroid.RESULTS.GRANTED){
+			return true;
+		}
+	}catch(e){
+		console.warn(e)
+		return false;
+	}
+}
+
+export function getFileFromDirectory(path){
+	RNFS.readDir(path) // /storage/emulated/0/Sulley
+        .then((result) => {
+        console.log('GOT RESULT', result);
+        return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+	}).then((statResult) => {
+        if (statResult[0].isFile()) {
+        return RNFS.readFile(statResult[1], 'utf8');
+        }
+        return 'no file';
+	}).then((contents) => {
+        console.log(contents);
+        })
+        .catch((err) => {
+        console.log(err.message, err.code);
+	});
+}
+
+export function getUUID(){
+	return uuid.v4();
+}
+
+export function getTodayDate(format){
+	var tgl = moment().format(format)
+	return tgl;
+}
+
+export function convertTimestampToDate(timestamp, format){
+	var dateString = moment(timestamp).format(format);
+	// const formatted = moment(timestamp).format('L'); //MM/DD/YYYY
+	return dateString;
+}
+
+export async function request_READ_PHONE_STATE() {
+ 
+	try {
+	  const granted = await PermissionsAndroid.request(
+		PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE ,
+		{
+		  'title': 'ReactNativeCode wants to READ_PHONE_STATE',
+		  'message': 'ReactNativeCode App needs access to your personal data. '
+		}
+	  )
+	  if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+   
+		Alert.alert("Permission Granted.");
+	  }
+	  else {
+   
+		Alert.alert("Permission Not Granted");
+   
+	  }
+	} catch (err) {
+	  console.warn(err)
+	}
+  }
 
 export function formatRp(num, fixed = 0) {
 	num = parseFloat(num);

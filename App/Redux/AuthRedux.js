@@ -7,6 +7,7 @@ const { Types, Creators } = createActions({
 	authRequest: ['data'],
 	authSuccess: ['payload'],
 	authFailure: ['error'],
+	authRequestLogout:['data'],
 	authLogout: [],
 	authUserUpdate: ['data'],
 	authLoginCheck: null
@@ -33,7 +34,7 @@ export const AuthSelectors = {
 
 // request the data from an api
 export const request = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
-export const requestLogin = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
+export const requestLogout = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
 
 // successful api lookup
 export const success = (state, action) => {
@@ -56,7 +57,8 @@ export const reducer = createReducer(INITIAL_STATE, {
 	[Types.AUTH_REQUEST]: request,
 	[Types.AUTH_SUCCESS]: success,
 	[Types.AUTH_FAILURE]: failure,
-	[Types.AUTH_LOGOUT]: logout,
+	// [Types.AUTH_LOGOUT]: requestLogout,
+	// [Types.AUTH_LOGOUT]: logout,
 	[Types.AUTH_USER_UPDATE]: userUpdate,
 	[Types.AUTH_LOGIN_CHECK]: authLoginCheck
 });

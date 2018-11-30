@@ -11,7 +11,7 @@ import { AuthTypes } from '../Redux/AuthRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
-import { getAuth, userUpdate } from './AuthSagas';
+import { getAuth, userUpdate, getAuthLogOut } from './AuthSagas';
 
 /* ------------- API ------------- */
 
@@ -31,6 +31,7 @@ export default function* root() {
 		
 		takeLatest(AuthTypes.AUTH_REQUEST, getAuth, idpApi),
 		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, idpApi),
+		// takeLatest(AuthTypes.AUTH_LOGOUT, getAuthLogOut, idpApi),
 
 		// takeLatest(LoginRedux.AUTH_REQUEST, getAuth, idpApi),
 		// takeLatest(LoginRedux.AUTH_USER_UPDATE, userUpdate, idpApi),

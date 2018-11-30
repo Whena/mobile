@@ -77,7 +77,7 @@ class FormLogin extends React.Component {
                         placeholderTextColor="#51a977"
                         selectionColor="#51a977"
                         keyboardType="email-address"
-                        onChangeText={(strEmail) => { this.setState({ strEmail: strEmail }) }}
+                        onChangeText={(strEmail) => {this.setState({ strEmail: strEmail.toLocaleLowerCase() }) }}
                         value={this.state.strEmail}
                         onSubmitEditing={() => this.password.focus()} />
                 </View>

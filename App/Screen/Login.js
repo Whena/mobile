@@ -19,9 +19,10 @@ import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { NavigationActions, StackActions  } from 'react-navigation';
 import {isNil } from 'ramda';
+import LoginTaskService from '../Database/TaskLoginService'
 
-var Realm = require('realm'); 
-let realm ;
+// var Realm = require('realm'); 
+// let realm ;
 
 class Login extends Component{
 
@@ -34,21 +35,21 @@ class Login extends Component{
             token:'',
         }
 
-        realm = new Realm({
-            schema: [{name: 'trn_login', 
-            primaryKey:'NIK',
-            properties: 
-            {
-                NIK: 'string',
-                ACCESS_TOKEN: 'string',
-                JOB_CODE: 'string', 
-                LOCATION_CODE: 'string',
-                REFFERENCE_ROLE: 'string',
-                USERNAME: 'string', 
-                USER_AUTH_CODE: 'string',
-                USER_ROLE: 'string', 
-            }}]
-        });
+        // realm = new Realm({
+        //     schema: [{name: 'trn_login', 
+        //     primaryKey:'NIK',
+        //     properties: 
+        //     {
+        //         NIK: 'string',
+        //         ACCESS_TOKEN: 'string',
+        //         JOB_CODE: 'string', 
+        //         LOCATION_CODE: 'string',
+        //         REFFERENCE_ROLE: 'string',
+        //         USERNAME: 'string', 
+        //         USER_AUTH_CODE: 'string',
+        //         USER_ROLE: 'string', 
+        //     }}]
+        // });
     }
 
     static navigationOptions = {
@@ -65,6 +66,21 @@ class Login extends Component{
     //     });     
     //   }
 
+    insertUser=(user)=>{
+        var data = {
+            NIK: user.NIK,
+            ACCESS_TOKEN: user.ACCESS_TOKEN,
+            JOB_CODE: user.JOB_CODE,
+            LOCATION_CODE: user.LOCATION_CODE,
+            REFFERENCE_ROLE: user.REFFERENCE_ROLE,
+            USERNAME: user.REFFERENCE_ROLE,
+            USER_AUTH_CODE: user.USER_AUTH_CODE,
+            USER_ROLE: user.USER_ROLE
+        };
+        var saved = LoginTaskService.save(data);
+        console.log(saved);
+    }
+
     componentWillReceiveProps(newProps) {
 		if (!isNil(newProps.auth)) {
 			this.setState({ fetching: newProps.auth.fetching });
@@ -74,6 +90,7 @@ class Login extends Component{
             // console.log(newProps.auth.user.ACCESS_TOKEN);
             // this.setState({token:newProps.auth.user.ACCESS_TOKEN});
             // this.insertUser;
+            this.insertUser;
             this.navigateScreen('MainMenu');
             // var ID = realm.objects('trn_login').length + 1;
             // Alert.alert(ID+'');
@@ -92,13 +109,13 @@ class Login extends Component{
 	}
 
     onLogin(username, password) {
-        // Keyboard.dismiss();
-		// this.props.authRequest({
-        //     username: username,
-        //     password: password
-        // });
+        Keyboard.dismiss();
+		this.props.authRequest({
+            username: username,
+            password: password
+        });
         
-        this.navigateScreen('MainMenu');
+        // this.navigateScreen('MainMenu');
 	}
 
     render(){
@@ -107,10 +124,11 @@ class Login extends Component{
                 <KeyboardAvoidingView
                     style={styles.container}
                     behavior="padding" >
-
                     <StatusBar
                         hidden={true}
-                        barStyle="light-content"/>
+                        barStyle="light-content"
+                    />
+                    
 
                     {/* <Logo/> */}
 
