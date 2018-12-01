@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 
 import Colors from '../../Constant/Colors'
-import RouteInspeksi from './RouteInspeksi';
+import InspectionNavigator from './InspectionNavigator'
 
 export default class InspectionScreen extends Component {
 
@@ -37,10 +37,7 @@ export default class InspectionScreen extends Component {
 
   render() {
     return (
-      // <InspectionNavigator />
-      // <InspectionNavigator />
-      <RouteInspeksi/>
+      <InspectionNavigator />
     )
-
   }
 }

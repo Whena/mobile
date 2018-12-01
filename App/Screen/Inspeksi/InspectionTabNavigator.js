@@ -1,33 +1,34 @@
 
-import { createMaterialTopTabNavigator } from 'react-navigation';
+import { createMaterialTopTabNavigator, createStackNavigator } from 'react-navigation';
 
 import HistoryInspection from './HistoryInscpection';
 import ListInspection from './ListInspection';
 
-export default createMaterialTopTabNavigator({
+const InspectionTabs = createMaterialTopTabNavigator({
 
   Riwayat: {
     screen: HistoryInspection,
+    headerMode: 'none',
     navigationOptions: {
+      headerMode: 'none',
       tabBarLabel: 'Riwayat'
     }
   },
   DaftarInspeksi: {
+    headerMode: 'none',
     screen: ListInspection,
     navigationOptions: {
+      headerMode: 'none',
       tabBarLabel: 'Daftar Inspeksi'
     }
   }
 }, {
-    navigationOptions: {
-      header: {
-        visible: true
-      }
-    },
+    headerMode: "none",
     initialRouteName: 'DaftarInspeksi',
     order: ['DaftarInspeksi', 'Riwayat'],
     // tabBarPosition:'bottom',
     swipeEnabled: false,
+    // Optional: Override the `navigationOptions` for the screen
     tabBarOptions: {
       activeTintColor: '#51A977',
       inactiveTintColor: 'grey',
@@ -38,4 +39,40 @@ export default createMaterialTopTabNavigator({
       showIcon: true,
     }
   });
+
+//Issue: the tab navigator needs to be wrapped inside a stack navigator
+export default createStackNavigator({ InspectionTabs }, { headerMode: "none" });
+
+// const RiwayatStack = createStackNavigator({
+//   Riwayat: HistoryInspection,
+// });
+
+// RiwayatStack.navigationOptions = {
+//   tabBarLabel: 'Riwayat'
+// };
+
+// const DaftarInspeksiStack = createStackNavigator({
+//   DaftarInspeksi: ListInspection,
+// });
+
+// DaftarInspeksiStack.navigationOptions = {
+//   tabBarLabel: 'Daftar Inspeksi'
+// };
+
+// export default (
+//   InspectionTabNavigator = createMaterialTopTabNavigator({
+//     DaftarInspeksiStack,
+//     RiwayatStack,
+//   }, {
+//       headerMode: 'none',
+//       tabBarOptions: {
+//         activeTintColor: '#51A977',
+//         inactiveTintColor: 'grey',
+//         style: { backgroundColor: 'white' },
+//         indicatorStyle: {
+//           backgroundColor: '#2db92d',
+//         }
+//       }
+//     }
+//   ));
 
