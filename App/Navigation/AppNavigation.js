@@ -15,7 +15,6 @@ const main = createStackNavigator({
         navigationOptions: {
 
         },
-        // Disable animation
         transitionConfig: () => ({ screenInterpolator: () => null }),
     });
 

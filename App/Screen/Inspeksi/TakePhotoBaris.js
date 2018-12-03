@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
 // } from 'react-native';
 // import Camera from 'react-native-camera';
 // import { Icon } from 'native-base';
-// import { dirPicutures } from './dirStorage';
+// import { dirPicutures } from '../../Lib/dirStorage';
 // const moment = require('moment');
 
 // let { height, width } = Dimensions.get('window');

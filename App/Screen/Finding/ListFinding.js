@@ -11,7 +11,6 @@ export default class ListFinding extends Component {
     super(props);
 
     var data = [1, 2, 3, 4, 5]
-
     this.state = {
       data,
       refreshing: false
