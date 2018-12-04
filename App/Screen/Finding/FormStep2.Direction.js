@@ -4,8 +4,7 @@ import {
 } from 'react-native';
 import {
     Container,
-    Content,
-    Spinner
+    Content
 } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
@@ -17,6 +16,7 @@ import moment from 'moment'
 import Contact from '../../Component/Contact'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
+import Polyline from '@mapbox/polyline'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
@@ -73,6 +73,10 @@ class FormStep2 extends Component {
             latitude: null,
             longitude: null,
             error: null,
+            coords: [],
+            x: 'false',
+            cordLatitude: -6.241586,
+            cordLongitude: 106.992416,
             // foto1: props.navigation.state.params.foto1,
             // foto2: props.navigation.state.params.foto2,
             // foto3: props.navigation.state.params.foto3,
@@ -81,6 +85,8 @@ class FormStep2 extends Component {
                 { step: '2', title: 'Tulis Keterangan' }
             ],
         }
+
+        this.mergeLot = this.mergeLot.bind(this);
     }
 
     componentDidMount() {
@@ -91,10 +97,50 @@ class FormStep2 extends Component {
                     longitude: position.coords.longitude,
                     error: null,
                 });
+                this.mergeLot();
             },
             (error) => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
         );
+    }
+
+    async getDirections(startLoc, destinationLoc) {
+        console.tron.log(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyASByvaP6kVDgnx7lsADk4Wf226gI81ntM`)
+
+        try {
+            let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyASByvaP6kVDgnx7lsADk4Wf226gI81ntM`)
+
+            let respJson = await resp.json();
+
+            console.tron.log(respJson)
+
+            let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+            let coords = points.map((point, index) => {
+                return {
+                    latitude: point[0],
+                    longitude: point[1]
+                }
+            })
+            this.setState({ coords: coords })
+            this.setState({ x: "true" })
+            return coords
+        } catch (error) {
+            this.setState({ x: "error" })
+            return error
+        }
+    }
+
+    mergeLot() {
+        console.tron.log("mergeLot")
+        if (this.state.latitude != null && this.state.longitude != null) {
+            let concatLot = this.state.latitude + "," + this.state.longitude
+            this.setState({
+                concat: concatLot
+            }, () => {
+                this.getDirections(concatLot, `${this.state.cordLatitude},${this.state.cordLongitude}`);
+            });
+        }
+
     }
 
     _onBtnClick = () => {
@@ -121,11 +167,6 @@ class FormStep2 extends Component {
         this._hideDateTimePicker();
     };
 
-    _showLocation = () => {
-        this.setState({
-            isMapsVisible: true
-        })
-    }
 
     render() {
         return (
@@ -203,9 +244,9 @@ class FormStep2 extends Component {
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}> Lokasi </Text>
                         {isEmpty(this.state.blok) && (
-                            <Text onPress={this._showLocation} style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
+                            <Text onPress={() => this.setState({ isMapsVisible: true })} style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                         {!isEmpty(this.state.blok) && (
-                            <Text onPress={this._showLocation} style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
+                            <Text onPress={() => this.setState({ isMapsVisible: true })} style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
 
                     </View>
 
@@ -293,23 +334,17 @@ class FormStep2 extends Component {
 
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={[style.label, { height: 35, textAlignVertical: 'center' }]}> Blok </Text>
-                            <TextInput style={style.inputloc}
-                                onChangeText={(blok) => this.setState({ blok })}
-                                value={this.state.blok} />
+                            <TextInput style={style.inputloc}></TextInput>
                         </View>
 
                         <View style={{ flexDirection: 'row', marginTop: 5 }}>
                             <Text style={[style.label, { height: 35, textAlignVertical: 'center' }]}> Baris </Text>
-                            <TextInput style={style.inputloc}
-                                onChangeText={(baris) => this.setState({ baris })}
-                                value={this.state.baris} />
+                            <TextInput style={style.inputloc}></TextInput>
                         </View>
 
                         <View style={{ marginTop: 10, width: '100%' }}>
                             <TouchableOpacity style={[style.buttonSetLoc, { alignSelf: 'flex-end' }]}
-                                onPress={() =>
-                                    this.setState({ isMapsVisible: false })
-                                }>
+                                onPress={() => this.setState({ isMapsVisible: false })}>
                                 <Text style={style.buttonText}>Set Lokasi</Text>
                             </TouchableOpacity>
                         </View>
@@ -317,29 +352,44 @@ class FormStep2 extends Component {
                         <View style={style.line} />
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
-                        
-                        {this.state.latitude && this.state.longitude && (
-                            <MapView
-                                style={{ height: 200, borderRadius: 10 }}
-                                provider={PROVIDER_GOOGLE}
-                                region={{
-                                    latitude: this.state.latitude,
-                                    longitude: this.state.longitude,
-                                    latitudeDelta: 3,
-                                    longitudeDelta: 3
-                                }}
-                            >
 
-                                {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
-                                    coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
-                                    title={"Your Location"}
-                                />}
-                            </MapView>
-                        )}
-                        {!this.state.latitude && !this.state.longitude && (
-                            <View style={style.loading}>
-                                <Spinner color={Colors.brand} />
-                            </View>)}
+                        <MapView
+                            style={{ height: 200, borderRadius: 10 }}
+                            provider={PROVIDER_GOOGLE}
+                            region={{
+                                latitude: this.state.cordLatitude,
+                                longitude: this.state.cordLongitude,
+                                latitudeDelta: 0.3,
+                                longitudeDelta: 0.3
+                            }}
+                        >
+
+                            {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
+                                coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
+                                title={"Your Location"}
+                            />}
+
+                            {!!this.state.cordLatitude && !!this.state.cordLongitude && <MapView.Marker pinColor={Colors.brand}
+                                coordinate={{ "latitude": this.state.cordLatitude, "longitude": this.state.cordLongitude }}
+                                title={"Your Destination"}
+                            />}
+
+                            {!!this.state.latitude && !!this.state.longitude && this.state.x == 'true' && <MapView.Polyline
+                                coordinates={this.state.coords}
+                                strokeWidth={2}
+                                strokeColor="red" />
+                            }
+
+                            {!!this.state.latitude && !!this.state.longitude && this.state.x == 'error' && <MapView.Polyline
+                                coordinates={[
+                                    { latitude: this.state.latitude, longitude: this.state.longitude },
+                                    { latitude: this.state.cordLatitude, longitude: this.state.cordLongitude },
+                                ]}
+                                strokeWidth={2}
+                                strokeColor="red" />
+                            }
+
+                        </MapView>
                     </View>
                 </SlidingUpPanel>
 

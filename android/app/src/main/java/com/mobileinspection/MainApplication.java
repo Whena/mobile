@@ -3,6 +3,7 @@ package com.mobileinspection;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.airbnb.android.react.maps.MapsPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.rnfs.RNFSPackage;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new MapsPackage(),
             new FastImageViewPackage(),
             new ImagePickerPackage(),
             new RNFSPackage(),

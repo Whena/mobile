@@ -11,7 +11,7 @@ const main = createStackNavigator({
     FormFinding: { screen: FormFinding }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'SplashScreen',
+        initialRouteName: 'FormFinding',
         navigationOptions: {
 
         },
