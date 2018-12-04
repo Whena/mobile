@@ -27,7 +27,7 @@ const InspectionTabs = createMaterialTopTabNavigator({
     initialRouteName: 'DaftarInspeksi',
     order: ['DaftarInspeksi', 'Riwayat'],
     // tabBarPosition:'bottom',
-    swipeEnabled: true,
+    swipeEnabled: false,
     // Optional: Override the `navigationOptions` for the screen
     tabBarOptions: {
       activeTintColor: '#51A977',
