@@ -30,7 +30,7 @@ const radioGroupList = [{
 class FormStep2 extends Component {
     constructor(props) {
         super(props);
-        var data = [{ name: "Nurul Husnah", departemen: "Staf Marketing", photo: "http://res.rankedgaming.com/resources/images/profile/default-avatar-male.png" },
+        var contacts = [{ name: "Nurul Husnah", departemen: "Staf Marketing", photo: "http://res.rankedgaming.com/resources/images/profile/default-avatar-male.png" },
         { name: "Nur Hasanah", departemen: "Staf Accounting", photo: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif" },
         { name: "Nurul Arifin", departemen: "Staf IT", photo: "https://s.kaskus.id/user/avatar/2013/08/23/avatar5791311_2.gif" }]
 
@@ -38,13 +38,14 @@ class FormStep2 extends Component {
             keterangan: "",
             priority: "",
             batasWaktu: "",
-            data,
+            tugasKepada: "",
+            contacts,
             isDateTimePickerVisible: false,
             isContactVisible: false,
             allowDragging: true,
-            foto1: props.navigation.state.params.foto1,
-            foto2: props.navigation.state.params.foto2,
-            foto3: props.navigation.state.params.foto3,
+            // foto1: props.navigation.state.params.foto1,
+            // foto2: props.navigation.state.params.foto2,
+            // foto3: props.navigation.state.params.foto3,
             stepper: [
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
@@ -54,6 +55,17 @@ class FormStep2 extends Component {
 
     _onBtnClick = () => {
         //console.tron.log(this.props.navigation.state.params.foto1)
+    }
+
+    _onContactSelected = user => {
+        this.setState({
+            isContactVisible: false,
+            tugasKepada: user.name
+        })
+    }
+
+    _renderContact = user => {
+        return <Contact onSelect={this._onContactSelected} user={user} />;
     }
 
     _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -132,8 +144,8 @@ class FormStep2 extends Component {
                             />
                         </View>
                         <View style={{ alignSelf: 'flex-end', height: 80, width: 80, marginLeft: 10 }}>
-                            <Image style={{ alignItems: 'stretch', width: 80, height: 80, borderRadius: 10 }}
-                                source={this.state.foto1}></Image>
+                            {/* <Image style={{ alignItems: 'stretch', width: 80, height: 80, borderRadius: 10 }}
+                                source={this.state.foto1}></Image> */}
                         </View>
                     </View>
 
@@ -191,7 +203,10 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}> Ditugaskan Kepada </Text>
-                        <Text onPress={() => this.setState({ isContactVisible: true })} style={style.item}> Pilih Karyawan </Text>
+                        {isEmpty(this.state.tugasKepada) && (
+                            <Text onPress={() => this.setState({ isContactVisible: true })} style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
+                        {!isEmpty(this.state.tugasKepada) && (
+                            <Text onPress={() => this.setState({ isContactVisible: true })} style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
                     </View>
 
                     <View style={[style.line]} />
@@ -220,10 +235,7 @@ class FormStep2 extends Component {
                             onTouchEnd={() => this.setState({ allowDragging: true })}
                             onTouchCancel={() => this.setState({ allowDragging: true })}
                             onTouchStart={() => this.setState({ allowDragging: false })}>
-                            <Contact
-                                onSelect={() => { this.setState({ isContactVisible: false }) }}
-                                data={this.state.data}
-                            />
+                            {this.state.contacts.map(this._renderContact)}
                         </ScrollView>
                     </View>
                 </SlidingUpPanel>

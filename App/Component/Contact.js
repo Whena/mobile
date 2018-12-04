@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
 	TouchableOpacity, View, Image, Text
@@ -6,42 +6,33 @@ import {
 import FastImage from 'react-native-fast-image'
 import R from 'ramda'
 
-class Contact extends Component {
+class Contact extends React.PureComponent {
 	static propTypes = {
-		onSelect: PropTypes.func,
-		data: PropTypes.array
+		onSelect: PropTypes.func.isRequired,
+		user: PropTypes.object.isRequired
 	};
 
-	static defaultProps = {
-		onSelect: () => { },
-		data: []
+	_onSelectedItem = () => {
+		this.props.onSelect(this.props.user);
 	};
-
-	_renderList() {
-		const Row = item => (
-			<TouchableOpacity style={{ flex: 1, flexDirection: 'row', marginBottom: 16 }}
-				onPress={this.props.onSelect}>
-				<FastImage style={{ marginRight: 16, width: 40, height: 40, borderRadius: 20 }}
-					resizeMode={FastImage.resizeMode.contain} 
-					source={{
-						uri: item.photo,
-						priority: FastImage.priority.normal,
-					  }}/>
-				<View style={{ flex: 1 }} >
-					<Text style={{ fontSize: 14, color: 'black' }}>{item.name}</Text>
-					<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{item.departemen}</Text>
-				</View>
-			</TouchableOpacity>
-		);
-
-		return R.map(Row, this.props.data)
-	}
-
 
 	render() {
+		const user = this.props.user
 		return (
 			<View style={{ flex: 1 }}>
-				{this._renderList()}
+				<TouchableOpacity style={{ flex: 1, flexDirection: 'row', marginBottom: 16 }}
+					onPress={this._onSelectedItem}>
+					<FastImage style={{ marginRight: 16, width: 40, height: 40, borderRadius: 20 }}
+						resizeMode={FastImage.resizeMode.contain}
+						source={{
+							uri: user.photo,
+							priority: FastImage.priority.normal,
+						}} />
+					<View style={{ flex: 1 }} >
+						<Text style={{ fontSize: 14, color: 'black' }}>{user.name}</Text>
+						<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{user.departemen}</Text>
+					</View>
+				</TouchableOpacity>
 			</View>
 		);
 	}
