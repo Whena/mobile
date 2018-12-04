@@ -27,16 +27,22 @@ const InspectionTabs = createMaterialTopTabNavigator({
     initialRouteName: 'DaftarInspeksi',
     order: ['DaftarInspeksi', 'Riwayat'],
     // tabBarPosition:'bottom',
-    swipeEnabled: false,
+    swipeEnabled: true,
     // Optional: Override the `navigationOptions` for the screen
     tabBarOptions: {
       activeTintColor: '#51A977',
       inactiveTintColor: 'grey',
-      style: { backgroundColor: 'white' },
+      style: {
+        backgroundColor: 'white',
+        borderTopColor: "transparent",
+        elevation: 0
+      },
       indicatorStyle: {
         backgroundColor: '#2db92d',
-      },
-      showIcon: true,
+        width: 15,
+        maxWidth: 15,
+        marginStart: '23%'
+      }
     }
   });
 
