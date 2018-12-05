@@ -64,16 +64,8 @@ class LoginScreen extends React.Component {
 			this.setState({ fetching: newProps.auth.fetching });
         }
 		if (!isNil(newProps.auth.user)) {
-            // console.log(newProps.auth.user);
-            // console.log(newProps.auth.user.ACCESS_TOKEN);
-            // this.setState({token:newProps.auth.user.ACCESS_TOKEN});
-
             this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
-
-            // const sdasd = LoginTaskService.findAll();
-            // Alert.alert(JSON.stringify(sdasd));
-
 		}
     }
 
@@ -88,14 +80,6 @@ class LoginScreen extends React.Component {
 
     onLogin(username, password) {
         Keyboard.dismiss();
-        // this.insertUser(null);
-        // this.navigateScreen('MainMenu');
-
-        //usefetch
-        // this.useFetch();
-        // this.executeTest()
-
-        //redux-sagas
         var Imei = this.get_IMEI_Number();
 		this.props.authRequest({
             username: username,
