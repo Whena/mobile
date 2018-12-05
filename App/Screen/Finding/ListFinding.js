@@ -51,14 +51,10 @@ export default class ListFinding extends Component {
     this.props.navigation.navigate('FormFinding')
   }
 
-  _detailScreen = () => {
-    this.props.navigation.navigate('DetailFinding')
-  }
-
   renderList(nav) {
     const Row = item => (
       <TouchableOpacity
-        onPress={this._detailScreen}
+        onPress={() => { nav.navigate('DetailFinding') }}
       >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
           <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/forest.jpg')}></Image>
@@ -123,7 +119,7 @@ export default class ListFinding extends Component {
           buttonColor={Colors.tintColor}
           onPress={() => { this.actionButtonClick() }}>
           <Icon name="pen" style={styles.actionButtonIcon} />
-          </ActionButton>
+        </ActionButton>
       </View>
 
     )
