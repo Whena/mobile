@@ -511,7 +511,6 @@ const styles = {
         textAlign: 'center',
         color: '#A9A9A9',
         paddingHorizontal: 18,
-        paddingVertical: 12,
-        
+        paddingVertical: 12
     }
 }

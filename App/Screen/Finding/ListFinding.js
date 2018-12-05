@@ -4,6 +4,7 @@ import R from 'ramda'
 import ActionButton from 'react-native-action-button'
 import Colors from '../../Constant/Colors'
 import Dash from 'react-native-dash'
+import Icon from 'react-native-vector-icons'
 
 export default class ListFinding extends Component {
 
@@ -52,11 +53,13 @@ export default class ListFinding extends Component {
 
   renderList(nav) {
     const Row = item => (
-      <TouchableOpacity	>
+      <TouchableOpacity
+        onPress={() => { nav.navigate('DetailFinding') }}
+      >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
           <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/forest.jpg')}></Image>
 
-          <View style={{ borderBottomLeftRadius: 5, borderBottomRightRadius: 5, backgroundColor: 'rgba(244, 131, 65, 0.7)', width: 120, padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10, backgroundColor: 'rgba(244, 131, 65, 0.7)', width: 120, padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 10, color: 'white' }}>Gawi Inti A-001/A01</Text>
           </View>
         </View>
@@ -114,7 +117,9 @@ export default class ListFinding extends Component {
 
         <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
           buttonColor={Colors.tintColor}
-          onPress={() => { this.actionButtonClick() }}></ActionButton>
+          onPress={() => { this.actionButtonClick() }}>
+          <Icon name="pen" style={styles.actionButtonIcon} />
+        </ActionButton>
       </View>
 
     )
