@@ -13,7 +13,7 @@ export default createStackNavigator({
   },
 }, {
     headerMode: 'none',
-    initialRouteName: 'Step2',
+    initialRouteName: 'Step1',
     transitionConfig: () => ({ screenInterpolator: () => null }),
   }
 );
