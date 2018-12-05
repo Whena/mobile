@@ -1,19 +1,19 @@
 
-import React, {Component} from 'react';
-import {ImageBackground, StatusBar, Text, Alert} from 'react-native';
-import {Container} from 'native-base'
-import { NavigationActions, StackActions  } from 'react-navigation';
-import {getPermission} from '../Lib/Utils'
+import React, { Component } from 'react';
+import { ImageBackground, StatusBar, Text, Alert } from 'react-native';
+import { Container } from 'native-base'
+import { NavigationActions, StackActions } from 'react-navigation';
+import { getPermission } from '../Lib/Utils'
 import TaskServices from '../Database/TaskServices'
 // import RealmSchema from '../Database/RealmSchema';
 var RNFS = require('react-native-fs');
 
-class SplashScreen extends Component{
+class SplashScreen extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.state={
-            json:''
+        this.state = {
+            json: ''
         }
     }
 
@@ -30,16 +30,16 @@ class SplashScreen extends Component{
         navigation.dispatch(resetAction);
     }
 
-    async componentDidMount(){ 
+    async componentDidMount() {
 
         // let list = TaskServices.getAllData("TR_TRACK_INSPECTION");        
         // let list = TaskServices.findBy("TR_TRACK_INSPECTION", "TRACK_INSPECTION_CODE", "000789-20181130-4122-H-A-T-1");
-        
+
         // this.setState({json: JSON.stringify(list)})
         // Alert.alert(JSON.stringify(list))
 
         var isAllGrandted = await getPermission();
-        if(isAllGrandted === true){
+        if (isAllGrandted === true) {
             //buat folder internal      
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi');
 
@@ -51,23 +51,23 @@ class SplashScreen extends Component{
 
             //delete record
             // TaskServices.deleteAllData('t_login',{user_auth_code:'auth'})
-            
+
             setTimeout(() => {
-                // if(TaskServices.getTotalData('TR_LOGIN') > 0){
+                if (TaskServices.getTotalData('TR_LOGIN') > 0) {
                     this.navigateScreen('MainMenu');
-                // }else{
-                //     this.navigateScreen('Login');
-                // }
-                
+                } else {
+                    this.navigateScreen('Login');
+                }
+
             }, 2000);
-        }else{
+        } else {
             Alert.alert('Seluruh Permission harus di hidupkan')
         }
     }
-    
 
-    render(){
-        return(
+
+    render() {
+        return (
             <Container>
                 <StatusBar
                     hidden={true}
@@ -75,9 +75,9 @@ class SplashScreen extends Component{
                 />
                 <ImageBackground source={require('../Images/splash.png')} style={{ flex: 1 }} />
                 {/* <Text>{this.state.json}</Text> */}
-                
+
             </Container>
-            
+
         )
     }
 }
