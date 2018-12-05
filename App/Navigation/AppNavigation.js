@@ -13,11 +13,11 @@ const main = createStackNavigator({
     Login: { screen: Login },
     FormFinding: { screen: FormFinding },
     Sync: { screen: SyncScreen },
-    Inbox: { screen: InboxScreen }
+    Inbox: { screen: InboxScreen },
     DetailFinding: { screen: DetailFindingScreen }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'MainMenu',
+        initialRouteName: 'SplashScreen',
         navigationOptions: {
 
         },
