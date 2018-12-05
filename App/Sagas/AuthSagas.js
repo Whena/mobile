@@ -16,7 +16,6 @@ export function* getAuth(api, action) {
 				yield put(AuthActions.authFailure('Username atau Password Salah !'));
 				break;
 			case true:
-				console.log(response);
 				yield put(AuthActions.authSuccess(response.data.data));
 				break;
 			default:

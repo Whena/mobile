@@ -14,37 +14,38 @@ import FormLogin from '../Component/FormLogin'
 import { connect } from 'react-redux';
 import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
-import { NavigationActions, StackActions  } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 import Colors from '../Constant/Colors';
-import {isNil } from 'ramda';
+import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
-const IMEI = require('react-native-imei');  
+//const IMEI = require('react-native-imei');  
 
 
 class LoginScreen extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             fetching: false,
-            user_id:'',
-            user_name:'',
-            token:'',
-            imei: IMEI.getImei()
+            user_id: '',
+            user_name: '',
+            token: '',
+            imei: ''
+            // imei: IMEI.getImei()
         }
     }
 
-    get_IMEI_Number(){ 
-        var IMEI_2 = IMEI.getImei(); 
-        this.setState({ imei : IMEI_2 });   
-        return IMEI_2;     
-    }
+    // get_IMEI_Number(){ 
+    //     var IMEI_2 = IMEI.getImei(); 
+    //     this.setState({ imei : IMEI_2 });   
+    //     return IMEI_2;     
+    // }
 
     static navigationOptions = {
-        header: null,        
+        header: null,
     }
 
-    insertUser(user){
+    insertUser(user) {
         var data = {
             NIK: user.NIK,
             ACCESS_TOKEN: user.ACCESS_TOKEN,
@@ -60,13 +61,13 @@ class LoginScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-		if (!isNil(newProps.auth)) {
-			this.setState({ fetching: newProps.auth.fetching });
+        if (!isNil(newProps.auth)) {
+            this.setState({ fetching: newProps.auth.fetching });
         }
-		if (!isNil(newProps.auth.user)) {
+        if (!isNil(newProps.auth.user)) {
             this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
-		}
+        }
     }
 
     navigateScreen(screenName) {
@@ -76,31 +77,31 @@ class LoginScreen extends React.Component {
             actions: [NavigationActions.navigate({ routeName: screenName })],
         });
         navigation.dispatch(resetAction);
-	}
+    }
 
     onLogin(username, password) {
         Keyboard.dismiss();
-        var Imei = this.get_IMEI_Number();
-		this.props.authRequest({
+        //var Imei = this.get_IMEI_Number();
+        this.props.authRequest({
             username: username,
             password: password,
-            imei:Imei
+            imei: ""
         });
-	}
+    }
 
     render() {
 
         return (
             <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
                 <KeyboardAvoidingView behavior="padding">
-                    <StatusBar hidden={false} backgroundColor={Colors.tintColor}  barStyle="light-content" />
+                    <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
                     {/* <FormLogin
                         onBtnClick={data => {
                             console.log(data)
                             this.props.navigation.navigate('MainTabs')
                         }} /> */}
                     <FormLogin
-                        onBtnClick={data=>{this.onLogin(data.strEmail, data.strPassword)}}/>
+                        onBtnClick={data => { this.onLogin(data.strEmail, data.strPassword) }} />
                     <View style={styles.footerView}>
                         <Text style={styles.footerText}>{'\u00A9'} 2018 Triputra Agro Persada. All Rights Reserved.</Text>
                     </View>
@@ -116,15 +117,13 @@ class LoginScreen extends React.Component {
 }
 
 const mapStateToProps = state => {
-	return {
-		auth: state.auth
-	};
+    return { auth: state.auth };
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
-		authRequest: obj => dispatch(AuthAction.authRequest(obj))
-	};
+    return {
+        authRequest: obj => dispatch(AuthAction.authRequest(obj))
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
