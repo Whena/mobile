@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, StatusBar, Image, TouchableOpacity, StyleSheet, Text, ScrollView, Alert } from 'react-native';
+import { ImageBackground, StatusBar, TouchableOpacity, View, ScrollView, Image, StyleSheet } from 'react-native';
+import { Container, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right } from 'native-base';
 
-import Colors from '../../Constant/Colors'
-// import { Container, Header, Left, Body, Right, Button, Icon, Title } from 'native-base';
-import CardView from 'react-native-cardview';
-
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import Icons from 'react-native-vector-icons/MaterialIcons';
+import Colors from '../../Constant/Colors';
+import homeData from '../../Data/home';
 
 class HomeScreen extends React.Component {
 
@@ -23,14 +22,14 @@ class HomeScreen extends React.Component {
     title: 'Beranda',
     headerTintColor: '#fff',
     headerRight: (
-      <TouchableOpacity onPress={() => navigation.navigate('BuatInspeksi')}>
+      <TouchableOpacity  onPress={() => navigation.navigate('Inbox')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_inbox.png')} />
         </View>
       </TouchableOpacity>
     ),
     headerLeft: (
-      <TouchableOpacity onPress={() => navigation.navigate('BuatInspeksi')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Sync')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_sync.png')} />
         </View>
@@ -38,14 +37,18 @@ class HomeScreen extends React.Component {
     )
   });
 
+  // actionClickSync() {
+  //   this.props.navigation.navigate('Sync')
+  // }
+
   // constructor(props){
   //   super(props);
   //   const params = props.navigation.state.params;
-    // if(params != null){
-    //   Alert.alert(params.logout);
-    // }
-    
-    // Alert.alert('params');
+  // if(params != null){
+  //   Alert.alert(params.logout);
+  // }
+
+  // Alert.alert('params');
   // }
 
   // componentWillReceiveProps(newProps){
@@ -60,63 +63,75 @@ class HomeScreen extends React.Component {
   //   Alert.alert(itemId)
   // }
 
+  alertItemName = (item) => {
+    alert(item.status)
+  }
+
   render() {
-    
+
     // var A = realm.objects('test'); 
     // var myJSON = JSON.stringify(A);
     return (
-      <ScrollView style={styles.container}>
+      <Container style={{ padding: 16 }}>
         <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
-        <View style={styles.sectionTimeline}>
-          <Text style={styles.textTimeline}>Timeline</Text>
-          <View style={styles.rightSection}>
-            <Text style={styles.textFilter}>Filter</Text>
-            <TouchableOpacity>
-              <Icon name="filter-list" size={28} style={{ marginLeft: 6 }} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Content>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}>
+            <View style={styles.sectionTimeline}>
+              <Text style={styles.textTimeline}>Timeline</Text>
+              <View style={styles.rightSection}>
+                <Text style={styles.textFilter}>Filter</Text>
+                <TouchableOpacity>
+                  <Icons name="filter-list" size={28} style={{ marginLeft: 6 }} />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-        <View style={styles.sectionCardView}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={10}>
-            <View style={{ height: 64, flexDirection: 'row', padding: 12, alignItems: 'center' }}>
-              <TouchableOpacity>
-                <Image style={{ width: 36, height: 36, borderRadius: 50, marginRight: 12 }} source={require('../../Images/background.png')}></Image>
-              </TouchableOpacity>
-              <Text >Aminju Muhammad</Text>
-            </View>
-            <Image style={{ alignItems: 'stretch', height: 250, paddingRight: 50 }} source={require('../../Images/background.png')}></Image>
-            <View style={{ padding: 16 }}>
-              <Text style={{ color: 'grey', fontSize: 10 }}>25 Oktober 2018</Text>
-              <Text style={{ color: 'black', fontSize: 14 }} >Lokasi : GAWI INTI-A-001/A01</Text>
-              <Text >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at lorem eu neque mollis ornare. Quisque sodales velit tempus, eleifend massa eget, lobortis eros.</Text>
-            </View>
-          </CardView>
-        </View>
-        
-      </ScrollView>
+            {
+              homeData.data.items.map((item, index) => (
+                <TouchableOpacity style={{ marginTop: 12 }} key={item.id} onPress={() => this.alertItemName(item)}>
+                  <Card >
+                    <CardItem>
+                      <Left>
+                        <Thumbnail style={{ height: 48, width: 48 }} source={item.image_thum} />
+                        <Body><Text>{item.name}</Text></Body>
+                      </Left>
+                    </CardItem>
+                    <CardItem cardBody>
+                      <ImageBackground source={item.image_thum} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
+                        <View style={{ alignContent: 'center', paddingTop: 2, paddingLeft: 12, flexDirection: 'row', height: 42, backgroundColor: 'rgba(52, 52, 52, 0.5)' }} >
+                          <Image style={{ marginTop: 2, height: 28, width: 28 }} source={require('../../Images/icon/ic_new_timeline.png')}></Image>
+                          <Text style={{ marginLeft: 12, color: 'white' }}>{item.status}</Text>
+                        </View>
+                      </ImageBackground>
+                    </CardItem>
+                    <CardItem>
+                      <Body>
+                        <Text>{item.date}</Text>
+                        <Text style={{ marginTop: 6 }}>Lokasi : {item.ba}</Text>
+                        <Text style={{ marginTop: 6 }}>{item.description}</Text>
+                      </Body>
+                    </CardItem>
+                  </Card>
+                </TouchableOpacity>
+              ))
+            }
+          </ScrollView>
+
+        </Content>
+      </Container>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    padding: 16,
-    flex: 1
-  },
   sectionTimeline: {
     height: 48,
     backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
-  },
-  sectionCardView: {
-    marginTop: 8,
-    alignItems: 'stretch',
-    height: 400,
-    backgroundColor: 'white'
   },
   rightSection: {
     flexDirection: 'row'
@@ -136,5 +151,6 @@ const styles = StyleSheet.create({
     color: 'grey'
   }
 });
+
 
 export default HomeScreen;

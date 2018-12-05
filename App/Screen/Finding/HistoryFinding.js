@@ -6,11 +6,11 @@ export default class HistoryFinding extends Component {
   constructor(props) {
     super(props)
 
-    var history = ["Martin Sulaeman", "Ahmad Cherudin", "Nadirsyah Hosen"]
+    var lokasi = ["GAWI INTI 1-A-A01/001", "GAWI INTI 1-A-A01/001", "GAWI INTI 1-A-A02/002"]
 
     this.state = {
-      history,
-			refreshing: false
+      lokasi,
+      refreshing: false
     }
   }
 
@@ -20,14 +20,15 @@ export default class HistoryFinding extends Component {
         style={styles.sectionCardView}	>
         <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')}></Image>
         <View style={styles.sectionDesc} >
-          <Text style={{ fontSize: 12, color: 'grey' }}>No: 20 | Blok: 10</Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Tugas Untuk: {item}</Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Status: <Text style={{ color: 'green' }}>Selesai</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>05 Dec 2018</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>Pokok Abnormal</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: 'green' }}>Baru</Text ></Text>
         </View>
       </TouchableOpacity>
     );
 
-    return R.map(Row, this.state.history)
+    return R.map(Row, this.state.lokasi)
   }
 
   render() {
@@ -65,6 +66,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: 80,
-    padding: 10,
+    paddingTop: 7,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
   }
 });
