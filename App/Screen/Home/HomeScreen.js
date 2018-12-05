@@ -5,13 +5,14 @@ import { connect } from 'react-redux'
 import Icons from 'react-native-vector-icons/MaterialIcons'
 import Colors from '../../Constant/Colors'
 import homeData from '../../Data/home'
+import TaskServices from '../../Database/TaskServices'
 
 class HomeScreen extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      user: props.auth
+      user: TaskServices.getAllData('TR_LOGIN')
     }
   }
 
@@ -45,8 +46,13 @@ class HomeScreen extends React.Component {
   });
 
   componentWillMount() {
-    console.tron.log("IPIN")
+
+  }
+
+  componentDidMount() {
     console.tron.log(this.state.user)
+    
+    alert(JSON.stringify(this.state.user[0]))
   }
 
   alertItemName = (item) => {
