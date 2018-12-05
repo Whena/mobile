@@ -50,13 +50,19 @@ export default class ListFinding extends Component {
     this.props.navigation.navigate('FormFinding')
   }
 
+  _detailScreen = () => {
+    this.props.navigation.navigate('DetailFinding')
+  }
+
   renderList(nav) {
     const Row = item => (
-      <TouchableOpacity	>
+      <TouchableOpacity
+        onPress={this._detailScreen}
+      >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
           <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/forest.jpg')}></Image>
 
-          <View style={{ borderBottomLeftRadius: 5, borderBottomRightRadius: 5, backgroundColor: 'rgba(244, 131, 65, 0.7)', width: 120, padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10, backgroundColor: 'rgba(244, 131, 65, 0.7)', width: 120, padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 10, color: 'white' }}>Gawi Inti A-001/A01</Text>
           </View>
         </View>
