@@ -17,6 +17,7 @@ import moment from 'moment'
 import Contact from '../../Component/Contact'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
+import ImageCarousel from 'react-native-image-page'
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
@@ -52,7 +53,6 @@ class FormStep2 extends Component {
             { id: "010", name: "Traffic Violations" },
             { id: "011", name: "Traffic Jam" },
             { id: "012", name: "Violation of Public Order" },
-
         ]
 
         this.state = {
@@ -73,9 +73,7 @@ class FormStep2 extends Component {
             latitude: null,
             longitude: null,
             error: null,
-            // foto1: props.navigation.state.params.foto1,
-            // foto2: props.navigation.state.params.foto2,
-            // foto3: props.navigation.state.params.foto3,
+            foto: props.navigation.state.params,
             stepper: [
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
@@ -193,8 +191,14 @@ class FormStep2 extends Component {
                             />
                         </View>
                         <View style={{ alignSelf: 'flex-end', height: 80, width: 80, marginLeft: 10 }}>
-                            {/* <Image style={{ alignItems: 'stretch', width: 80, height: 80, borderRadius: 10 }}
-                                source={this.state.foto1}></Image> */}
+                            <ImageCarousel
+                                height={80}
+                                width={80}
+                                animate={false}
+                                indicatorSize={10}
+                                indicatorColor="red"
+                                images={this.state.foto}
+                            />
                         </View>
                     </View>
 
@@ -317,7 +321,7 @@ class FormStep2 extends Component {
                         <View style={style.line} />
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
-                        
+
                         {this.state.latitude && this.state.longitude && (
                             <MapView
                                 style={{ height: 200, borderRadius: 10 }}

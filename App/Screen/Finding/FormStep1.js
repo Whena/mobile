@@ -33,12 +33,12 @@ class FormStep1 extends Component {
         if (isNil(this.state.foto1)) {
             alert("Minimal harus ada 1 Foto diambil")
         } else {
-            const params = {
-                foto1: this.state.foto1,
-                foto2: this.state.foto2,
-                foto3: this.state.foto3
-            }
+            var params = [this.state.foto1]
+            if (this.state.foto2) params.push(this.state.foto2)
+            if (this.state.foto3) params.push(this.state.foto3)
 
+            console.tron.log(params);
+            
             this.props.navigation.navigate('Step2', params)
         }
     }
