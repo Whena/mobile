@@ -13,7 +13,7 @@ const main = createStackNavigator({
     DetailFinding: { screen: DetailFindingScreen }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'DetailFinding',
+        initialRouteName: 'MainMenu',
         navigationOptions: {
 
         },

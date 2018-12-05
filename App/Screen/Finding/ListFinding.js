@@ -4,6 +4,7 @@ import R from 'ramda'
 import ActionButton from 'react-native-action-button'
 import Colors from '../../Constant/Colors'
 import Dash from 'react-native-dash'
+import Icon from 'react-native-vector-icons'
 
 export default class ListFinding extends Component {
 
@@ -120,7 +121,9 @@ export default class ListFinding extends Component {
 
         <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
           buttonColor={Colors.tintColor}
-          onPress={() => { this.actionButtonClick() }}></ActionButton>
+          onPress={() => { this.actionButtonClick() }}>
+          <Icon name="pen" style={styles.actionButtonIcon} />
+          </ActionButton>
       </View>
 
     )
