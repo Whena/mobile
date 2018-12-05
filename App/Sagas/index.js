@@ -11,7 +11,8 @@ import { AuthTypes } from '../Redux/AuthRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
-import { getAuth, userUpdate, getAuthLogOut } from './AuthSagas';
+import { getAuth, userUpdate } from './AuthSagas';
+//, getAuthLogOut
 
 /* ------------- API ------------- */
 

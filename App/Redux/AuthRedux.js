@@ -34,7 +34,7 @@ export const AuthSelectors = {
 
 // request the data from an api
 export const request = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
-export const requestLogout = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
+//export const requestLogout = (state, { data }) => state.merge({ fetching: true, error: null, user: null });
 
 // successful api lookup
 export const success = (state, action) => {
@@ -45,7 +45,7 @@ export const success = (state, action) => {
 // Something went wrong somewhere.
 export const failure = (state, { error }) => state.merge({ fetching: false, error });
 
-export const logout = state => state.merge({ fetching: false, error: null, user: null });
+//export const logout = state => state.merge({ fetching: false, error: null, user: null });
 
 export const userUpdate = (state, { data }) => state.merge({ fetching: true, error: null });
 

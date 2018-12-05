@@ -1,12 +1,19 @@
 import React from 'react';
 import { ImageBackground, StatusBar, TouchableOpacity, View, ScrollView, Image, StyleSheet } from 'react-native';
 import { Container, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right } from 'native-base';
-
-import Icons from 'react-native-vector-icons/MaterialIcons';
-import Colors from '../../Constant/Colors';
-import homeData from '../../Data/home';
+import { connect } from 'react-redux'
+import Icons from 'react-native-vector-icons/MaterialIcons'
+import Colors from '../../Constant/Colors'
+import homeData from '../../Data/home'
 
 class HomeScreen extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: props.auth
+    }
+  }
 
   static navigationOptions = ({ navigation }) => ({
     headerStyle: {
@@ -22,7 +29,7 @@ class HomeScreen extends React.Component {
     title: 'Beranda',
     headerTintColor: '#fff',
     headerRight: (
-      <TouchableOpacity  onPress={() => navigation.navigate('Inbox')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_inbox.png')} />
         </View>
@@ -37,31 +44,10 @@ class HomeScreen extends React.Component {
     )
   });
 
-  // actionClickSync() {
-  //   this.props.navigation.navigate('Sync')
-  // }
-
-  // constructor(props){
-  //   super(props);
-  //   const params = props.navigation.state.params;
-  // if(params != null){
-  //   Alert.alert(params.logout);
-  // }
-
-  // Alert.alert('params');
-  // }
-
-  // componentWillReceiveProps(newProps){
-  //   // const { navigation } = this.newProps;
-  //   const itemId = newProps.getParam('logout', 'N');
-  //   Alert.alert(itemId)
-  // }
-
-  // componentDidMount(){
-  //   const { navigation } = this.props;
-  //   const itemId = navigation.getParam('logout', 'N');
-  //   Alert.alert(itemId)
-  // }
+  componentWillMount() {
+    console.tron.log("IPIN")
+    console.tron.log(this.state.user)
+  }
 
   alertItemName = (item) => {
     alert(item.status)
@@ -153,4 +139,15 @@ const styles = StyleSheet.create({
 });
 
 
-export default HomeScreen;
+
+const mapStateToProps = state => {
+  return {
+    auth: state.auth.user
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
