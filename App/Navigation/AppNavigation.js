@@ -3,15 +3,17 @@ import SplashScreen from '../Screen/SplashScreen';
 import Login from '../Screen/LoginScreen'
 import MainMenu from '../Screen/Home/MainTabNavigator'
 import FormFinding from '../Screen/Finding/FormFinding'
+import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen'
 
 const main = createStackNavigator({
-    MainMenu: { screen: MainMenu, navigationOptions: { header: null }},
+    MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
     SplashScreen: { screen: SplashScreen },
     Login: { screen: Login },
-    FormFinding: { screen: FormFinding }
+    FormFinding: { screen: FormFinding },
+    DetailFinding: { screen: DetailFindingScreen }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'FormFinding',
+        initialRouteName: 'MainMenu',
         navigationOptions: {
 
         },

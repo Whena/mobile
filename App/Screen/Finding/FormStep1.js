@@ -10,7 +10,7 @@ import {
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import R, { isEmpty } from 'ramda';
+import R, { isEmpty, isNil } from 'ramda';
 import { dirPicutures } from '../../Lib/dirStorage';
 import ImagePicker from 'react-native-image-picker';
 const moment = require('moment');
@@ -30,13 +30,17 @@ class FormStep1 extends Component {
     }
 
     onBtnClick() {
-        const params = {
-            foto1: this.state.foto1,
-            foto2: this.state.foto2,
-            foto3: this.state.foto3
+        if (isNil(this.state.foto1)) {
+            alert("Minimal harus ada 1 Foto diambil")
+        } else {
+            var params = [this.state.foto1]
+            if (this.state.foto2) params.push(this.state.foto2)
+            if (this.state.foto3) params.push(this.state.foto3)
+
+            console.tron.log(params);
+            
+            this.props.navigation.navigate('Step2', params)
         }
-        
-        this.props.navigation.navigate('Step2', params)
     }
 
     takePicture() {
