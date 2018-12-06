@@ -9,6 +9,7 @@ import { persistReducer } from 'redux-persist';
 export const reducers = combineReducers({
 	nav: require('./NavigationRedux').reducer,
 	auth: require('./AuthRedux').reducer,
+	// inspeksi : require('./InspeksiRedux').reducer,
 	network
 });
 

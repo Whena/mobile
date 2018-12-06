@@ -8,10 +8,12 @@ import { networkEventsListenerSaga } from 'react-native-offline';
 import { StartupTypes } from '../Redux/StartupRedux';
 // import { LoginRedux } from '../redux/LoginRedux';
 import { AuthTypes } from '../Redux/AuthRedux';
+import { InspeksiTypes } from '../Redux/InspeksiRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
+// import { postInspeksi } from './InspeksiSagas';
 //, getAuthLogOut
 
 /* ------------- API ------------- */
@@ -32,7 +34,8 @@ export default function* root() {
 		
 		takeLatest(AuthTypes.AUTH_REQUEST, getAuth, idpApi),
 		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, idpApi),
-		// takeLatest(AuthTypes.AUTH_LOGOUT, getAuthLogOut, idpApi),
+
+		// takeLatest(InspeksiTypes.POST_INSPEKSI, getAuthLogOut, idpApi),
 
 		// takeLatest(LoginRedux.AUTH_REQUEST, getAuth, idpApi),
 		// takeLatest(LoginRedux.AUTH_USER_UPDATE, userUpdate, idpApi),

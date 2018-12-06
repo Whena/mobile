@@ -14,16 +14,13 @@ export default class ListInspection extends Component {
     super(props);
   }
 
-  clickHandler = () => {
-
-    //function to handle click on floating Action Button
-    // Alert.alert('Floating Button Clicked');
-    this.props.navigation.push('BuatInspeksi');
-  };
+  actionButtonClick() {
+    this.props.navigation.navigate('FormInspection')
+  }
 
   render() {
     return (
-        <ActionButton buttonColor={Colors.tintColor} onPress={() => this.props.navigation.push('BuatInspeksi')}></ActionButton>
+        <ActionButton buttonColor={Colors.tintColor} onPress={() => this.actionButtonClick()}></ActionButton>
     )
   }
 }

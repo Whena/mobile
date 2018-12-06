@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 import Colors from '../../Constant/Colors'
-import InspectionNavigator from './InspectionNavigator'
+import InspectionTabNavigator from './InspectionTabNavigator'
+
+// import { connect } from 'react-redux';
+// import InspesiActions from '../../Redux/InspeksiRedux';
 
 export default class InspectionScreen extends Component {
 
+  static router = InspectionTabNavigator.router;
   static navigationOptions = {
     headerStyle: {
       backgroundColor: Colors.tintColor
@@ -37,7 +41,16 @@ export default class InspectionScreen extends Component {
 
   render() {
     return (
-      <InspectionNavigator />
+      <View style={styles.container}>
+        <InspectionTabNavigator navigation={this.props.navigation} />
+      </View >
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    flex: 1
+  }
+});

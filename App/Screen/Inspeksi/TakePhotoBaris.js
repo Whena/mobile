@@ -20,6 +20,7 @@ import imgNextPhoto from '../../Images/icon/ic_next_photo.png';
 import { RNCamera as Camera } from 'react-native-camera';
 import {getTodayDate} from '../../Lib/Utils'
 import TaskServices from '../../Database/TaskServices';
+import { NavigationActions, StackActions  } from 'react-navigation';
 
 const moment = require('moment');
 var RNFS = require('react-native-fs');
@@ -29,21 +30,30 @@ class TakePhotoBaris extends Component {
 
   constructor(props) {
     super(props);
-    // let params = props.navigation.state.params;
-    // let order = R.clone(params.data);
+
+    let params = props.navigation.state.params;
+    let inspeksiHeader = R.clone(params.inspeksiHeader);
+    let dataUsual = R.clone(params.dataUsual);
+    let from = R.clone(params.from);
+
+    // console.log(dataUsual)
 
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+    
     this.state = {
       hasPhoto: false,
       path: null,
       pathImg: null,
       dataModel: null,
-      // order
+      inspeksiHeader,
+      // trackInspeksi,
+      dataUsual,
+      from
     };
   }
 
   componentDidMount(){
-    // this.setParameter();
+    this.setParameter();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -51,21 +61,36 @@ class TakePhotoBaris extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
-  handleBackButtonClick() {
+  handleBackButtonClick() { 
     if(this.state.hasPhoto){
-      RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/test.jpg')
+
+      RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME)
         .then(() => {
           console.log('FILE DELETED');
       });
+      RNFS.unlink(this.state.path)
+      this.setState({path: null, hasPhoto:false});
     }
-    this.props.navigation.goBack(null);
+
+    if(this.state.from !== 'undefined'){
+      this.props.navigation.goBack(null);
+    }else{
+      //harus ditambah pertanyaan sebelum back
+      const navigation = this.props.navigation;
+      const resetAction = StackActions.reset({
+          index: 0,            
+          actions: [NavigationActions.navigate({ routeName: 'InspectionNavigator'})]
+      });
+      navigation.dispatch(resetAction);
+    }
+    
     return true;
   }
 
   setParameter(){
-    var imgCode = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+'-'+this.state.order.AFD+'-I-'+
+    var imgCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-I-'+
       (parseInt(TaskServices.getTotalData('TR_IMAGE'))+1);
-    var trCode = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+'-'+this.state.order.AFD+'-D-'+
+    var trCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-D-'+
       (parseInt(TaskServices.getTotalData('TR_IMAGE'))+1);
     var imageName = 'IMG-'+imgCode+'.jpg';
     
@@ -79,6 +104,7 @@ class TakePhotoBaris extends Component {
     }
 
     this.setState({dataModel:image});
+    
   }
 
   takePicture = async () => {
@@ -88,8 +114,7 @@ class TakePhotoBaris extends Component {
       }else{
         const data = await this.camera.takePictureAsync();
         this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi', hasPhoto: true });
-        RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/test.jpg');
-        // RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME);
+        RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME);
       }
       
     } catch (err) {
@@ -113,8 +138,8 @@ class TakePhotoBaris extends Component {
   }
 
   insertDB(){
-    // TaskService.saveData('TR_IMAGE', this.state.dataModel);
-    this.props.navigation.navigate('KondisiBaris1'); 
+    this.props.navigation.navigate('KondisiBaris1',
+    {fotoBaris:this.state.dataModel, inspeksiHeader: this.state.inspeksiHeader, dataUsual: this.state.dataUsual});
   }
 
   renderImage() {
@@ -142,7 +167,7 @@ class TakePhotoBaris extends Component {
     return (
       <View style={styles.container}>
         {/* {this.state.path ? this.renderImage() : this.renderCamera()} */}
-        <View style={{flex:2, backgroundColor:Colors.brandSecondary}}>
+        <View style={{flex:2}}>
            {this.state.path ? this.renderImage() : this.renderCamera()}
         </View>
         <View style={{flex:0.5, alignItems:'center', justifyContent:'center'}}>
@@ -628,7 +653,7 @@ const styles = StyleSheet.create({
 // } from 'react-native';
 // import Camera from 'react-native-camera';
 // import { Icon } from 'native-base';
-// import { dirPicutures } from '../../Lib/dirStorage';
+// import { dirPicutures } from './dirStorage';
 // const moment = require('moment');
 
 // let { height, width } = Dimensions.get('window');

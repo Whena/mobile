@@ -33,13 +33,6 @@ const TR_BLOCK_INSPECTION_H = {
         LAT_END_INSPECTION:'string',
         LONG_END_INSPECTION:'string',
         ASSIGN_TO:'string'
-
-        // INSERT_USER:'string',
-        // INSERT_TIME:'string',
-        // UPDATE_USER:'string',
-        // UPDATE_TIME:'string',
-        // DELETE_USER:'string',
-        // DELETE_TIME:'string'
     }
 }
 
@@ -53,14 +46,6 @@ const TR_BLOCK_INSPECTION_D = {
         AREAL: 'string',
         VALUE: 'string', 
         STATUS_SYNC: 'string'
-
-        // SYNC_TIME: 'string',
-        // INSERT_USER: 'string', 
-        // INSERT_TIME: 'string',
-        // UPDATE_USER: 'string', 
-        // UPDATE_TIME:'string',
-        // DELETE_USER:'string',
-        // DELETE_TIME:'string',
     }
 }
 
@@ -74,14 +59,6 @@ const TR_IMAGE = {
         IMAGE_PATH: 'string',
         STATUS_IMAGE: 'string', 
         STATUS_SYNC: 'string'
-
-        // SYNC_TIME: 'string',
-        // INSERT_USER: 'string', 
-        // INSERT_TIME: 'string',
-        // UPDATE_USER: 'string', 
-        // UPDATE_TIME:'string',
-        // DELETE_USER:'string',
-        // DELETE_TIME:'string',
     }
 }
 
@@ -94,16 +71,40 @@ const TR_TRACK_INSPECTION = {
         DATE_TRACK:'string',
         LAT_TRACK: 'string',
         LONG_TRACK: 'string' 
+    }
+}
 
-        // SYNC_TIME: 'string',
-        // INSERT_USER: 'string', 
-        // INSERT_TIME: 'string',
-        // UPDATE_USER: 'string', 
-        // UPDATE_TIME:'string',
-        // DELETE_USER:'string',
-        // DELETE_TIME:'string',
+const TR_BARIS_INSPECTION = {
+    name: 'TR_BARIS_INSPECTION',
+    primaryKey: 'ID',
+    properties:{
+        ID: 'int',
+        BLOCK_INSPECTION_CODE : 'string'        
+    }
+}
+
+const TM_AFD = {
+    name: 'TM_AFD',
+    // primaryKey: 'ID',
+    properties:{
+        REGION_CODE: 'int',
+        COMP_CODE : 'int' ,    
+        EST_CODE : 'int' ,    
+        WERKS : 'int' , 
+        AFD_CODE:'string',
+        AFD_NAME:'string',  
+        WERKS_AFD_CODE : 'string' , 
+        START_VALID : 'string' , 
+        END_VALID : 'string' , 
+        INSERT_TIME_DW : 'string' , 
+        UPDATE_TIME_DW : 'string' , 
+        INSERT_USER : 'string' , 
+        INSERT_TIME : 'string' , 
+        UPDATE_USER : 'string' , 
+        UPDATE_TIME : 'string' , 
+        FLAG_UPDATE : 'string' , 
     }
 }
 
 
-export default {TR_LOGIN, TR_BLOCK_INSPECTION_H, TR_BLOCK_INSPECTION_D, TR_IMAGE, TR_TRACK_INSPECTION}
+export default {TR_LOGIN, TR_BLOCK_INSPECTION_H, TR_BLOCK_INSPECTION_D, TR_IMAGE, TR_TRACK_INSPECTION, TR_BARIS_INSPECTION, TM_AFD}

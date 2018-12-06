@@ -4,7 +4,7 @@ import {
     TouchableOpacity,
     View,
     Image,
-    Dimensions, BackHandler
+    Dimensions, BackHandler,Platform
   } from 'react-native';
 import Colors from '../../Constant/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,8 +12,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RNCamera as Camera } from 'react-native-camera';
 import imgTakePhoto from '../../Images/icon/ic_take_photo.png';
 import imgNextPhoto from '../../Images/icon/ic_next_photo.png';
+import R from 'ramda';
+import {getTodayDate} from '../../Lib/Utils'
+import TaskServices from '../../Database/TaskServices'
 
 
+const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 const moment = require('moment');
 var RNFS = require('react-native-fs');
 
@@ -21,21 +25,33 @@ class TakePhotoSelfie extends Component{
 
     constructor(props){
         super(props);
-        // let params = props.navigation.state.params;
-        // let order = R.clone(params.data);
+
+        let params = props.navigation.state.params;
+        let fotoBaris = R.clone(params.fotoBaris);
+        let inspeksiHeader = R.clone(params.inspeksiHeader);
+        // let trackInspeksi = R.clone(params.trackInspeksi);
+        let kondisiBaris1 = R.clone(params.kondisiBaris1);
+        let kondisiBaris2 = R.clone(params.kondisiBaris2);
+        let dataUsual = R.clone(params.dataUsual);
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+
         this.state={
           hasPhoto: false,
           path: null,          
           pathImg: null,
           dataModel: null,
-          // order
+          fotoBaris,
+          inspeksiHeader,
+          // trackInspeksi,
+          kondisiBaris1,
+          kondisiBaris2,
+          dataUsual
         }
     }
 
     componentDidMount(){
-      // this.setParameter();
+      this.setParameter();
       BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
   
@@ -44,40 +60,30 @@ class TakePhotoSelfie extends Component{
     }
 
     setParameter(){
-      var imgCode = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+'-'+this.state.order.AFD+'-I-'+TaskServices.getTotalData('TR_IMAGE')+1;
-      var trCode = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+'-'+this.state.order.AFD+'-D-'+TaskServices.getTotalData('TR_IMAGE')+1;
+      var imgCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-IS-'+TaskServices.getTotalData('TR_IMAGE')+1;
+      var trCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-DS-'+TaskServices.getTotalData('TR_IMAGE')+1;
       var imageName = 'IMG-'+imgCode+'.jpg';
       
       var image = {
-          IMAGE_CODE: IMAGE_CODE,
+          IMAGE_CODE: imgCode,
           TR_CODE: trCode,
           IMAGE_NAME:imageName,
           IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi',
           STATUS_IMAGE: '', 
           STATUS_SYNC: 'N'
-  
-          // SYNC_TIME: '',
-          // INSERT_USER: '', 
-          // INSERT_TIME: '',
-          // UPDATE_USER: '', 
-          // UPDATE_TIME:'',
-          // DELETE_USER:'',
-          // DELETE_TIME:'',
       }
   
       this.setState({dataModel:image});
     }
-
-    insertDB(){
-      TaskService.saveData('TR_IMAGE', this.state.dataModel);
-    }
   
-    handleBackButtonClick() {
+    handleBackButtonClick =()=> {
       if(this.state.hasPhoto){
-        RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/selfie.jpg')
+        RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME)
           .then(() => {
             console.log('FILE DELETED');
         });
+        RNFS.unlink(this.state.path)
+        this.setState({path: null, hasPhoto:false});
       }
       this.props.navigation.goBack(null);
       return true;
@@ -85,11 +91,11 @@ class TakePhotoSelfie extends Component{
 
     takePicture = async () => {
       try {
-        if(this.state.hasPhoto){
-          this.props.navigation.navigate('KondisiBarisAkhir');        
+        if(this.state.hasPhoto){    
+          this.insertDB() 
         }else{
           const data = await this.camera.takePictureAsync();
-          this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi', hasPhoto: true });
+          this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi', hasPhoto: true });      
           RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME);
         }
         
@@ -97,6 +103,18 @@ class TakePhotoSelfie extends Component{
         console.log('err: ', err);
       }
     };
+
+    insertDB(){ 
+      this.props.navigation.navigate('KondisiBarisAkhir',{
+        fotoSelfie: this.state.dataModel,
+        inspeksiHeader: this.state.inspeksiHeader, 
+        fotoBaris: this.state.fotoBaris,
+        // trackInspeksi: this.state.trackInspeksi,
+        kondisiBaris1: this.state.kondisiBaris1, 
+        kondisiBaris2: this.state.kondisiBaris2, 
+        dataUsual: this.state.dataUsual});    
+
+    }
   
     renderCamera() {
       return (

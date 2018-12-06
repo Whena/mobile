@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
-import {TouchableOpacity, Alert, TextInput } from 'react-native';
-import {
-	Container,
-	Content,
-	Body,
-	Text,
-    View,
-	ListItem
-} from 'native-base';
+import {TouchableOpacity, View, Alert, Text, TextInput, ScrollView, Image } from 'react-native';
+// import {
+// 	Container,
+// 	Content,
+// 	Body,
+// 	Text,
+//     View
+// } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -22,105 +21,125 @@ class KondisiBaris1 extends Component{
     constructor(props){
         super(props);
         
-        // let params = props.navigation.state.params;
-        // let order = R.clone(params.data);
+        let params = props.navigation.state.params;
+        let fotoBaris = R.clone(params.fotoBaris);
+        let inspeksiHeader = R.clone(params.inspeksiHeader);
+        // let trackInspeksi = R.clone(params.trackInspeksi);
+        let dataUsual = R.clone(params.dataUsual);
 
-        this.state = {        
+        this.state = {  
+            jumlahPokok : '0',    
             pokokPanen : '0',
             buahTinggal : '0',
             brondolPinggir :'0',
             brondolTPH : '0',
             pokokTdkPupuk: '0',
-            dataModel: null,
-            // order
-            // intPokokPanen:0,
+            fotoBaris,
+            inspeksiHeader,
+            // trackInspeksi,
+            dataUsual
         }
     }
 
     componentDidMount(){
-        // this.setParameter();
     }
 
+    validation(){
 
-
-    setParameter(){
-        var blokInspectionCodeD = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+
-        '-'+this.state.order.AFD+'-D-'+ (parseInt(TaskServices.getTotalData('TR_BLOCK_INSPECTION_D'))+1);         
-
-        var data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE:'',
-            AREAL: this.state.order.BARIS,
-            VALUE: '', 
-            STATUS_SYNC: 'N'
-        }
-
-        this.setState({dataModel:data});
     }
 
     insertDB(){
 
-        // var blokInspectionCodeD = this.state.order.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.order.BA+
-        // '-'+this.state.order.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+1;         
-
-        // var data = {
-        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-        //     BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-        //     CONTENT_INSPECTION_CODE:'CC0001',
-        //     AREAL: this.state.order.BARIS,
-        //     VALUE: this.state.pokokPanen, 
-        //     STATUS_SYNC: 'N'
-        // }
-        // TaskServices.saveData('TR_BLOCK_INSPECTION_D', data);
+        var blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+1;    
         
-        // data = {
-        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-        //     BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-        //     CONTENT_INSPECTION_CODE:'CC0002',
-        //     AREAL: this.state.order.BARIS,
-        //     VALUE: this.state.buahTinggal, 
-        //     STATUS_SYNC: 'N'
-        // }
-        // TaskServices.saveData('TR_BLOCK_INSPECTION_D', data)
+        var kondisiBaris1 = []
 
-        // data = {
-        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-        //     BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-        //     CONTENT_INSPECTION_CODE:'CC0003',
-        //     AREAL: this.state.order.BARIS,
-        //     VALUE: this.state.brondolPinggir, 
-        //     STATUS_SYNC: 'N'
-        // }
-        // TaskServices.saveData('TR_BLOCK_INSPECTION_D', data)
+        var data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0001',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.jumlahPokok, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);
 
-        // data = {
-        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-        //     BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-        //     CONTENT_INSPECTION_CODE:'CC0004',
-        //     AREAL: this.state.order.BARIS,
-        //     VALUE: this.state.brondolTPH, 
-        //     STATUS_SYNC: 'N'
-        // }
-        // TaskServices.saveData('TR_BLOCK_INSPECTION_D', data)
+        blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+2;
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0002',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.pokokPanen, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);
+        
+        blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+3; 
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0003',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.buahTinggal, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);
 
-        // data = {
-        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-        //     BLOCK_INSPECTION_CODE: this.state.order.BLOCK_INSPECTION_CODE,
-        //     CONTENT_INSPECTION_CODE:'CC0005',
-        //     AREAL: this.state.order.BARIS,
-        //     VALUE: this.state.pokokTdkPupuk, 
-        //     STATUS_SYNC: 'N'
-        // }
-        // TaskServices.saveData('TR_BLOCK_INSPECTION_D', data)
-              
-        // this.props.navigation.navigate('KondisiBaris2', {data: this.state.order});   
-        this.props.navigation.navigate('KondisiBaris2');      
+        blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+4; 
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0004',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.brondolPinggir, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);
+
+        blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+5; 
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0005',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.brondolTPH, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);
+
+        blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
+        '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+6; 
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE:'CC0006',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.pokokTdkPupuk, 
+            STATUS_SYNC: 'N'
+        }
+        kondisiBaris1.push(data);              
+        
+        this.props.navigation.navigate('KondisiBaris2',{
+            fotoBaris: this.state.fotoBaris,
+            inspeksiHeader: this.state.inspeksiHeader, 
+            // trackInspeksi: this.state.trackInspeksi,
+            kondisiBaris1: kondisiBaris1, 
+            dataUsual: this.state.dataUsual});    
     }
 
     increaseNumber(param){
         var sum = 0;
         switch(param){
+            case 'JP':
+                sum = parseInt(this.state.jumlahPokok)+1;
+                this.setState({jumlahPokok: sum.toString()})
+                break;
             case 'PP':
                 sum = parseInt(this.state.pokokPanen)+1;
                 this.setState({pokokPanen: sum.toString()})
@@ -150,6 +169,12 @@ class KondisiBaris1 extends Component{
     decreaseNumber(param){
         var sum = 0;
         switch(param){
+            case 'JP':
+                if(parseInt(this.state.jumlahPokok)>0){
+                    sum = parseInt(this.state.jumlahPokok)-1;
+                    this.setState({jumlahPokok: sum.toString()})
+                }                
+                break;
             case 'PP':
                 if(parseInt(this.state.pokokPanen)>0){
                     sum = parseInt(this.state.pokokPanen)-1;
@@ -187,7 +212,7 @@ class KondisiBaris1 extends Component{
 
     render(){
         return(
-            <View style={styles.mainContainer}>
+            <ScrollView style={styles.mainContainer}>
                 {/*STEPPER*/}
                 <View style={{flexDirection:'row', marginLeft:20, marginRight:20, marginTop:10}}>
                     <View style={styles.containerStepper}>
@@ -228,19 +253,35 @@ class KondisiBaris1 extends Component{
                 
                 {/*LABEL*/}
                 <View style={styles.containerLabel}>
-                    <View style={{flex:2, backgroundColor:Colors.brandSecondary}}>
-
+                    <View style={{flex:2}}>
+                        <Image source={require('../../Images/icon/ic_walking.png')} style={styles.icon} />
                     </View>
                     <View style={{flex:7}}>
-                        <Text style={{fontSize:12}}>Sambil Jalan</Text>
-                        <Text style={{fontSize:10, color:'grey'}}>Kamu bisa input ini ketika berjalan disepanjang baris.</Text>
+                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Sambil Jalan</Text>
+                        <Text style={{ fontSize: 12, color: 'grey' }}>Kamu bisa input ini ketika berjalan disepanjang baris.</Text>
                     </View>
                 </View>
 
                 <View style={{height:10, backgroundColor:'#F5F5F5', marginTop:10}}/>
 
                 {/*INPUT*/}
-                <View style={{backgroundColor:'white'}}>                        
+                <View style={{backgroundColor:'white'}}>  
+                    <View style={styles.containerLabel}>
+                        <Text style={styles.txtLabel}>Jumlah Pokok</Text>
+                        <View style={[styles.containerInput, {flex:5}]}>
+                            <TouchableOpacity style={styles.btnMinus} onPress={()=>{this.decreaseNumber('JP')}}>
+                                <Icon2 name={"minus"}  size={20} color="white" />
+                            </TouchableOpacity>
+                            <TextInput
+                                underlineColorAndroid={'transparent'}
+                                style={[styles.searchInput]}
+                                value={this.state.jumlahPokok}                                    
+                                onChangeText={(jumlahPokok) => { this.setState({ jumlahPokok: jumlahPokok }) }}/>
+                            <TouchableOpacity style={styles.btnAdd} onPress={()=>{this.increaseNumber('JP')}}>
+                                <Icon name={"add"}  size={20} color="white" />
+                            </TouchableOpacity>
+                        </View>
+                    </View>                      
                     <View style={styles.containerLabel}>
                         <Text style={styles.txtLabel}>Pokok Panen</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
@@ -278,7 +319,7 @@ class KondisiBaris1 extends Component{
                         </View>
                     </View>
                     <View style={styles.containerLabel}>
-                        <Text style={styles.txtLabel}>Brodol di Pinggiran</Text>
+                        <Text style={styles.txtLabel}>Brodolan di Pinggiran</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
                             <TouchableOpacity style={styles.btnMinus}
                                 onPress={()=>{this.decreaseNumber('BP')}}>
@@ -295,7 +336,7 @@ class KondisiBaris1 extends Component{
                         </View>
                     </View>
                     <View style={styles.containerLabel}>
-                        <Text style={[styles.txtLabel,{fontWeight:'300'}]}>Brondol di TPH</Text>
+                        <Text style={[styles.txtLabel,{fontWeight:'300'}]}>Brondolan di TPH</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
                             <TouchableOpacity style={styles.btnMinus}
                                 onPress={()=>{this.decreaseNumber('BTP')}}>
@@ -331,7 +372,7 @@ class KondisiBaris1 extends Component{
                 </View>
 
                 {/*CIRCLE*/}
-                <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent: 'center'}}>
+                <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent: 'center', marginTop:20, marginBottom:20}}>
                     <TouchableOpacity style={styles.cicle} onPress={()=>{}}>
                         {/* <Icon name={"chevron-left"}  size={10} color="white" /> */}
                     </TouchableOpacity>
@@ -340,7 +381,7 @@ class KondisiBaris1 extends Component{
                     </TouchableOpacity>
                 </View>
 
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -432,5 +473,12 @@ const styles = {
         borderColor: '#989898',
         color: 	'#808080',
         textAlign:'center'
+    },
+    icon: {
+        alignContent: 'flex-end',
+        height: 64,
+        width: 64,
+        resizeMode: 'stretch',
+        alignItems: 'center'
     },
 }

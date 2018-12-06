@@ -1,8 +1,8 @@
 
-import Colors from '../../Constant/Colors'
+import Colors from '../../../Constant/Colors'
 
 const btnBiasa = {
-    width:100,
+    width:70,
     borderWidth:1,
     borderColor:'#C8C8C8',
     backgroundColor: '#D8D8D8',
@@ -14,7 +14,7 @@ const btnBiasa = {
 }
 
 const btnBaik = {
-    width:100,
+    width:70,
     backgroundColor: Colors.brand,
     borderRadius: 25, 
     margin:5,  
@@ -24,7 +24,7 @@ const btnBaik = {
 }
 
 const btnSedang ={
-    width:100,
+    width:70,
     backgroundColor: 'orange',
     borderRadius: 25, 
     margin:5,  
@@ -34,8 +34,19 @@ const btnSedang ={
     
 }
 
-const btnBuruk ={
-    width:100,
+const btnKurang ={
+    width:70,
+    backgroundColor: 'yellow',
+    borderRadius: 25, 
+    margin:5,  
+    padding:10 ,
+    alignSelf:'center',
+    justifyContent: 'center',
+    
+}
+
+const btnRehab ={
+    width:70,
     backgroundColor: 'red',
     borderRadius: 25, 
     margin:5,  
@@ -46,5 +57,5 @@ const btnBuruk ={
 }
 
 export default {
-    btnBaik, btnBiasa, btnBuruk, btnSedang
+    btnBiasa, btnRehab, btnKurang, btnSedang, btnBaik
 }

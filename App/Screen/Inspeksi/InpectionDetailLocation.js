@@ -2,15 +2,26 @@ import React from 'react';
 import {
     StyleSheet,
     Text,
-    View,
-    StatusBar,
-    ImageBackground,
-    KeyboardAvoidingView
+    View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign'
-import Size from '../resources/sizes'
+import Colors from '../constants/Colors'
 
 class DetailInspeksiLokasi extends React.Component {
+
+    static navigationOptions = {
+        headerStyle: {
+            backgroundColor: Colors.tintColor
+        },
+        headerTitleStyle: {
+            textAlign: "left",
+            flex: 1,
+            fontSize: 18,
+            fontWeight: '400',
+            marginHorizontal: 12
+        },
+        title: 'Detail Inspeksi',
+        headerTintColor: '#fff',
+    };
 
     render() {
         return (

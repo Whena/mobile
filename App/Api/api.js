@@ -14,9 +14,17 @@ const create = (type = '') => {
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
+    //insepksi
+    // const postInspeksiHeader = body => api.post('/inspection-header', body);
+    // const postInspeksiDetail = body => api.post('/inspection-detail', body);
+
+
+
     return {
         api,
-        login
+        login,
+        // postInspeksiHeader,
+        // postInspeksiDetail
 
     };
 };

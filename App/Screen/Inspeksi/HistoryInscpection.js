@@ -1,14 +1,79 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import CardView from 'react-native-cardview';
+import Colors from '../../Constant/Colors';
+import Taskservice from '../../Database/TaskServices'
 
 export default class HistoryInspection extends Component {
+  
+  renderAll =()=>{
+    let data = Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
+    if (data !== null){
+      let arr = [];
+      for (let i = 0; i < data.length; i++) {
+        arr.push(this.renderList(data[i]));
+      }
+      return <View>{arr}</View>;
+    }
+  }
+
+  renderList = (data) => {
+    return(
+      <TouchableOpacity style={{ marginTop: 12 }} onPress={()=> this.actionButtonClick(data)}>
+          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
+            <View style={styles.sectionCardView}>
+              <View style={{ flexDirection: 'row', height: 120 }} >
+                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'yellow' }} />
+                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
+              </View>
+              <View style={styles.sectionDesc} >
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{data.WERKS}</Text>
+                <Text style={{ fontSize: 12 }}>{data.BLOCK_CODE.toLocaleUpperCase()}</Text>
+                <Text style={{ fontSize: 12 }}>{data.INSPECTION_DATE}</Text>
+                <Text style={{ fontSize: 12, color: 'red' }}>Belum Terkirim</Text>
+              </View>
+              <View style={styles.rightSection}>
+                <Text style={styles.textValue}>B</Text>
+              </View>
+            </View>
+          </CardView>
+        </TouchableOpacity>
+    );
+    
+  }
+
+  actionButtonClick(data) {
+    // alert('fausnc,')
+    this.props.navigation.navigate('FormHistoryInspection', {data:data});
+  }
 
   render() {
     return (
       <ScrollView style={styles.container}>
 
-        <View style={{ marginTop: 12 }}>
+        {this.renderAll()}
+
+        {/* <TouchableOpacity style={{ marginTop: 12 }} onPress={() => this.actionButtonClick()}>
+          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
+            <View style={styles.sectionCardView}>
+              <View style={{ flexDirection: 'row', height: 120 }} >
+                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'red' }} />
+                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
+              </View>
+              <View style={styles.sectionDesc} >
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>GAWI INTI - 1</Text>
+                <Text style={{ fontSize: 12 }}>A-001/A01</Text>
+                <Text style={{ fontSize: 12 }}>01 Nov 2018, 10.56</Text>
+                <Text style={{ fontSize: 12, color: 'grey' }}>Sudah Terkirim</Text>
+              </View>
+              <View style={styles.rightSection}>
+                <Text style={styles.textValue}>A</Text>
+              </View>
+            </View>
+          </CardView>
+        </TouchableOpacity> */}
+
+        {/* <View style={{ marginTop: 12 }}>
           <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
             <View style={styles.sectionCardView}>
               <View style={{ flexDirection: 'row', height: 120 }} >
@@ -66,7 +131,7 @@ export default class HistoryInspection extends Component {
               </View>
             </View>
           </CardView>
-        </View>
+        </View> */}
 
       </ScrollView >
     )
@@ -76,7 +141,7 @@ export default class HistoryInspection extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     paddingTop: 4,
     paddingRight: 16,
     paddingLeft: 16,
