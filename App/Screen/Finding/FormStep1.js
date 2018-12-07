@@ -38,7 +38,7 @@ class FormStep1 extends Component {
             if (this.state.foto3) params.push(this.state.foto3)
 
             console.tron.log(params);
-            
+
             this.props.navigation.navigate('Step2', params)
         }
     }

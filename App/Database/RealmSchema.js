@@ -15,7 +15,8 @@ let realmSchema = new Realm({
         ModelTables.TR_BARIS_INSPECTION,
         ModelTables.TM_AFD,
         ModelTables.TR_CATEGORY,
-        ModelTables.TR_CONTACT
+        ModelTables.TR_CONTACT,
+        ModelTables.TR_FINDING
     ]
 });
 

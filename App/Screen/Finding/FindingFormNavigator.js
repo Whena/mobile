@@ -1,5 +1,5 @@
 
-import { createMaterialTopTabNavigator, createStackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 import FormStep1 from './FormStep1';
 import FormStep2 from './FormStep2';

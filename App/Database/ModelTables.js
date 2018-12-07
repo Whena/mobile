@@ -129,6 +129,32 @@ const TR_CONTACT = {
     }
 }
 
+const TR_FINDING = {
+    name: 'TR_FINDING',
+    primaryKey: 'FINDING_CODE',
+    properties: {
+        FINDING_CODE: 'string',
+        WERKS: 'string',
+        AFD_CODE: 'string',
+        BLOCK_CODE: 'string',
+        FINDING_CATEGORY: 'string',
+        FINDING_DESC: 'string',
+        FINDING_PRIORITY: 'string',
+        DUE_DATE: 'string',
+        ASSIGN_TO: 'string',
+        PROGRESS: 'string',
+        LAT_FINDING: 'double',
+        LONG_FINDING: 'double',
+        REFFERENCE_INS_CODE: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        DELETE_USER: 'string',
+        DELETE_TIME: 'string'
+    }
+}
+
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -138,5 +164,6 @@ export default {
     TR_BARIS_INSPECTION,
     TM_AFD,
     TR_CATEGORY,
-    TR_CONTACT
+    TR_CONTACT,
+    TR_FINDING
 }

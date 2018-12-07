@@ -18,6 +18,8 @@ import { NavigationActions, StackActions } from 'react-navigation';
 import Colors from '../Constant/Colors';
 import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
+import CategoryAction from '../Redux/CategoryRedux'
+import ContactAction from '../Redux/ContactRedux'
 //const IMEI = require('react-native-imei');  
 
 
@@ -66,6 +68,8 @@ class LoginScreen extends React.Component {
         }
         if (!isNil(newProps.auth.user)) {
             this.insertUser(newProps.auth.user);
+            this.props.categoryRequest();
+            this.props.contactRequest();
             this.navigateScreen('MainMenu');
         }
     }
@@ -122,7 +126,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        authRequest: obj => dispatch(AuthAction.authRequest(obj))
+        authRequest: obj => dispatch(AuthAction.authRequest(obj)),
+        categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
+        contactRequest: () => dispatch(ContactAction.contactRequest())
     };
 };
 
