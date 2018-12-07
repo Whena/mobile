@@ -7,7 +7,8 @@ import { getPermission } from '../Lib/Utils'
 import { connect } from 'react-redux';
 import { isNil } from 'ramda'
 import TaskServices from '../Database/TaskServices'
-// import RealmSchema from '../Database/RealmSchema';
+import CategoryAction from '../Redux/CategoryRedux'
+import ContactAction from '../Redux/ContactRedux'
 var RNFS = require('react-native-fs');
 
 class SplashScreen extends Component {
@@ -15,8 +16,7 @@ class SplashScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            json: '',
-            user: this.props.auth.user
+            json: ''
         }
     }
 
@@ -32,7 +32,7 @@ class SplashScreen extends Component {
         });
         navigation.dispatch(resetAction);
     }
-    
+
     async componentDidMount() {
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
@@ -42,11 +42,14 @@ class SplashScreen extends Component {
             //buat Folder DiExtrnal
             RNFS.mkdir('file:///storage/emulated/0/MobileInspection');
 
-
             setTimeout(() => {
-                //this.navigateScreen('Login');
                 if (TaskServices.getTotalData('TR_LOGIN') > 0) {
+
+                    this.props.categoryRequest();
+                    this.props.contactRequest();
+
                     this.navigateScreen('MainMenu');
+
                 } else {
                     this.navigateScreen('Login');
                 }
@@ -74,13 +77,14 @@ class SplashScreen extends Component {
 }
 
 const mapStateToProps = state => {
-    return {
-        auth: state.auth
-    };
+    return {};
 };
 
 const mapDispatchToProps = dispatch => {
-    return {};
+    return {
+        categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
+        contactRequest: () => dispatch(ContactAction.contactRequest())
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SplashScreen);

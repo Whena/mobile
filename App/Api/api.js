@@ -1,6 +1,7 @@
 import apisauce from 'apisauce';
+import TaskServices from '../Database/TaskServices'
 
-const create = (type = '') => {
+const create = () => {
     let api = apisauce.create({
         baseURL: 'http://149.129.242.205:3001/api',
         headers: {
@@ -9,22 +10,25 @@ const create = (type = '') => {
             'Content-Type': 'application/json'
         },
     });
-    
+
+    let user = TaskServices.getAllData('TR_LOGIN')
+    if (user.length > 0) {
+        api.setHeader('Authorization', 'Bearer ' + user[0].ACCESS_TOKEN)
+    }
+
     // POST
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
-    //insepksi
-    // const postInspeksiHeader = body => api.post('/inspection-header', body);
-    // const postInspeksiDetail = body => api.post('/inspection-detail', body);
-
-
+    //GET
+    const getCategory = () => api.get('/category')
+    const getContact = () => api.get('/contacts')
 
     return {
         api,
         login,
-        // postInspeksiHeader,
-        // postInspeksiDetail
+        getCategory,
+        getContact
 
     };
 };

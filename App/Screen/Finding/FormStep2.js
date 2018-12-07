@@ -19,7 +19,8 @@ import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
 import ImageCarousel from 'react-native-image-page'
 
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import TaskServices from '../../Database/TaskServices'
 
 const radioGroupList = [{
     label: 'Hight',
@@ -40,31 +41,18 @@ class FormStep2 extends Component {
             { name: "Nur Hasanah", departemen: "Staf Accounting", photo: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif" },
             { name: "Nurul Arifin", departemen: "Staf IT", photo: "https://s.kaskus.id/user/avatar/2013/08/23/avatar5791311_2.gif" }]
 
-        var categories = [
-            { id: "001", name: "Terrories Potential" },
-            { id: "002", name: "Sanitation" },
-            { id: "003", name: "Illegal Ads" },
-            { id: "004", name: "Fallen Tree" },
-            { id: "005", name: "Illegal Parking" },
-            { id: "006", name: "Public Facilities" },
-            { id: "007", name: "Food Control" },
-            { id: "008", name: "Road Demage" },
-            { id: "009", name: "Broken Streetlight" },
-            { id: "010", name: "Traffic Violations" },
-            { id: "011", name: "Traffic Jam" },
-            { id: "012", name: "Violation of Public Order" },
-        ]
-
         this.state = {
             keterangan: "",
             priority: "",
             batasWaktu: "",
             tugasKepada: "",
+            contactid: "",
             category: "",
+            categoryid: "",
             blok: "",
             baris: "",
-            contacts,
-            categories,
+            contacts: TaskServices.getAllData('TR_CONTACT'),
+            categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
             isContactVisible: false,
             isCategoryVisible: false,
@@ -82,6 +70,7 @@ class FormStep2 extends Component {
     }
 
     componentDidMount() {
+        //alert(JSON.stringify(this.state.categories))
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -102,7 +91,8 @@ class FormStep2 extends Component {
     _onContactSelected = user => {
         this.setState({
             isContactVisible: false,
-            tugasKepada: user.name
+            tugasKepada: user.EMPLOYEE_NIK,
+            contactid: user.EMPLOYEE_NIK
         })
     }
 
@@ -396,7 +386,8 @@ class FormStep2 extends Component {
                                         onPress={() => {
                                             this.setState({
                                                 isCategoryVisible: false,
-                                                category: item.name
+                                                category: item.CATEGORY_NAME,
+                                                categoryid: item._id
                                             })
                                         }}
                                         style={style.itemCategory}>
@@ -406,7 +397,7 @@ class FormStep2 extends Component {
                                                 uri: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
                                                 priority: FastImage.priority.normal,
                                             }} />
-                                        <Text style={style.textCategory}>{item.name}</Text>
+                                        <Text style={style.textCategory}>{item.CATEGORY_NAME}</Text>
                                     </TouchableOpacity>
                                 );
                             }}
