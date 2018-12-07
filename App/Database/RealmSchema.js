@@ -16,7 +16,10 @@ let realmSchema = new Realm({
         ModelTables.TM_AFD,
         ModelTables.TR_CATEGORY,
         ModelTables.TR_CONTACT,
-        ModelTables.TR_FINDING
+        ModelTables.TR_FINDING,
+        ModelTables.TR_LOG_FINDING,
+        ModelTables.TR_IMAGE_FINDING,
+        ModelTables.T_LOG_IMAGE
     ]
 });
 

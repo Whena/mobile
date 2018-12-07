@@ -146,6 +146,33 @@ const TR_FINDING = {
         LAT_FINDING: 'double',
         LONG_FINDING: 'double',
         REFFERENCE_INS_CODE: 'string',
+    }
+}
+
+const TR_LOG_FINDING = {
+    name: 'TR_LOG_FINDING',
+    // primaryKey: 'ID',
+    properties: {
+        FINDING_CODE: 'string',
+        PROSES: 'string',
+        PROGRESS: 'string',
+        IMEI: 'string',
+        SYNC_TIME: 'string',
+        SYNC_USER: 'string'
+    }
+}
+
+const TR_IMAGE_FINDING = {
+    name: 'TR_IMAGE',
+    // primaryKey: 'ID',
+    properties: {
+        IMAGE_CODE: 'string',
+        TR_CODE: 'string',
+        IMAGE_NAME: 'string',
+        IMAGE_PATH: 'string',
+        STATUS_IMAGE: 'string',
+        STATUS_SYNG: 'string',
+        SYNG_TIME: 'string',
         INSERT_USER: 'string',
         INSERT_TIME: 'string',
         UPDATE_USER: 'string',
@@ -167,3 +194,28 @@ export default {
     TR_CONTACT,
     TR_FINDING
 }
+
+const T_LOG_IMAGE = {
+    name: 'T_LOG_IMAGE',
+    // primaryKey: 'ID',
+    properties: {
+        IMAGE_CODE: 'string',
+        IMEI: 'string',
+        STATUS_SYNC: 'string',
+        SYNC_TIME: 'string',
+        INSERT_USER: 'string'
+    }
+}
+
+export default { 
+    TR_LOGIN, 
+    TR_BLOCK_INSPECTION_H, 
+    TR_BLOCK_INSPECTION_D, 
+    TR_IMAGE, TR_TRACK_INSPECTION, 
+    TR_BARIS_INSPECTION, 
+    TM_AFD,
+    TR_FINDING,
+    TR_LOG_FINDING,
+    TR_IMAGE_FINDING,
+    T_LOG_IMAGE
+ }
