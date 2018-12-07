@@ -25,12 +25,12 @@ class Contact extends React.PureComponent {
 					<FastImage style={{ marginRight: 16, width: 40, height: 40, borderRadius: 20 }}
 						resizeMode={FastImage.resizeMode.contain}
 						source={{
-							uri: user.photo,
+							uri: user.EMPLOYEE_NIK,
 							priority: FastImage.priority.normal,
 						}} />
 					<View style={{ flex: 1 }} >
-						<Text style={{ fontSize: 14, color: 'black' }}>{user.name}</Text>
-						<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{user.departemen}</Text>
+						<Text style={{ fontSize: 14, color: 'black' }}>{user.EMPLOYEE_NIK}</Text>
+						<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{user.USER_ROLE}</Text>
 					</View>
 				</TouchableOpacity>
 			</View>

@@ -106,30 +106,47 @@ const TM_AFD = {
     }
 }
 
+const TR_CATEGORY = {
+    name: 'TR_CATEGORY',
+    primaryKey: '_id',
+    properties: {
+        _id: 'string',
+        CATEGORY_NAME: 'string',
+        ICON: 'string'
+    }
+}
+
+const TR_CONTACT = {
+    name: 'TR_CONTACT',
+    primaryKey: '_id',
+    properties: {
+        _id: 'string',
+        USER_AUTH_CODE: 'string',
+        EMPLOYEE_NIK: 'string',
+        USER_ROLE: 'string',
+        LOCATION_CODE: 'string',
+        REF_ROLE: 'string',
+    }
+}
+
 const TR_FINDING = {
     name: 'TR_FINDING',
     primaryKey: 'FINDING_CODE',
     properties: {
-        FINDING_CODE: 'int',
-        WERKS: 'int',
-        AFD_CODE: 'int',
-        BLOCK_CODE: 'int',
+        FINDING_CODE: 'string',
+        WERKS: 'string',
+        AFD_CODE: 'string',
+        BLOCK_CODE: 'string',
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
         FINDING_PRIORITY: 'string',
         DUE_DATE: 'string',
         ASSIGN_TO: 'string',
         PROGRESS: 'string',
-        LAT_FINDING: 'string',
-        LONG_FINDING: 'string',
+        LAT_FINDING: 'double',
+        LONG_FINDING: 'double',
         REFFERENCE_INS_CODE: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        DELETE_USER: 'string',
     }
-
 }
 
 const TR_LOG_FINDING = {
@@ -163,6 +180,19 @@ const TR_IMAGE_FINDING = {
         DELETE_USER: 'string',
         DELETE_TIME: 'string'
     }
+}
+
+export default {
+    TR_LOGIN,
+    TR_BLOCK_INSPECTION_H,
+    TR_BLOCK_INSPECTION_D,
+    TR_IMAGE,
+    TR_TRACK_INSPECTION,
+    TR_BARIS_INSPECTION,
+    TM_AFD,
+    TR_CATEGORY,
+    TR_CONTACT,
+    TR_FINDING
 }
 
 const T_LOG_IMAGE = {

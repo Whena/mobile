@@ -9,7 +9,8 @@ import { persistReducer } from 'redux-persist';
 export const reducers = combineReducers({
 	nav: require('./NavigationRedux').reducer,
 	auth: require('./AuthRedux').reducer,
-	// inspeksi : require('./InspeksiRedux').reducer,
+	category: require('./CategoryRedux').reducer,	
+	contact: require('./ContactRedux').reducer,
 	network
 });
 
@@ -22,7 +23,7 @@ export default () => {
 		finalReducers = persistReducer(persistConfig, reducers);
 	}
 
-	
+
 	let { store, sagasManager, sagaMiddleware } = configureStore(finalReducers, rootSaga);
 
 	if (module.hot) {

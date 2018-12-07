@@ -51,8 +51,6 @@ class HomeScreen extends React.Component {
 
   componentDidMount() {
     console.tron.log(this.state.user)
-    
-    alert(JSON.stringify(this.state.user[0]))
   }
 
   alertItemName = (item) => {

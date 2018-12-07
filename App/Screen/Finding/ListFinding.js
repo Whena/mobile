@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { AppState, View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
 import R from 'ramda'
 import ActionButton from 'react-native-action-button'
 import Colors from '../../Constant/Colors'
 import Dash from 'react-native-dash'
 import Icon from 'react-native-vector-icons'
+import TaskServices from '../../Database/TaskServices'
 
 export default class ListFinding extends Component {
 
@@ -48,7 +49,7 @@ export default class ListFinding extends Component {
   };
 
   actionButtonClick() {
-    this.props.navigation.navigate('FormFinding')
+    this.props.navigation.navigate('FindingFormNavigator')
   }
 
   renderList(nav) {
@@ -67,6 +68,18 @@ export default class ListFinding extends Component {
     );
 
     return R.map(Row, this.state.data)
+  }
+
+  componentDidMount() {
+    AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        console.tron.log('active');
+        alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
+      }
+      if (state === 'background') {
+        console.tron.log('background');
+      }
+    })
   }
 
   render() {

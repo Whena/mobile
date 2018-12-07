@@ -6,15 +6,15 @@ import { networkEventsListenerSaga } from 'react-native-offline';
 
 /* ------------- Types ------------- */
 import { StartupTypes } from '../Redux/StartupRedux';
-// import { LoginRedux } from '../redux/LoginRedux';
 import { AuthTypes } from '../Redux/AuthRedux';
-import { InspeksiTypes } from '../Redux/InspeksiRedux';
+import { CategoryTypes } from '../Redux/CategoryRedux';
+import { ContactTypes } from '../Redux/ContactRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
-// import { postInspeksi } from './InspeksiSagas';
-//, getAuthLogOut
+import { getCategory} from './CategorySagas';
+import { getContact } from './ContactSagas';
 
 /* ------------- API ------------- */
 
@@ -34,11 +34,8 @@ export default function* root() {
 		
 		takeLatest(AuthTypes.AUTH_REQUEST, getAuth, idpApi),
 		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, idpApi),
-
-		// takeLatest(InspeksiTypes.POST_INSPEKSI, getAuthLogOut, idpApi),
-
-		// takeLatest(LoginRedux.AUTH_REQUEST, getAuth, idpApi),
-		// takeLatest(LoginRedux.AUTH_USER_UPDATE, userUpdate, idpApi),
+		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, idpApi),
+		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, idpApi),
 		
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

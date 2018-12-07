@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavigationActions, StackActions } from 'react-navigation';
 import {
     Text, FlatList, ScrollView, TouchableOpacity, View, Image, Dimensions
 } from 'react-native';
@@ -37,9 +38,12 @@ class FormStep1 extends Component {
             if (this.state.foto2) params.push(this.state.foto2)
             if (this.state.foto3) params.push(this.state.foto3)
 
-            console.tron.log(params);
-            
-            this.props.navigation.navigate('Step2', params)
+            const navigation = this.props.navigation;
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
+            });
+            navigation.dispatch(resetAction);
         }
     }
 

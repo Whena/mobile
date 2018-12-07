@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavigationActions, StackActions } from 'react-navigation';
 import {
     ScrollView, Text, FlatList, TextInput, TouchableOpacity, View, Image
 } from 'react-native';
@@ -19,7 +20,9 @@ import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
 import ImageCarousel from 'react-native-image-page'
 
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import TaskServices from '../../Database/TaskServices'
+import { getUUID } from '../../Lib/Utils'
 
 const radioGroupList = [{
     label: 'Hight',
@@ -35,36 +38,20 @@ const radioGroupList = [{
 class FormStep2 extends Component {
     constructor(props) {
         super(props);
-        var contacts = [
-            { name: "Nurul Husnah", departemen: "Staf Marketing", photo: "http://res.rankedgaming.com/resources/images/profile/default-avatar-male.png" },
-            { name: "Nur Hasanah", departemen: "Staf Accounting", photo: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif" },
-            { name: "Nurul Arifin", departemen: "Staf IT", photo: "https://s.kaskus.id/user/avatar/2013/08/23/avatar5791311_2.gif" }]
-
-        var categories = [
-            { id: "001", name: "Terrories Potential" },
-            { id: "002", name: "Sanitation" },
-            { id: "003", name: "Illegal Ads" },
-            { id: "004", name: "Fallen Tree" },
-            { id: "005", name: "Illegal Parking" },
-            { id: "006", name: "Public Facilities" },
-            { id: "007", name: "Food Control" },
-            { id: "008", name: "Road Demage" },
-            { id: "009", name: "Broken Streetlight" },
-            { id: "010", name: "Traffic Violations" },
-            { id: "011", name: "Traffic Jam" },
-            { id: "012", name: "Violation of Public Order" },
-        ]
 
         this.state = {
+            user: TaskServices.getAllData('TR_LOGIN')[0],
             keterangan: "",
             priority: "",
             batasWaktu: "",
             tugasKepada: "",
+            assignto: "",
             category: "",
+            categoryid: "",
             blok: "",
             baris: "",
-            contacts,
-            categories,
+            contacts: TaskServices.getAllData('TR_CONTACT'),
+            categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
             isContactVisible: false,
             isCategoryVisible: false,
@@ -82,6 +69,7 @@ class FormStep2 extends Component {
     }
 
     componentDidMount() {
+        //alert(JSON.stringify(this.state.categories))
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -95,14 +83,46 @@ class FormStep2 extends Component {
         );
     }
 
-    _onBtnClick = () => {
-        //console.tron.log(this.props.navigation.state.params.foto1)
+    navigateScreen(screenName) {
+        const navigation = this.props.navigation;
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({ routeName: screenName })],
+        });
+        navigation.dispatch(resetAction);
+    }
+
+    _onBtnSaveClicked = () => {
+        var data = {
+            FINDING_CODE: getUUID(),
+            WERKS: "",
+            AFD_CODE: "",
+            BLOCK_CODE: this.state.blok,
+            FINDING_CATEGORY: this.state.categoryid,
+            FINDING_DESC: this.state.keterangan,
+            FINDING_PRIORITY: this.state.priority,
+            DUE_DATE: this.state.batasWaktu,
+            ASSIGN_TO: this.state.assignto,
+            PROGRESS: "0",
+            LAT_FINDING: this.state.latitude,
+            LONG_FINDING: this.state.longitude,
+            REFFERENCE_INS_CODE: "",
+            INSERT_USER: this.state.user.USER_AUTH_CODE,
+            INSERT_TIME: "",
+            UPDATE_USER: "",
+            UPDATE_TIME: "",
+            DELETE_USER: "",
+            DELETE_TIME: ""
+        }
+        TaskServices.saveData('TR_FINDING', data);
+        this.props.navigation.goBack(null);
     }
 
     _onContactSelected = user => {
         this.setState({
             isContactVisible: false,
-            tugasKepada: user.name
+            tugasKepada: user.EMPLOYEE_NIK,
+            assignto: user.EMPLOYEE_NIK
         })
     }
 
@@ -273,7 +293,7 @@ class FormStep2 extends Component {
                     <View style={[style.line]} />
 
                     <TouchableOpacity style={[style.button, { margin: 16 }]}
-                        onPress={() => this._onBtnClick}>
+                        onPress={this._onBtnSaveClicked}>
                         <Text style={style.buttonText}>Simpan</Text>
                     </TouchableOpacity>
                 </Content>
@@ -396,7 +416,8 @@ class FormStep2 extends Component {
                                         onPress={() => {
                                             this.setState({
                                                 isCategoryVisible: false,
-                                                category: item.name
+                                                category: item.CATEGORY_NAME,
+                                                categoryid: item._id
                                             })
                                         }}
                                         style={style.itemCategory}>
@@ -406,7 +427,7 @@ class FormStep2 extends Component {
                                                 uri: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
                                                 priority: FastImage.priority.normal,
                                             }} />
-                                        <Text style={style.textCategory}>{item.name}</Text>
+                                        <Text style={style.textCategory}>{item.CATEGORY_NAME}</Text>
                                     </TouchableOpacity>
                                 );
                             }}

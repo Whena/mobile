@@ -11,15 +11,15 @@ export default createMaterialTopTabNavigator({
       tabBarLabel: 'Riwayat'
     }
   },
-  DaftarInspeksi: {
+  DaftarFinding: {
     screen: ListFinding,
     navigationOptions: {
       tabBarLabel: 'Daftar Finding'
     }
   }
 }, {
-    initialRouteName: 'DaftarInspeksi',
-    order: ['DaftarInspeksi', 'Riwayat'],
+    initialRouteName: 'DaftarFinding',
+    order: ['DaftarFinding', 'Riwayat'],
     swipeEnabled: true,
     tabBarOptions: {
       activeTintColor: '#51A977',
