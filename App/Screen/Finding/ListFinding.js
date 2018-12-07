@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { AppState, View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
 import R from 'ramda'
 import ActionButton from 'react-native-action-button'
 import Colors from '../../Constant/Colors'
@@ -70,9 +70,17 @@ export default class ListFinding extends Component {
     return R.map(Row, this.state.data)
   }
 
-  onResume() {
-		alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
-	}
+  componentDidMount() {
+    AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        console.tron.log('active');
+        alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
+      }
+      if (state === 'background') {
+        console.tron.log('background');
+      }
+    })
+  }
 
   render() {
     const nav = this.props.navigation;
