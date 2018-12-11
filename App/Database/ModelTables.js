@@ -163,7 +163,7 @@ const TR_LOG_FINDING = {
 }
 
 const TR_IMAGE_FINDING = {
-    name: 'TR_IMAGE',
+    name: 'TR_IMAGE_FINDING',
     // primaryKey: 'ID',
     properties: {
         IMAGE_CODE: 'string',
@@ -182,18 +182,18 @@ const TR_IMAGE_FINDING = {
     }
 }
 
-export default {
-    TR_LOGIN,
-    TR_BLOCK_INSPECTION_H,
-    TR_BLOCK_INSPECTION_D,
-    TR_IMAGE,
-    TR_TRACK_INSPECTION,
-    TR_BARIS_INSPECTION,
-    TM_AFD,
-    TR_CATEGORY,
-    TR_CONTACT,
-    TR_FINDING
-}
+// export default {
+//     TR_LOGIN,
+//     TR_BLOCK_INSPECTION_H,
+//     TR_BLOCK_INSPECTION_D,
+//     TR_IMAGE,
+//     TR_TRACK_INSPECTION,
+//     TR_BARIS_INSPECTION,
+//     TM_AFD,
+//     TR_CATEGORY,
+//     TR_CONTACT,
+//     TR_FINDING
+// }
 
 const T_LOG_IMAGE = {
     name: 'T_LOG_IMAGE',
@@ -211,11 +211,14 @@ export default {
     TR_LOGIN, 
     TR_BLOCK_INSPECTION_H, 
     TR_BLOCK_INSPECTION_D, 
-    TR_IMAGE, TR_TRACK_INSPECTION, 
+    TR_IMAGE, 
+    TR_TRACK_INSPECTION, 
     TR_BARIS_INSPECTION, 
     TM_AFD,
     TR_FINDING,
     TR_LOG_FINDING,
     TR_IMAGE_FINDING,
-    T_LOG_IMAGE
+    T_LOG_IMAGE,
+    TR_CATEGORY,
+    TR_CONTACT
  }
