@@ -11,6 +11,7 @@ export const reducers = combineReducers({
 	auth: require('./AuthRedux').reducer,
 	category: require('./CategoryRedux').reducer,	
 	contact: require('./ContactRedux').reducer,
+	// inspeksi : require('./InspeksiRedux').reducer,
 	network
 });
 

@@ -6,6 +6,7 @@ import {
 	Content,  
 	Card,
 	CardItem,
+    Title,
 } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
@@ -66,7 +67,7 @@ class BuatInspeksiRedesign extends Component{
                 var lat = parseFloat(position.coords.latitude);
                 var lon = parseFloat(position.coords.longitude);
                 const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
-                console.log(timestamp);
+                // console.log(timestamp);
                 this.setState({latitude:lat, longitude:lon});
 
 			},

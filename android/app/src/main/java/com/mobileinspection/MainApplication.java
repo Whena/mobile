@@ -3,15 +3,15 @@ package com.mobileinspection;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.kishanjvaghela.cardview.RNCardViewPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
-import com.imagepicker.ImagePickerPackage;
 import com.rnfs.RNFSPackage;
 import io.realm.react.RealmReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
-import com.kishanjvaghela.cardview.RNCardViewPackage;
 import org.reactnative.camera.RNCameraPackage;
 import codes.simen.IMEI.IMEI;
 import com.kishanjvaghela.cardview.RNCardViewPackage;
@@ -37,15 +37,15 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNCardViewPackage(),
+            new ImagePickerPackage(),
             new MapsPackage(),
             new FastImageViewPackage(),
-            new ImagePickerPackage(),
             new RNFSPackage(),
             new RealmReactPackage(),
             new VectorIconsPackage(),
             new RNDeviceInfo(),
             new ReactNativeConfigPackage(),
-            new RNCardViewPackage(),
             new RNCameraPackage(),
             new IMEI()
       );

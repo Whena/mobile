@@ -15,6 +15,7 @@ import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory} from './CategorySagas';
 import { getContact } from './ContactSagas';
+// import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas';
 
 /* ------------- API ------------- */
 
@@ -36,6 +37,10 @@ export default function* root() {
 		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, idpApi),
 		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, idpApi),
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, idpApi),
+
+		
+		// takeLatest(InspeksiTypes.POST_INSPEKSI, postInspeksiHeader, apiToken),
+		// takeLatest(InspeksiTypes.POST_DETAIL_INSPEKSI, postInspeksiDetail, apiToken),
 		
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

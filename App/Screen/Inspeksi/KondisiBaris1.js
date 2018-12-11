@@ -130,7 +130,8 @@ class KondisiBaris1 extends Component{
             inspeksiHeader: this.state.inspeksiHeader, 
             // trackInspeksi: this.state.trackInspeksi,
             kondisiBaris1: kondisiBaris1, 
-            dataUsual: this.state.dataUsual});    
+            dataUsual: this.state.dataUsual}
+        );    
     }
 
     increaseNumber(param){

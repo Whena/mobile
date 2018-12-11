@@ -20,7 +20,7 @@ import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
-//const IMEI = require('react-native-imei');  
+const IMEI = require('react-native-imei');  
 
 
 class LoginScreen extends React.Component {
@@ -37,11 +37,11 @@ class LoginScreen extends React.Component {
         }
     }
 
-    // get_IMEI_Number(){ 
-    //     var IMEI_2 = IMEI.getImei(); 
-    //     this.setState({ imei : IMEI_2 });   
-    //     return IMEI_2;     
-    // }
+    get_IMEI_Number(){ 
+        var IMEI_2 = IMEI.getImei(); 
+        this.setState({ imei : IMEI_2 });   
+        return IMEI_2;     
+    }
 
     static navigationOptions = {
         header: null,
@@ -85,11 +85,11 @@ class LoginScreen extends React.Component {
 
     onLogin(username, password) {
         Keyboard.dismiss();
-        //var Imei = this.get_IMEI_Number();
+        var imei = this.get_IMEI_Number();
         this.props.authRequest({
             username: username,
             password: password,
-            imei: ""
+            imei: imei
         });
     }
 
