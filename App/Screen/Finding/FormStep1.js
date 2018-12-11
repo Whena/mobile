@@ -74,7 +74,7 @@ class FormStep1 extends Component {
         } else {
             let params = [];
             this.state.selectedPhotos.map((item) => {
-                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }) + ".jpg";
+                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
                 var path = dirPicutures + '/' + pname;
 
                 RNFS.copyFile(item, path).then((success) => {

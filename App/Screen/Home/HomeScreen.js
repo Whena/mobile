@@ -51,6 +51,14 @@ class HomeScreen extends React.Component {
 
   componentDidMount() {
     console.tron.log(this.state.user)
+
+    if (TaskServices.getTotalData('TR_CATEGORY') == 0) {
+      this.props.categoryRequest();
+    }
+
+    if (TaskServices.getTotalData('TR_CONTACT') == 0) {
+      this.props.contactRequest();
+    }
   }
 
   alertItemName = (item) => {
@@ -145,13 +153,15 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = state => {
-  return {
-    auth: state.auth.user
-  };
+  return {};
 };
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
+    contactRequest: () => dispatch(ContactAction.contactRequest())
+  };
 };
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

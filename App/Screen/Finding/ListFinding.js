@@ -73,8 +73,8 @@ export default class ListFinding extends Component {
   componentDidMount() {
     AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        console.tron.log('active');
-        //alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
+        console.tron.log(TaskServices.getAllData('TR_FINDING'))
+        console.tron.log(TaskServices.getAllData('TR_IMAGE_FINDING'))
       }
       if (state === 'background') {
         console.tron.log('background');
@@ -138,6 +138,7 @@ export default class ListFinding extends Component {
     )
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {

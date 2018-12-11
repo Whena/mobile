@@ -146,6 +146,12 @@ const TR_FINDING = {
         LAT_FINDING: 'double',
         LONG_FINDING: 'double',
         REFFERENCE_INS_CODE: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        DELETE_USER: 'string',
+        DELETE_TIME: 'string'
     }
 }
 
@@ -207,13 +213,13 @@ const T_LOG_IMAGE = {
     }
 }
 
-export default { 
-    TR_LOGIN, 
-    TR_BLOCK_INSPECTION_H, 
-    TR_BLOCK_INSPECTION_D, 
-    TR_IMAGE, 
-    TR_TRACK_INSPECTION, 
-    TR_BARIS_INSPECTION, 
+export default {
+    TR_LOGIN,
+    TR_BLOCK_INSPECTION_H,
+    TR_BLOCK_INSPECTION_D,
+    TR_IMAGE,
+    TR_TRACK_INSPECTION,
+    TR_BARIS_INSPECTION,
     TM_AFD,
     TR_FINDING,
     TR_LOG_FINDING,
@@ -221,4 +227,4 @@ export default {
     T_LOG_IMAGE,
     TR_CATEGORY,
     TR_CONTACT
- }
+}

@@ -9,10 +9,10 @@ import {
     Content,
     Spinner
 } from 'native-base';
+import R, { isEmpty, isNil } from 'ramda'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import R, { isEmpty } from 'ramda'
 import RadioGroup from 'react-native-custom-radio-group'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import moment from 'moment'
@@ -28,8 +28,8 @@ import Carousel from 'react-native-looped-carousel'
 import { dirPicutures } from '../../Lib/dirStorage'
 
 const radioGroupList = [{
-    label: 'HIGHT',
-    value: 'HIGHT'
+    label: 'HIGH',
+    value: 'HIGH'
 }, {
     label: 'MED',
     value: 'MED'
@@ -52,7 +52,6 @@ class FormStep2 extends Component {
             category: "",
             categoryid: "",
             blok: "",
-            baris: "",
             contacts: TaskServices.getAllData('TR_CONTACT'),
             categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
@@ -61,15 +60,15 @@ class FormStep2 extends Component {
             isCategoryVisible: false,
             isMapsVisible: false,
             allowDragging: true,
-            latitude: null,
-            longitude: null,
+            latitude: 0,
+            longitude: 0,
             error: null,
             foto: props.navigation.state.params,
             stepper: [
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
-            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 })
+            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase()
         }
     }
 
@@ -118,29 +117,68 @@ class FormStep2 extends Component {
     };
 
     _onBtnSaveClicked = () => {
-        var data = {
-            FINDING_CODE: this.state.TRANS_CODE,
-            WERKS: "",
-            AFD_CODE: "",
-            BLOCK_CODE: this.state.blok,
-            FINDING_CATEGORY: this.state.categoryid,
-            FINDING_DESC: this.state.keterangan,
-            FINDING_PRIORITY: this.state.priority,
-            DUE_DATE: this.state.batasWaktu,
-            ASSIGN_TO: this.state.assignto,
-            PROGRESS: "0",
-            LAT_FINDING: this.state.latitude,
-            LONG_FINDING: this.state.longitude,
-            REFFERENCE_INS_CODE: "",
-            INSERT_USER: this.state.user.USER_AUTH_CODE,
-            INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
-            UPDATE_USER: "",
-            UPDATE_TIME: "",
-            DELETE_USER: "",
-            DELETE_TIME: ""
+        var valid = true;
+        if (
+            isEmpty(this.state.keterangan) ||
+            isEmpty(this.state.blok) ||
+            isEmpty(this.state.category) ||
+            isEmpty(this.state.priority) ||
+            (isEmpty(this.tugasKepada) && isEmpty(this.batasWaktu))) {
+            valid = false;
         }
-        TaskServices.saveData('TR_FINDING', data);
-        this.props.navigation.goBack(null);
+
+        if (!valid) {
+            Alert.alert(
+                'Peringatan',
+                "Semua isian dengan tanda * harus diisi"
+            );
+        } else {
+            var data = {
+                FINDING_CODE: this.state.TRANS_CODE,
+                WERKS: "",
+                AFD_CODE: "",
+                BLOCK_CODE: this.state.blok,
+                FINDING_CATEGORY: this.state.categoryid,
+                FINDING_DESC: this.state.keterangan,
+                FINDING_PRIORITY: this.state.priority,
+                DUE_DATE: this.state.batasWaktu,
+                ASSIGN_TO: this.state.assignto,
+                PROGRESS: "0",
+                LAT_FINDING: this.state.latitude,
+                LONG_FINDING: this.state.longitude,
+                REFFERENCE_INS_CODE: "",
+                INSERT_USER: this.state.user.USER_AUTH_CODE,
+                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+                UPDATE_USER: "",
+                UPDATE_TIME: "",
+                DELETE_USER: "",
+                DELETE_TIME: ""
+            }
+
+            TaskServices.saveData('TR_FINDING', data);
+
+            this.state.foto.map((image, i) => {
+                var imagetr = {
+                    IMAGE_CODE: image.replace(".jpg", ""),
+                    TR_CODE: this.state.TRANS_CODE,
+                    IMAGE_NAME: image,
+                    IMAGE_PATH: dirPicutures + "/" + image,
+                    STATUS_IMAGE: '',
+                    STATUS_SYNG: '',
+                    SYNG_TIME: '',
+                    INSERT_USER: this.state.user.USER_AUTH_CODE,
+                    INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+                    UPDATE_USER: '',
+                    UPDATE_TIME: '',
+                    DELETE_USER: '',
+                    DELETE_TIME: ''
+                }
+
+                TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
+            })
+            
+            this.props.navigation.goBack(null);
+        }
     }
 
     _onContactSelected = user => {
@@ -227,7 +265,7 @@ class FormStep2 extends Component {
                     />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View style={{ height: 80, flex: 1 }}>
-                            <Text style={{ fontSize: 14 }}> Keterangan </Text>
+                            <Text style={{ fontSize: 14 }}>Keterangan <Text style={style.mandatory}>*</Text></Text>
 
                             <TextInput style={{ flex: 1, textAlignVertical: "top" }}
                                 multiline
@@ -249,7 +287,7 @@ class FormStep2 extends Component {
                     <View style={style.line} />
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <Text style={style.label}> Lokasi </Text>
+                        <Text style={style.label}>Lokasi <Text style={style.mandatory}>*</Text></Text>
                         {isEmpty(this.state.blok) && (
                             <Text onPress={this._showLocation} style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                         {!isEmpty(this.state.blok) && (
@@ -259,7 +297,7 @@ class FormStep2 extends Component {
                     <View style={style.line} />
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <Text style={style.label}> Kategori </Text>
+                        <Text style={style.label}>Kategori <Text style={style.mandatory}>*</Text></Text>
                         {isEmpty(this.state.category) && (
                             <Text onPress={() => this.setState({ isCategoryVisible: true })} style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
                         {!isEmpty(this.state.category) && (
@@ -269,9 +307,9 @@ class FormStep2 extends Component {
 
                     <View style={[style.line]} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <Text style={[style.label, { marginTop: 3 }]}> Priority </Text>
+                        <Text style={[style.label, { marginTop: 3 }]}>Priority <Text style={style.mandatory}>*</Text></Text>
                         <RadioGroup
-                            onChangeText={(priority) => this.setState({ priority })}
+                            onChange={(priority) => this.setState({ priority })}
                             style={style.item}
                             containerStyle={{}}
                             buttonContainerStyle={{ borderRadius: 10, padding: 5, marginRight: 3, width: 55 }}
@@ -285,7 +323,7 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1 }}>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <Text style={style.label}> Batas Waktu </Text>
+                            <Text style={style.label}>Batas Waktu {isEmpty(this.state.tugasKepada) && (<Text style={style.mandatory}>*</Text>)}</Text>
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
@@ -370,13 +408,6 @@ class FormStep2 extends Component {
                                 value={this.state.blok} />
                         </View>
 
-                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-                            <Text style={[style.label, { height: 35, textAlignVertical: 'center' }]}> Baris </Text>
-                            <TextInput style={style.inputloc}
-                                onChangeText={(baris) => this.setState({ baris })}
-                                value={this.state.baris} />
-                        </View>
-
                         <View style={{ marginTop: 10, width: '100%' }}>
                             <TouchableOpacity style={[style.buttonSetLoc, { alignSelf: 'flex-end' }]}
                                 onPress={() =>
@@ -390,28 +421,22 @@ class FormStep2 extends Component {
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
 
-                        {this.state.latitude && this.state.longitude && (
-                            <MapView
-                                style={{ height: 200, borderRadius: 10 }}
-                                provider={PROVIDER_GOOGLE}
-                                region={{
-                                    latitude: this.state.latitude,
-                                    longitude: this.state.longitude,
-                                    latitudeDelta: 3,
-                                    longitudeDelta: 3
-                                }}
-                            >
+                        <MapView
+                            style={{ height: 300, borderRadius: 10 }}
+                            provider={PROVIDER_GOOGLE}
+                            region={{
+                                latitude: this.state.latitude,
+                                longitude: this.state.longitude,
+                                latitudeDelta: 3,
+                                longitudeDelta: 3
+                            }}
+                        >
 
-                                {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
-                                    coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
-                                    title={"Your Location"}
-                                />}
-                            </MapView>
-                        )}
-                        {!this.state.latitude && !this.state.longitude && (
-                            <View style={style.loading}>
-                                <Spinner color={Colors.brand} />
-                            </View>)}
+                            {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
+                                coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
+                                title={"Your Location"}
+                            />}
+                        </MapView>
                     </View>
                 </SlidingUpPanel>
 
@@ -579,5 +604,9 @@ const style = {
         borderRadius: 5,
         borderColor: 'grey',
         borderWidth: 0.5
+    },
+    mandatory: {
+        fontSize: 12,
+        color: 'red',
     }
 };
