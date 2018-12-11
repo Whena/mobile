@@ -10,6 +10,7 @@ import TaskServices from '../Database/TaskServices'
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 var RNFS = require('react-native-fs');
+import { dirPicutures } from '../Lib/dirStorage'
 
 class SplashScreen extends Component {
 
@@ -38,6 +39,8 @@ class SplashScreen extends Component {
         if (isAllGrandted === true) {
             //buat folder internal      
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi');
+            
+            RNFS.mkdir(dirPicutures);
 
             //buat Folder DiExtrnal
             RNFS.mkdir('file:///storage/emulated/0/MobileInspection');

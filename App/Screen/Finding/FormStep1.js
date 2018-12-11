@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavigationActions, StackActions } from 'react-navigation';
 import {
-    Text, FlatList, ScrollView, TouchableOpacity, View, Image, Dimensions
+    BackHandler, Text, FlatList, ScrollView, TouchableOpacity, View, Image, Alert
 } from 'react-native';
 import {
     Container,
@@ -10,19 +10,22 @@ import {
 } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import R, { isEmpty, isNil } from 'ramda';
-import { dirPicutures } from '../../Lib/dirStorage';
-import ImagePicker from 'react-native-image-picker';
-const moment = require('moment');
+import Icon from 'react-native-vector-icons/MaterialIcons'
+import R, { isEmpty, isNil } from 'ramda'
+import { dirPicutures } from '../../Lib/dirStorage'
+import ImagePicker from 'react-native-image-picker'
+import ImagePickerCrop from 'react-native-image-crop-picker'
+import random from 'random-string'
+import TaskServices from '../../Database/TaskServices'
+import RNFS from 'react-native-fs'
 
 class FormStep1 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            foto1: "",
-            foto2: "",
-            foto3: "",
+            user: TaskServices.getAllData('TR_LOGIN')[0],
+            photos: [],
+            selectedPhotos: [],
             stepper: [
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
@@ -30,55 +33,119 @@ class FormStep1 extends Component {
         }
     }
 
-    onBtnClick() {
-        if (isNil(this.state.foto1)) {
-            alert("Minimal harus ada 1 Foto diambil")
+    exitAlert = () => {
+        if (this.state.photos.length == 0) {
+            this.props.navigation.goBack(null)
         } else {
-            var params = [this.state.foto1]
-            if (this.state.foto2) params.push(this.state.foto2)
-            if (this.state.foto3) params.push(this.state.foto3)
+            Alert.alert(
+                'Peringatan',
+                'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+                [
+                    { text: 'NO', style: 'cancel' },
+                    { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+                ]
+            );
+        }
 
-            const navigation = this.props.navigation;
-            const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
-            });
-            navigation.dispatch(resetAction);
+    };
+
+    handleAndroidBackButton = callback => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            callback();
+            return true;
+        });
+    };
+
+    componentDidMount() {
+        this.handleAndroidBackButton(this.exitAlert);
+    }
+
+    onBtnClick() {
+        if (this.state.photos.length == 0) {
+            Alert.alert(
+                'Peringatan',
+                'Anda belum mengambil foto'
+            );
+        } else if (this.state.selectedPhotos.length == 0) {
+            Alert.alert(
+                'Peringatan',
+                "Minimal harus ada 1 Foto dipilih"
+            );
+        } else {
+            let params = [];
+            this.state.selectedPhotos.map((item) => {
+                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }) + ".jpg";
+                var path = dirPicutures + '/' + pname;
+
+                RNFS.copyFile(item, path).then((success) => {
+                    params.push(pname)
+
+                    const navigation = this.props.navigation;
+                    const resetAction = StackActions.reset({
+                        index: 0,
+                        actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
+                    });
+                    navigation.dispatch(resetAction);
+                }).catch((err) => {
+                    console.tron.log("Error moveFile: " + err.message)
+                    alert("Terjadi kesalahan, silahkan coba lagi")
+                });
+
+            })
         }
     }
 
     takePicture() {
-        const options = {
-            storageOptions: {
-                skipBackup: true,
-                path: dirPicutures,
-            },
-        };
-
-        ImagePicker.launchCamera(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else {
-                const source = { uri: response.uri };
-                if (isEmpty(this.state.foto1)) {
-                    this.setState({
-                        foto1: source,
-                    });
-                } else if (isEmpty(this.state.foto2)) {
-                    this.setState({
-                        foto2: source,
-                    });
-                } else {
-                    this.setState({
-                        foto3: source,
-                    });
-                }
-            }
-
-
+        ImagePickerCrop.openCamera({
+            width: 640,
+            height: 480,
+            cropping: true,
+        }).then(image => {
+            const photos = R.clone(this.state.photos)
+            photos.push({ uri: image.path })
+            this.setState({
+                photos,
+            })
         });
+    }
+
+    _onSelectedPhoto = foto => {
+        const selectedPhotos = R.clone(this.state.selectedPhotos)
+        if (selectedPhotos.includes(foto)) {
+            var index = selectedPhotos.indexOf(foto);
+            selectedPhotos.splice(index, 1);
+        } else {
+            if (selectedPhotos.length > 2) {
+                alert("Hanya 3 foto yang bisa dipilih")
+            } else {
+                selectedPhotos.push(foto);
+            }
+        }
+
+        this.setState({
+            selectedPhotos,
+        });
+    }
+
+    _renderFoto = foto => {
+        let border = { borderWidth: 0 }
+
+        {
+            if (this.state.selectedPhotos.includes(foto.uri)) {
+                border = { borderWidth: 5, borderColor: 'red' }
+            }
+        }
+
+        return (
+            <TouchableOpacity
+                onPress={() => { this._onSelectedPhoto(foto.uri) }}
+                style={{ height: 100, width: 100, marginLeft: 10 }}>
+                <Image style={[{
+                    alignItems: 'stretch', width: 100, height: 100,
+                    borderRadius: 10
+                }, border]} source={foto} />
+            </TouchableOpacity>
+        )
     }
 
     render() {
@@ -154,28 +221,8 @@ class FormStep1 extends Component {
                     </Card>
 
                     <View style={{ marginTop: 16, height: 120 }}>
-                        <ScrollView style={{ alignSelf: 'center' }} contentContainerStyle={{ paddingRight: 16, paddingLeft: 6 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-                            {!isEmpty(this.state.foto1) && (
-                                <View style={{ height: 100, width: 100, marginLeft: 10 }}>
-                                    <Image style={{ alignItems: 'stretch', width: 100, height: 100, borderRadius: 10 }}
-                                        source={this.state.foto1}></Image>
-                                </View>
-                            )}
-
-                            {!isEmpty(this.state.foto2) && (
-                                <View style={{ height: 100, width: 100, marginLeft: 10 }}>
-                                    <Image style={{ alignItems: 'stretch', width: 100, height: 100, borderRadius: 10 }}
-                                        source={this.state.foto2}></Image>
-                                </View>
-                            )}
-
-                            {!isEmpty(this.state.foto3) && (
-                                <View style={{ height: 100, width: 100, marginLeft: 10 }}>
-                                    <Image style={{ alignItems: 'stretch', width: 100, height: 100, borderRadius: 10 }}
-                                        source={this.state.foto3}></Image>
-                                </View>
-                            )}
-
+                        <ScrollView contentContainerStyle={{ paddingRight: 16, paddingLeft: 6 }} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            {this.state.photos.map(this._renderFoto)}
                         </ScrollView >
                     </View>
 

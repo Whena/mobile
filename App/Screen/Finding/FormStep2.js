@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { NavigationActions, StackActions } from 'react-navigation';
 import {
-    ScrollView, Text, FlatList, TextInput, TouchableOpacity, View, Image
+    ScrollView, Text, FlatList, TextInput, TouchableOpacity, View, Image, Modal,
+    BackHandler, Alert
 } from 'react-native';
 import {
     Container,
@@ -18,29 +19,31 @@ import moment from 'moment'
 import Contact from '../../Component/Contact'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
-import ImageCarousel from 'react-native-image-page'
-
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import TaskServices from '../../Database/TaskServices'
 import { getUUID } from '../../Lib/Utils'
+import random from 'random-string'
+import IIcon from 'react-native-vector-icons/Ionicons'
+import Carousel from 'react-native-looped-carousel'
+import { dirPicutures } from '../../Lib/dirStorage'
 
 const radioGroupList = [{
-    label: 'Hight',
-    value: 'Hight'
+    label: 'HIGHT',
+    value: 'HIGHT'
 }, {
-    label: 'Med',
-    value: 'Med'
+    label: 'MED',
+    value: 'MED'
 }, {
-    label: 'Low',
-    value: 'Low'
+    label: 'LOW',
+    value: 'LOW'
 }];
 
 class FormStep2 extends Component {
     constructor(props) {
         super(props);
-
+        var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
-            user: TaskServices.getAllData('TR_LOGIN')[0],
+            user,
             keterangan: "",
             priority: "",
             batasWaktu: "",
@@ -54,6 +57,7 @@ class FormStep2 extends Component {
             categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
             isContactVisible: false,
+            isImageFullVisible: false,
             isCategoryVisible: false,
             isMapsVisible: false,
             allowDragging: true,
@@ -65,6 +69,7 @@ class FormStep2 extends Component {
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
+            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 })
         }
     }
 
@@ -81,6 +86,8 @@ class FormStep2 extends Component {
             (error) => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
         );
+
+        this.handleAndroidBackButton(this.exitAlert);
     }
 
     navigateScreen(screenName) {
@@ -92,9 +99,27 @@ class FormStep2 extends Component {
         navigation.dispatch(resetAction);
     }
 
+    exitAlert = () => {
+        Alert.alert(
+            'Peringatan',
+            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+            [
+                { text: 'NO', style: 'cancel' },
+                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+            ]
+        );
+    };
+
+    handleAndroidBackButton = callback => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            callback();
+            return true;
+        });
+    };
+
     _onBtnSaveClicked = () => {
         var data = {
-            FINDING_CODE: getUUID(),
+            FINDING_CODE: this.state.TRANS_CODE,
             WERKS: "",
             AFD_CODE: "",
             BLOCK_CODE: this.state.blok,
@@ -108,7 +133,7 @@ class FormStep2 extends Component {
             LONG_FINDING: this.state.longitude,
             REFFERENCE_INS_CODE: "",
             INSERT_USER: this.state.user.USER_AUTH_CODE,
-            INSERT_TIME: "",
+            INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
             UPDATE_USER: "",
             UPDATE_TIME: "",
             DELETE_USER: "",
@@ -211,14 +236,13 @@ class FormStep2 extends Component {
                             />
                         </View>
                         <View style={{ alignSelf: 'flex-end', height: 80, width: 80, marginLeft: 10 }}>
-                            <ImageCarousel
-                                height={80}
-                                width={80}
-                                animate={false}
-                                indicatorSize={10}
-                                indicatorColor="red"
-                                images={this.state.foto}
-                            />
+                            <TouchableOpacity onPress={() => { this.setState({ isImageFullVisible: true }) }}>
+                                <Image resizeMode={'cover'}
+                                    style={{ height: 80, width: 80, borderRadius: 5 }}
+                                    source={{ uri: "file://" + dirPicutures + "/" + this.state.foto[0] }}
+                                />
+                            </TouchableOpacity>
+
                         </View>
                     </View>
 
@@ -230,7 +254,6 @@ class FormStep2 extends Component {
                             <Text onPress={this._showLocation} style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                         {!isEmpty(this.state.blok) && (
                             <Text onPress={this._showLocation} style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
-
                     </View>
 
                     <View style={style.line} />
@@ -274,6 +297,7 @@ class FormStep2 extends Component {
                             </View>
                         </View>
                         <DateTimePicker
+                            minimumDate={new Date()}
                             isVisible={this.state.isDateTimePickerVisible}
                             onConfirm={this._handleDatePicked}
                             onCancel={this._hideDateTimePicker}
@@ -297,6 +321,30 @@ class FormStep2 extends Component {
                         <Text style={style.buttonText}>Simpan</Text>
                     </TouchableOpacity>
                 </Content>
+
+                <Modal
+                    transparent={false}
+                    visible={this.state.isImageFullVisible}>
+                    <View style={{ flex: 1 }}>
+                        <Carousel
+                            style={{ flex: 1 }}
+                            autoplay={false}
+                            currentPage={this.state.foto.length - 1}
+                            onAnimateNextPage={p => console.log(p)}>
+                            {this.state.foto.map((image, i) => (
+                                <View style={{ flex: 1, backgroundColor: 'black' }}>
+                                    <Image resizeMode={"contain"} style={{ flex: 1 }}
+                                        source={{ uri: "file://" + dirPicutures + "/" + image }} />
+                                </View>
+                            ))}
+                        </Carousel>
+                        <IIcon style={{
+                            position: 'absolute',
+                            right: 16,
+                            top: 10,
+                        }} color={'white'} name="ios-close-circle-outline" size={45} onPress={() => { this.setState({ isImageFullVisible: false }) }} />
+                    </View>
+                </Modal>
 
                 <SlidingUpPanel
                     // height={340}

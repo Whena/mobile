@@ -74,7 +74,7 @@ export default class ListFinding extends Component {
     AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         console.tron.log('active');
-        alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
+        //alert(JSON.stringify(TaskServices.getAllData('TR_FINDING')));
       }
       if (state === 'background') {
         console.tron.log('background');
