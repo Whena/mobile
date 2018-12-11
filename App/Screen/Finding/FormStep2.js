@@ -8,7 +8,8 @@ import {
     Container,
     Content,
     Spinner
-} from 'native-base';
+} from 'native-base'
+import Geojson from 'react-native-geojson'
 import R, { isEmpty, isNil } from 'ramda'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
@@ -26,6 +27,8 @@ import random from 'random-string'
 import IIcon from 'react-native-vector-icons/Ionicons'
 import Carousel from 'react-native-looped-carousel'
 import { dirPicutures } from '../../Lib/dirStorage'
+import layer from '../../Data/kalimantantimur.json'
+
 
 const radioGroupList = [{
     label: 'HIGH',
@@ -62,6 +65,8 @@ class FormStep2 extends Component {
             allowDragging: true,
             latitude: 0,
             longitude: 0,
+            regionLat: -2.20773509068532,
+            regionLon: 105.382972196639997,
             error: null,
             foto: props.navigation.state.params,
             stepper: [
@@ -176,7 +181,7 @@ class FormStep2 extends Component {
 
                 TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
             })
-            
+
             this.props.navigation.goBack(null);
         }
     }
@@ -425,8 +430,8 @@ class FormStep2 extends Component {
                             style={{ height: 300, borderRadius: 10 }}
                             provider={PROVIDER_GOOGLE}
                             region={{
-                                latitude: this.state.latitude,
-                                longitude: this.state.longitude,
+                                latitude: this.state.regionLat,
+                                longitude: this.state.regionLon,
                                 latitudeDelta: 3,
                                 longitudeDelta: 3
                             }}
