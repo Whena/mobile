@@ -14,7 +14,7 @@ export default createMaterialTopTabNavigator({
   DaftarFinding: {
     screen: ListFinding,
     navigationOptions: {
-      tabBarLabel: 'Daftar Finding'
+      tabBarLabel: 'Daftar Temuan'
     }
   }
 }, {
