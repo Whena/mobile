@@ -9,8 +9,8 @@ import moment from 'moment'
 import ActionButton from 'react-native-action-button'
 import Colors from '../../Constant/Colors'
 import Dash from 'react-native-dash'
-import Icon from 'react-native-vector-icons'
 import TaskServices from '../../Database/TaskServices'
+import Icon from 'react-native-vector-icons/FontAwesome5'
 // import layer from '../../Data/skm.json'
 
 
@@ -51,6 +51,13 @@ export default class ListFinding extends Component {
 
   }
 
+  willFocus = this.props.navigation.addListener(
+    'willFocus',
+    () => {
+      this._initData()
+    }
+  )
+
   static navigationOptions = {
     headerStyle: {
       backgroundColor: Colors.tintColor
@@ -81,7 +88,7 @@ export default class ListFinding extends Component {
   };
 
   _initData() {
-    var data = TaskServices.getAllData('TR_FINDING')
+    var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100')
     var dataLewat = []
     var data7Hari = []
     var dataMore7Hari = []
@@ -114,37 +121,32 @@ export default class ListFinding extends Component {
   _renderItem = item => {
     const nav = this.props.navigation;
     const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
-
+    var label = { backgroundColor: item.PROGRESS == '0' ? 'rgba(255, 0, 0, 0.7)' : 'rgba(255, 255, 0, 0.7)' };
     return (
       < TouchableOpacity
         onPress={() => { nav.navigate('DetailFinding') }
         }
       >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
-          <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }}></Image>
+          <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }} />
 
-          <View style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10, backgroundColor: 'rgba(244, 131, 65, 0.7)', width: 120, padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 10, color: 'white' }}>{item.FINDING_CODE}</Text>
+          <View style={[styles.labelBackground, label]}>
+            <Icon name={'map-marker-alt'} color={'white'} size={14}
+              style={{ marginRight: 5, marginTop: 1 }} />
+            <Text style={{ fontSize: 12, color: 'white' }}>{item.BLOCK_CODE}</Text>
           </View>
         </View>
       </TouchableOpacity >
     )
   }
+
+
   componentWillMount() {
-    this._initData()
+
   }
 
-  componentDidMount() {
-    AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        this._initData()
-        //console.tron.log(TaskServices.query('TR_FINDING', 'PROGRESS < 100'))
-        //console.tron.log(TaskServices.getAllData('TR_IMAGE_FINDING'))
-      }
-      if (state === 'background') {
-        console.tron.log('background');
-      }
-    })
+  componentWillUnmount() {
+    this.willFocus.remove()
   }
 
   render() {
@@ -161,6 +163,26 @@ export default class ListFinding extends Component {
         </MapView> */}
 
         <Content style={styles.container} >
+
+          <Text style={{ fontSize: 16, fontWeight: 'bold', paddingHorizontal: 16 }}>
+            Belum Ada Batas Waktu
+          </Text>
+
+          <Dash
+            dashColor={'#ccc'}
+            dashThickness={1}
+            dashGap={5}
+            style={{
+              height: 1, marginLeft: 16, marginRight: 16, marginTop: 10
+            }} />
+
+          <View style={{ marginTop: 16, height: 120 }}>
+            <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
+              {this.state.dataNoDate.map(this._renderItem)}
+            </ScrollView >
+          </View>
+
+          <View style={styles.devider} />
 
           <Text style={{ fontSize: 16, fontWeight: 'bold', paddingHorizontal: 16 }}>
             Lewat batas waktu
@@ -212,31 +234,12 @@ export default class ListFinding extends Component {
               height: 1, marginLeft: 16, marginRight: 16, marginTop: 10
             }} />
 
-          <View style={{ marginTop: 16, height: 120 }}>
+          <View style={{ marginTop: 16, height: 120, marginBottom: 32 }}>
             <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
               {this.state.dataMore7Hari.map(this._renderItem)}
             </ScrollView >
           </View>
 
-          <View style={styles.devider} />
-
-          <Text style={{ fontSize: 16, fontWeight: 'bold', paddingHorizontal: 16 }}>
-            Belum Ada Batas Waktu
-          </Text>
-
-          <Dash
-            dashColor={'#ccc'}
-            dashThickness={1}
-            dashGap={5}
-            style={{
-              height: 1, marginLeft: 16, marginRight: 16, marginTop: 10
-            }} />
-
-          <View style={{ marginTop: 16, marginBottom: 32, height: 120 }}>
-            <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {this.state.dataNoDate.map(this._renderItem)}
-            </ScrollView >
-          </View>
         </Content>
 
         <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
@@ -271,5 +274,10 @@ const styles = StyleSheet.create({
     color: 'white',
   }, devider: {
     marginBottom: 16, marginTop: 16, backgroundColor: '#ccc', height: 8
+  }, labelBackground: {
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    width: 120, padding: 5, position: 'absolute', bottom: 0,
+    justifyContent: 'center', flex: 1, flexDirection: 'row'
   }
 });

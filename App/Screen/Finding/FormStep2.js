@@ -9,7 +9,6 @@ import {
     Content,
     Spinner
 } from 'native-base'
-import Geojson from 'react-native-geojson'
 import R, { isEmpty, isNil } from 'ramda'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
@@ -148,12 +147,12 @@ class FormStep2 extends Component {
                 FINDING_PRIORITY: this.state.priority,
                 DUE_DATE: this.state.batasWaktu,
                 ASSIGN_TO: this.state.assignto,
-                PROGRESS: "0",
+                PROGRESS: 0,
                 LAT_FINDING: this.state.latitude,
                 LONG_FINDING: this.state.longitude,
                 REFFERENCE_INS_CODE: "",
                 INSERT_USER: this.state.user.USER_AUTH_CODE,
-                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
                 UPDATE_USER: "",
                 UPDATE_TIME: "",
                 DELETE_USER: "",

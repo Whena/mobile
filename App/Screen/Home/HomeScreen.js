@@ -6,6 +6,8 @@ import Icons from 'react-native-vector-icons/MaterialIcons'
 import Colors from '../../Constant/Colors'
 import homeData from '../../Data/home'
 import TaskServices from '../../Database/TaskServices'
+import CategoryAction from '../../Redux/CategoryRedux'
+import ContactAction from '../../Redux/ContactRedux'
 
 class HomeScreen extends React.Component {
 
@@ -50,8 +52,6 @@ class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    console.tron.log(this.state.user)
-
     if (TaskServices.getTotalData('TR_CATEGORY') == 0) {
       this.props.categoryRequest();
     }
@@ -149,8 +149,6 @@ const styles = StyleSheet.create({
     color: 'grey'
   }
 });
-
-
 
 const mapStateToProps = state => {
   return {};

@@ -5,7 +5,6 @@ import { Container } from 'native-base'
 import { NavigationActions, StackActions } from 'react-navigation';
 import { getPermission } from '../Lib/Utils'
 import { connect } from 'react-redux';
-import { isNil } from 'ramda'
 import TaskServices from '../Database/TaskServices'
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'

@@ -13,8 +13,9 @@ import { ContactTypes } from '../Redux/ContactRedux';
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
-import { getCategory} from './CategorySagas';
+import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
+import TaskServices from '../Database/TaskServices'
 
 /* ------------- API ------------- */
 
@@ -22,21 +23,18 @@ import { getContact } from './ContactSagas';
 // to the sagas which need it.
 // const idpApi = DebugConfig.useFixtures == 'true' ? FixtureAPI : API.create('IDP');
 
-const idpApi = DebugConfig.useFixtures == 'true' ? FixtureAPI : API.create('LOGIN');
+const miApi = DebugConfig.useFixtures == 'true' ? FixtureAPI : API.create();
 
-const fixtureAPI = FixtureAPI;
 /* ------------- Connect Types To Sagas ------------- */
 
 export default function* root() {
 	yield all([
 		takeLatest(StartupTypes.STARTUP, startup),
+		takeLatest(AuthTypes.AUTH_REQUEST, getAuth, miApi),
+		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, miApi),
+		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, miApi),
+		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
 
-		
-		takeLatest(AuthTypes.AUTH_REQUEST, getAuth, idpApi),
-		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, idpApi),
-		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, idpApi),
-		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, idpApi),
-		
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);
 }
