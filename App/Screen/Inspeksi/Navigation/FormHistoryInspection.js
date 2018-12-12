@@ -6,6 +6,8 @@ import FormHistoryInspectionNavigator from './FormHistoryInspectionNavigator'
 
 class FormHistoryInspection extends Component{
 
+    // static router = FormHistoryInspection.router;
+
     static navigationOptions = {
         headerStyle: {
             backgroundColor: Colors.tintColor

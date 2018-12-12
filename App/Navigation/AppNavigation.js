@@ -7,6 +7,7 @@ import SyncScreen from '../Screen/Sync'
 import InboxScreen from '../Screen/Inbox'
 import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen'
 import Colors from '../Constant/Colors'
+import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspection'
 
 const main = createStackNavigator({
     MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
@@ -29,7 +30,8 @@ const main = createStackNavigator({
     },
     Sync: { screen: SyncScreen },
     Inbox: { screen: InboxScreen },
-    DetailFinding: { screen: DetailFindingScreen }
+    DetailFinding: { screen: DetailFindingScreen },
+    FormInspection: { screen: FormInspectionNavigator }
 }, {
         headerMode: 'screen',
         initialRouteName: 'SplashScreen',

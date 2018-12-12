@@ -177,7 +177,8 @@ class KondisiBarisAkhir extends Component{
         let param = [nilai.toString(), result, getTodayDate('DD MMM YYYY HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
         TaskService.updateInspectionHScore(this.state.inspeksiHeader.BLOCK_INSPECTION_CODE, param);
         
-        this.navigateScreen('BuatInspeksi', '', '');
+        // this.navigateScreen('BuatInspeksi', '', '');
+        this.props.navigation.goBack(null);
 
     }
 

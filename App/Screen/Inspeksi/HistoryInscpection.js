@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'rea
 import CardView from 'react-native-cardview';
 import Colors from '../../Constant/Colors';
 import Taskservice from '../../Database/TaskServices'
+import { NavigationActions, StackActions  } from 'react-navigation';
 
 export default class HistoryInspection extends Component {
   
@@ -11,15 +12,18 @@ export default class HistoryInspection extends Component {
     if (data !== null){
       let arr = [];
       for (let i = 0; i < data.length; i++) {
-        arr.push(this.renderList(data[i]));
+        arr.push(this.renderList(data[i], i));
       }
       return <View>{arr}</View>;
     }
   }
 
-  renderList = (data) => {
+  renderList = (data, index) => {
     return(
-      <TouchableOpacity style={{ marginTop: 12 }} onPress={()=> this.actionButtonClick(data)}>
+      <TouchableOpacity 
+        style={{ marginTop: 12 }} 
+        onPress={()=> this.actionButtonClick(data)}
+        key={index}>
           <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
             <View style={styles.sectionCardView}>
               <View style={{ flexDirection: 'row', height: 120 }} >
@@ -43,8 +47,17 @@ export default class HistoryInspection extends Component {
   }
 
   actionButtonClick(data) {
-    // alert('fausnc,')
-    this.props.navigation.navigate('FormHistoryInspection', {data:data});
+    // this.props.navigation.navigate('FormHistoryInspection', {test: data});
+    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'FormHistoryInspection', params: { sport: 'x' }}))
+
+    // NavigationActions.navigate({
+    //   routeName: 'InspectionStack',
+    //   params: {test: data},
+    //   action: NavigationActions.navigate({
+    //     routeName: 'FormHistoryInspection',
+    //     params:  {test: data}
+    //   })
+    // });
   }
 
   render() {

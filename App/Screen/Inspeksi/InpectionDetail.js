@@ -17,8 +17,11 @@ class DetailInspeksi extends React.Component {
     constructor(props){
         super(props);
 
-        let params = props.navigation.state.params;    
-        console.log(params)    
+        // let params = props.navigation.state.params;       
+        let params = props.navigation.state.params;
+        console.log(params) 
+        // let sfa = R.clone(params.test);
+        // console.log(sfa)
         // let data = R.clone(params.data);
         // this.state = {
         //     data
@@ -145,6 +148,8 @@ class DetailInspeksi extends React.Component {
 
 }
 
+export default DetailInspeksi; 
+
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#F2F2F2',
@@ -188,5 +193,3 @@ const styles = StyleSheet.create({
     }
 
 });
-
-export default DetailInspeksi; 
