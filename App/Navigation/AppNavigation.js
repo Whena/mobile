@@ -32,7 +32,7 @@ const main = createStackNavigator({
     DetailFinding: { screen: DetailFindingScreen }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'SplashScreen',
+        initialRouteName: 'MainMenu',
         navigationOptions: {
 
         },
