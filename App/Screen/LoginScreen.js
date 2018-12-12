@@ -7,7 +7,7 @@ import {
     ImageBackground,
     KeyboardAvoidingView,
     Keyboard,
-    Alert
+    AsyncStorage
 } from 'react-native';
 
 import FormLogin from '../Component/FormLogin'
@@ -48,6 +48,8 @@ class LoginScreen extends React.Component {
     }
 
     insertUser(user) {
+        //AsyncStorage.setItem("token", user.ACCESS_TOKEN);
+
         var data = {
             NIK: user.NIK,
             ACCESS_TOKEN: user.ACCESS_TOKEN,

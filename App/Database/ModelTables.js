@@ -142,7 +142,7 @@ const TR_FINDING = {
         FINDING_PRIORITY: 'string',
         DUE_DATE: 'string',
         ASSIGN_TO: 'string',
-        PROGRESS: 'string',
+        PROGRESS: 'int',
         LAT_FINDING: 'double',
         LONG_FINDING: 'double',
         REFFERENCE_INS_CODE: 'string',

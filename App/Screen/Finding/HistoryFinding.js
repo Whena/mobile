@@ -1,34 +1,55 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import R from 'ramda';
+import TaskServices from '../../Database/TaskServices'
+import { getFormatDate } from '../../Lib/Utils'
+import moment from 'moment'
 
 export default class HistoryFinding extends Component {
   constructor(props) {
     super(props)
 
-    var lokasi = ["GAWI INTI 1-A-A01/001", "GAWI INTI 1-A-A01/001", "GAWI INTI 1-A-A02/002"]
-
     this.state = {
-      lokasi,
-      refreshing: false
+      refreshing: false,
+      data: []
     }
   }
 
-  renderList(nav) {
-    const Row = item => (
+  willFocus = this.props.navigation.addListener(
+    'willFocus',
+    () => {
+      this._initData()
+    }
+  )
+
+  _initData() {
+    var data = TaskServices.findBy('TR_FINDING', 'PROGRESS', 100)
+
+    this.setState({ data })
+  }
+
+  componentWillUnmount() {
+    this.willFocus.remove()
+  }
+
+
+
+  _renderItem = item => {
+    console.tron.log(item)
+    const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
+    const category = TaskServices.findBy2('TR_CATEGORY', '_id', item.FINDING_CATEGORY)
+
+    return (
       <TouchableOpacity
         style={styles.sectionCardView}	>
-        <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')}></Image>
+        <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }} />
         <View style={styles.sectionDesc} >
-          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item}</Text></Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>05 Dec 2018</Text></Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>Pokok Abnormal</Text ></Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: 'green' }}>Baru</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_CODE}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>{item.INSERT_TIME}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>{category.CATEGORY_NAME}</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: 'green' }}>Selesai</Text ></Text>
         </View>
       </TouchableOpacity>
     );
-
-    return R.map(Row, this.state.lokasi)
   }
 
   render() {
@@ -37,7 +58,7 @@ export default class HistoryFinding extends Component {
       <ScrollView style={styles.container}>
         <View style={{ paddingTop: 4, paddingRight: 16, paddingLeft: 16, paddingBottom: 16 }}>
           <View style={{ marginTop: 12 }}>
-            {this.renderList(nav)}
+            {this.state.data.map(this._renderItem)}
           </View>
         </View>
       </ScrollView >

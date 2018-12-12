@@ -8,12 +8,12 @@ import {
     Content,
     Card,
 } from 'native-base';
+import { connect } from 'react-redux'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import R, { isEmpty, isNil } from 'ramda'
+import R from 'ramda'
 import { dirPicutures } from '../../Lib/dirStorage'
-import ImagePicker from 'react-native-image-picker'
 import ImagePickerCrop from 'react-native-image-crop-picker'
 import random from 'random-string'
 import TaskServices from '../../Database/TaskServices'
@@ -33,6 +33,10 @@ class FormStep1 extends Component {
         }
     }
 
+    componentDidMount() {
+       
+    }
+    
     exitAlert = () => {
         if (this.state.photos.length == 0) {
             this.props.navigation.goBack(null)
@@ -129,7 +133,6 @@ class FormStep1 extends Component {
 
     _renderFoto = foto => {
         let border = { borderWidth: 0 }
-
         {
             if (this.state.selectedPhotos.includes(foto.uri)) {
                 border = { borderWidth: 5, borderColor: 'red' }
@@ -236,7 +239,17 @@ class FormStep1 extends Component {
     }
 }
 
-export default FormStep1;
+const mapStateToProps = state => {
+    return {};
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormStep1);
 
 const style = {
     stepperContainer: {
