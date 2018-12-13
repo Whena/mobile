@@ -250,7 +250,7 @@ class BuatInspeksiRedesign extends Component{
                         {!this.state.keyboardOpen &&
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.validation()}}>
-                                    <Text style={styles.buttonText}>Mulain Inspeksi</Text>
+                                    <Text style={styles.buttonText}>Mulai Inspeksi</Text>
                                 </TouchableOpacity>                        
                             </View>
                         }
