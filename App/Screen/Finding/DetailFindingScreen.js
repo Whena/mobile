@@ -8,28 +8,39 @@ import {
     Spinner,
     Card
 } from 'native-base'
+import random from 'random-string'
 import * as Progress from 'react-native-progress'
 import Carousel from 'react-native-carousel-view'
+import TaskServices from '../../Database/TaskServices'
+import Slider from 'react-native-slider'
+import { dirPicutures } from '../../Lib/dirStorage'
+import RNFS from 'react-native-fs'
+import R, { isEmpty, isNil } from 'ramda'
+import ImagePickerCrop from 'react-native-image-crop-picker'
+import moment from 'moment'
 
 export default class DetailFindingScreen extends Component {
 
     constructor(props) {
         super(props);
-        var cars = [
-            {
-                title: 'Gawi Inti A-001/A01',
-                path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPrCjm27FwGkHdJd0Fa_VxBsgJEQJRLUp8m_GcN-eIeQCiSpDM'
-            },
-            {
-                title: 'Gawi Inti A-002/A02',
-                path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrEFrld0EZZ5XoLsJGL5FqIitpuOIlTyfCwgF0NeZvdhkuXTTi'
-            }
-        ]
+
+        var ID = this.props.navigation.state.params.ID
+        var user = TaskServices.getAllData('TR_LOGIN')[0]
+        var data = TaskServices.findBy2('TR_FINDING', 'FINDING_CODE', ID)
+        var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`)
+        var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`)
 
         this.state = {
-            cars
+            user,
+            id: ID,
+            images,
+            image: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
+            bukti: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
+            data,
+            progress: data.PROGRESS
         }
     }
+
     static navigationOptions = {
         headerStyle: {
             backgroundColor: Colors.tintColor
@@ -44,12 +55,18 @@ export default class DetailFindingScreen extends Component {
         headerTintColor: '#fff'
     };
 
+    _getStatus() {
+        if (this.state.data.PROGRESS == 100) return "Selesai"
+        if (this.state.data.PROGRESS == 0) return "Baru"
+        return "Sedang di proses"
+    }
+
     _renderCarousel = item => {
         return (
             <View style={{ height: 200, flex: 1 }}>
                 <FastImage style={{ alignItems: 'center', width: '100%', height: 200 }}
                     source={{
-                        uri: item.path,
+                        uri: "file://" + item.IMAGE_PATH,
                         priority: FastImage.priority.normal,
                     }} />
 
@@ -57,28 +74,104 @@ export default class DetailFindingScreen extends Component {
                     backgroundColor: 'rgba(244, 131, 65, 0.7)', width: '100%',
                     padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center'
                 }}>
-                    <Text style={{ fontSize: 14, color: 'white' }}>{item.title}</Text>
+                    <Text style={{ fontSize: 14, color: 'white' }}>{this._getStatus()}</Text>
                 </View>
             </View>
         )
     }
 
+    _takePicture() {
+        ImagePickerCrop.openCamera({
+            width: 640,
+            height: 480,
+            cropping: true,
+        }).then(image => {
+            this.setState({ image: image.path })
+        });
+    }
+
+    _saveToDB() {
+        var save = {
+            FINDING_CODE: this.state.data.FINDING_CODE,
+            WERKS: this.state.data.WERKS,
+            AFD_CODE: this.state.data.AFD_CODE,
+            BLOCK_CODE: this.state.data.BLOCK_CODE,
+            FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
+            FINDING_DESC: this.state.data.FINDING_DESC,
+            FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
+            DUE_DATE: this.state.data.DUE_DATE,
+            ASSIGN_TO: this.state.data.ASSIGN_TO,
+            PROGRESS: this.state.progress,
+            LAT_FINDING: this.state.data.LAT_FINDING,
+            LONG_FINDING: this.state.data.LONG_FINDING,
+            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,
+            INSERT_USER: this.state.data.INSERT_USER,
+            INSERT_TIME: this.state.data.INSERT_TIME,
+            UPDATE_USER: this.state.data.UPDATE_USER,
+            UPDATE_TIME: this.state.data.UPDATE_TIME,
+            DELETE_USER: this.state.data.DELETE_USER,
+            DELETE_TIME: this.state.data.DELETE_TIME
+        }
+
+        TaskServices.saveData('TR_FINDING', save)
+
+        this.setState({ data: save })
+
+        alert("Data berhasil di simpan")
+    }
+
+    _saveData() {
+        if (!isEmpty(this.state.image) && isEmpty(this.state.bukti)) {
+            var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
+            var path = dirPicutures + '/' + pname;
+
+            RNFS.copyFile(this.state.image, path).then((success) => {
+                var imagetr = {
+                    IMAGE_CODE: pname.replace(".jpg", ""),
+                    TR_CODE: this.state.id,
+                    IMAGE_NAME: pname,
+                    IMAGE_PATH: path,
+                    STATUS_IMAGE: 'SESUDAH',
+                    STATUS_SYNG: '',
+                    SYNG_TIME: '',
+                    INSERT_USER: this.state.user.USER_AUTH_CODE,
+                    INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+                    UPDATE_USER: '',
+                    UPDATE_TIME: '',
+                    DELETE_USER: '',
+                    DELETE_TIME: ''
+                }
+
+                this.setState({
+                    bukti: path
+                })
+
+                TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
+
+                this._saveToDB();
+
+            }).catch((err) => {
+                console.tron.log("Error moveFile: " + err.message)
+                alert("Terjadi kesalahan, silahkan coba lagi")
+            });
+        } else {
+            this._saveToDB();
+        }
+    }
+
     render() {
+        const category = TaskServices.findBy2('TR_CATEGORY', '_id', this.state.data.FINDING_CATEGORY)
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1, padding: 16, }}>
                     <View style={{ flex: 1, flexDirection: 'row', }}>
-                        <FastImage style={{ marginRight: 16, width: 40, height: 40, borderRadius: 10 }}
-                            resizeMode={FastImage.resizeMode.cover}
-                            source={{
-                                uri: "https://cdns.klimg.com/merdeka.com/i/w/news/2018/04/08/961377/670x335/klhk-dan-bupati-inhu-digugat-terkait-izin-pembebasan-hutan.jpg",
-                                priority: FastImage.priority.normal,
-                            }} />
+                        <Image style={{ marginRight: 16, width: 40, height: 40, borderRadius: 10 }}
+                            source={require('../../Images/icon/ic_games_menu.png')}></Image>
                         <View style={{ flex: 1 }} >
                             <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Detail Temuan</Text>
                             <Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>
-                                Kamis, 01 November 2018 | 11.00 - 11.30
-                        </Text>
+                                {this.state.data.INSERT_TIME}
+                            </Text>
                         </View>
                     </View>
 
@@ -95,7 +188,7 @@ export default class DetailFindingScreen extends Component {
                             indicatorSize={15}
                             indicatorColor="red"
                         >
-                            {this.state.cars.map(this._renderCarousel)}
+                            {this.state.images.map(this._renderCarousel)}
 
                         </Carousel>
                     </View>
@@ -108,59 +201,81 @@ export default class DetailFindingScreen extends Component {
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Kategori </Text>
-                                <Text style={styles.item}>: Jalan Rusak </Text>
+                                <Text style={styles.item}>: {category.CATEGORY_NAME} </Text>
                             </View>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Priority </Text>
-                                <Text style={styles.item}>: Tinggi </Text>
+                                <Text style={styles.item}>: {this.state.data.FINDING_PRIORITY} </Text>
                             </View>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Batas Waktu </Text>
-                                <Text style={styles.item}>: 20 Desember 2018, 11.30 </Text>
+                                <Text style={styles.item}>: {this.state.data.DUE_DATE} </Text>
                             </View>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Ditugaskan Kepada </Text>
-                                <Text style={styles.item}>: Ahmad Barokah</Text>
+                                <Text style={styles.item}>: {this.state.data.ASSIGN_TO}</Text>
                             </View>
                         </View>
                     </View>
 
                     <Text style={styles.title}>Deskripsi:</Text>
-                    <Text style={{ fontSize: 14 }}>Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.</Text>
+                    <Text style={{ fontSize: 14 }}> {this.state.data.FINDING_DESC}</Text>
 
                     <View style={{ flex: 1 }}>
                         <Text style={[styles.title, { marginBottom: 5 }]}>Progress:</Text>
-                        <View>
-                            <Progress.Bar showsText={true} height={20}
-                                color={Colors.brand} width={null} progress={0.6} />
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                            <Slider
+                                step={25}
+                                thumbTouchSize={{ width: 40, height: 40 }}
+                                disabled={this.state.PROGRESS == 100 ? true : false}
+                                maximumValue={100}
+                                thumbStyle={{ backgroundColor: Colors.brand }}
+                                style={{ height: 20, flex: 1 }}
+                                trackStyle={{ height: 5 }}
+                                value={this.state.progress}
+                                onValueChange={(value) => this.setState({
+                                    progress: parseInt(value)
+                                })} />
+                            {/* <Progress.Bar showsText={true} height={20}
+                                color={Colors.brand} width={null} progress={0.6} /> */}
                             <Text style={{
                                 height: 20,
                                 textAlignVertical: 'center',
-                                fontSize: 10, position: 'absolute',
-                                marginLeft: 10, color: 'white'
-                            }}>60%</Text>
+                                marginLeft: 10, color: 'black'
+                            }}>{this.state.progress}%</Text>
                         </View>
                     </View>
 
-
                     <Text style={styles.title}>Bukti Kerja:</Text>
-                    <Card style={[styles.cardContainer]}>
-                        <TouchableOpacity style={{ padding: 70 }}
-                            onPress={() => { }}
-                        >
-                            <Image style={{
-                                alignSelf: 'center', alignItems: 'stretch',
-                                width: 55, height: 55
-                            }}
-                                source={require('../../Images/icon/ic_camera_big.png')}></Image>
-                        </TouchableOpacity>
-                    </Card>
+                    {isEmpty(this.state.image) &&
+                        <Card style={[styles.cardContainer]}>
+
+                            <TouchableOpacity style={{ padding: 70 }}
+                                onPress={() => { this._takePicture() }}
+                            >
+                                <Image style={{
+                                    alignSelf: 'center', alignItems: 'stretch',
+                                    width: 55, height: 55
+                                }}
+                                    source={require('../../Images/icon/ic_camera_big.png')}></Image>
+                            </TouchableOpacity>
+                        </Card>
+                    }
+                    {!isEmpty(this.state.image) &&
+                        <View style={[styles.cardContainer, { height: 250 }]}>
+                            <FastImage resizeMode={FastImage.resizeMode.contain} style={{ flex: 1 }}
+                                source={{
+                                    uri: this.state.image,
+                                    priority: FastImage.priority.normal,
+                                }} />
+                        </View>}
 
                     <TouchableOpacity style={[styles.button, { marginTop: 16, marginBottom: 30 }]}
-                        onPress={() => { }}>
+                        onPress={() => { this._saveData() }}>
                         <Text style={styles.buttonText}>Simpan</Text>
                     </TouchableOpacity>
 
