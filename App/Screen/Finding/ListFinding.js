@@ -35,13 +35,7 @@ export default class ListFinding extends Component {
 
   constructor(props) {
     super(props);
-
-    var data = [1, 2, 3, 4, 5]
-
-    //console.tron.log(TaskServices.getAllData('TR_FINDING'))
-
     this.state = {
-      data,
       dataLewat: [],
       data7Hari: [],
       dataMore7Hari: [],
@@ -124,7 +118,7 @@ export default class ListFinding extends Component {
     var label = { backgroundColor: item.PROGRESS == '0' ? 'rgba(255, 0, 0, 0.7)' : 'rgba(255, 255, 0, 0.7)' };
     return (
       < TouchableOpacity
-        onPress={() => { nav.navigate('DetailFinding') }
+        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }
         }
       >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
@@ -197,7 +191,7 @@ export default class ListFinding extends Component {
 
           <View style={{ marginTop: 16, height: 120 }}>
             <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {this.state.dataNoDate.map(this._renderItem)}
+              {this.state.dataLewat.map(this._renderItem)}
             </ScrollView >
           </View>
 

@@ -170,7 +170,7 @@ const TR_LOG_FINDING = {
 
 const TR_IMAGE_FINDING = {
     name: 'TR_IMAGE_FINDING',
-    // primaryKey: 'ID',
+    //primaryKey: 'IMAGE_CODE',
     properties: {
         IMAGE_CODE: 'string',
         TR_CODE: 'string',

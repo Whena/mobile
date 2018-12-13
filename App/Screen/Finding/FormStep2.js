@@ -167,7 +167,7 @@ class FormStep2 extends Component {
                     TR_CODE: this.state.TRANS_CODE,
                     IMAGE_NAME: image,
                     IMAGE_PATH: dirPicutures + "/" + image,
-                    STATUS_IMAGE: '',
+                    STATUS_IMAGE: 'SEBELUM',
                     STATUS_SYNG: '',
                     SYNG_TIME: '',
                     INSERT_USER: this.state.user.USER_AUTH_CODE,
