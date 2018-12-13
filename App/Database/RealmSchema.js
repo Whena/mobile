@@ -7,10 +7,10 @@ import ModelTables from './ModelTables';
 let realmSchema = new Realm({
     // path: newPath,
     schema: [
-        ModelTables.TR_BLOCK_INSPECTION_H, 
-        ModelTables.TR_BLOCK_INSPECTION_D, 
+        ModelTables.TR_BLOCK_INSPECTION_H,
+        ModelTables.TR_BLOCK_INSPECTION_D,
         ModelTables.TR_LOGIN,
-        ModelTables.TR_IMAGE, 
+        ModelTables.TR_IMAGE,
         ModelTables.TR_TRACK_INSPECTION,
         ModelTables.TR_BARIS_INSPECTION,
         ModelTables.TM_AFD,
@@ -19,7 +19,8 @@ let realmSchema = new Realm({
         ModelTables.TR_FINDING,
         ModelTables.TR_LOG_FINDING,
         ModelTables.TR_IMAGE_FINDING,
-        ModelTables.T_LOG_IMAGE
+        ModelTables.T_LOG_IMAGE,
+        ModelTables.TM_REGION
     ]
 });
 
