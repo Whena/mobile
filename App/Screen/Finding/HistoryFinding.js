@@ -34,13 +34,15 @@ export default class HistoryFinding extends Component {
 
 
   _renderItem = item => {
-    console.tron.log(item)
+    const nav = this.props.navigation
     const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
     const category = TaskServices.findBy2('TR_CATEGORY', '_id', item.FINDING_CATEGORY)
 
     return (
       <TouchableOpacity
-        style={styles.sectionCardView}	>
+        style={styles.sectionCardView}
+        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }}
+      >
         <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }} />
         <View style={styles.sectionDesc} >
           <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_CODE}</Text></Text>

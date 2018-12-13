@@ -274,11 +274,15 @@ export default class DetailFindingScreen extends Component {
                                 }} />
                         </View>}
 
-                    <TouchableOpacity style={[styles.button, { marginTop: 16, marginBottom: 30 }]}
-                        onPress={() => { this._saveData() }}>
-                        <Text style={styles.buttonText}>Simpan</Text>
-                    </TouchableOpacity>
+                    {(this.state.data.PROGRESS < 100) &&
+                        <TouchableOpacity style={[styles.button, { marginTop: 16, marginBottom: 30 }]}
+                            onPress={() => { this._saveData() }}>
+                            <Text style={styles.buttonText}>Simpan</Text>
+                        </TouchableOpacity>}
 
+                    {(this.state.data.PROGRESS == 100) &&
+                        <View style={{ flex: 1, height: 30 }}></View>
+                    }
                 </Content >
             </Container>
         )
