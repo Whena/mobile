@@ -20,6 +20,16 @@ export default class SyncScreen extends React.Component {
         headerTintColor: '#fff'
     })
 
+    _insertTM_Region(data) {
+        var dataTable = {
+            NIK: data.NIK,
+            ACCESS_TOKEN: data.ACCESS_TOKEN,
+            JOB_CODE: data.JOB_CODE
+        };
+
+        TaskServices.saveData('TM_REGION', dataTable);
+    }
+
     render() {
         return (
             <Container style={{ flex: 1, padding: 16 }}>
