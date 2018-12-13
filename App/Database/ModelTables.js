@@ -213,16 +213,6 @@ const T_LOG_IMAGE = {
     }
 }
 
-const TM_REGION = {
-    name: 'TM_REGION',
-    primaryKey: 'ID',
-    properties: {
-        NATIONAL: ' string',
-        REGION_CODE: 'string',
-        REGION_NAME: 'string'
-    }
-}
-
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -236,6 +226,5 @@ export default {
     TR_IMAGE_FINDING,
     T_LOG_IMAGE,
     TR_CATEGORY,
-    TR_CONTACT,
-    TM_REGION
+    TR_CONTACT
 }

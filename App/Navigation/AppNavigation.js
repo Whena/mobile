@@ -34,7 +34,7 @@ const main = createStackNavigator({
     FormInspection: { screen: FormInspectionNavigator }
 }, {
         headerMode: 'screen',
-        initialRouteName: 'SyncScreen',
+        initialRouteName: 'SplashScreen',
         navigationOptions: {
 
         },
