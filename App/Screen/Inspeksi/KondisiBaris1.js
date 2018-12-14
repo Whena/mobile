@@ -211,6 +211,18 @@ class KondisiBaris1 extends Component{
         }
     }
 
+    remove0(param){
+        console.log(param)
+        var str = param.toString();
+        if(str.lenght > 1){
+            if(str.indexOf(0) == '0'){
+                var val = str.substring(0);
+                console.log(val);
+                return val;
+            }
+        }
+    }
+
     render(){
         return(
             <ScrollView style={styles.mainContainer}>
@@ -267,7 +279,7 @@ class KondisiBaris1 extends Component{
 
                 {/*INPUT*/}
                 <View style={{backgroundColor:'white'}}>  
-                    <View style={styles.containerLabel}>
+                    {/* <View style={styles.containerLabel}>
                         <Text style={styles.txtLabel}>Jumlah Pokok</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
                             <TouchableOpacity style={styles.btnMinus} onPress={()=>{this.decreaseNumber('JP')}}>
@@ -282,7 +294,7 @@ class KondisiBaris1 extends Component{
                                 <Icon name={"add"}  size={20} color="white" />
                             </TouchableOpacity>
                         </View>
-                    </View>                      
+                    </View>                       */}
                     <View style={styles.containerLabel}>
                         <Text style={styles.txtLabel}>Pokok Panen</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
@@ -292,8 +304,10 @@ class KondisiBaris1 extends Component{
                             <TextInput
                                 underlineColorAndroid={'transparent'}
                                 style={[styles.searchInput]}
+                                maxLength={2}
+                                keyboardType={'numeric'}
                                 value={this.state.pokokPanen}                                    
-                                onChangeText={(pokokPanen) => { this.setState({ pokokPanen: pokokPanen }) }}/>
+                                onChangeText={(text)=>{text = text.replace(/[^0-9 ]/g, ''); this.setState({pokokPanen:text})}}/>
                             <TouchableOpacity style={styles.btnAdd} onPress={()=>{this.increaseNumber('PP')}}>
                                 <Icon name={"add"}  size={20} color="white" />
                             </TouchableOpacity>
@@ -310,8 +324,10 @@ class KondisiBaris1 extends Component{
                             <TextInput
                                 underlineColorAndroid={'transparent'}
                                 style={[styles.searchInput]}
+                                maxLength={2}
+                                keyboardType={'numeric'}
                                 value={this.state.buahTinggal}                                    
-                                onChangeText={(buahTinggal) => { this.setState({ buahTinggal: buahTinggal }) }}/>
+                                onChangeText={(text)=>{text = text.replace(/[^0-9]/g, ''); this.setState({buahTinggal:text})}}/>
                             <TouchableOpacity 
                                 style={styles.btnAdd}
                                 onPress={() => this.increaseNumber('BT')}>
@@ -320,7 +336,7 @@ class KondisiBaris1 extends Component{
                         </View>
                     </View>
                     <View style={styles.containerLabel}>
-                        <Text style={styles.txtLabel}>Brodolan di Pinggiran</Text>
+                        <Text style={styles.txtLabel}>Brondolan di Piringan</Text>
                         <View style={[styles.containerInput, {flex:5}]}>
                             <TouchableOpacity style={styles.btnMinus}
                                 onPress={()=>{this.decreaseNumber('BP')}}>
@@ -329,8 +345,10 @@ class KondisiBaris1 extends Component{
                             <TextInput
                                 underlineColorAndroid={'transparent'}
                                 style={[styles.searchInput]}
-                                value={this.state.brondolPinggir}                                    
-                                onChangeText={(brondolPinggir) => { this.setState({ brondolPinggir: brondolPinggir }) }}/>
+                                maxLength={2}
+                                keyboardType={'numeric'}
+                                value={this.state.brondolPinggir} 
+                                onChangeText={(text)=>{text = text.replace(/[^0-9]/g, ''); this.setState({brondolPinggir:text})}}/>
                             <TouchableOpacity style={styles.btnAdd} onPress={()=>{this.increaseNumber('BP')}}>
                                 <Icon name={"add"}  size={20} color="white" />
                             </TouchableOpacity>
@@ -345,9 +363,12 @@ class KondisiBaris1 extends Component{
                             </TouchableOpacity>
                             <TextInput
                                 underlineColorAndroid={'transparent'}
-                                style={[styles.searchInput]}                                    
+                                style={[styles.searchInput]}     
+                                maxLength={2}   
+                                keyboardType={'numeric'}                            
                                 value={this.state.brondolTPH}                                    
-                                onChangeText={(brondolTPH) => { this.setState({ brondolTPH: brondolTPH }) }}/>
+                                onChangeText={(text)=>{text = text.replace(/[^0-9]/g, ''); this.setState({brondolTPH:text})}}
+                                />
                             <TouchableOpacity style={styles.btnAdd} onPress={()=>{this.increaseNumber('BTP')}}>
                                 <Icon name={"add"}  size={20} color="white" />
                             </TouchableOpacity>
@@ -362,9 +383,12 @@ class KondisiBaris1 extends Component{
                             </TouchableOpacity>
                             <TextInput
                                 underlineColorAndroid={'transparent'}
-                                style={[styles.searchInput]}                                    
-                                value={this.state.pokokTdkPupuk}                                    
-                                onChangeText={(pokokTdkPupuk) => { this.setState({ pokokTdkPupuk: pokokTdkPupuk }) }}/>
+                                style={[styles.searchInput]}  
+                                maxLength={2} 
+                                keyboardType={'numeric'}                                 
+                                value={this.state.pokokTdkPupuk}       
+                                onChangeText={(text)=>{text = text.replace(/[^0-9]/g, ''); this.setState({pokokTdkPupuk:text})} 
+                                }/>
                             <TouchableOpacity style={styles.btnAdd} onPress={()=>{this.increaseNumber('PTP')}}>
                                 <Icon name={"add"}  size={20} color="white" />
                             </TouchableOpacity>

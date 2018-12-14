@@ -13,7 +13,7 @@ import { RNCamera as Camera } from 'react-native-camera';
 import imgTakePhoto from '../../Images/icon/ic_take_photo.png';
 import imgNextPhoto from '../../Images/icon/ic_next_photo.png';
 import R from 'ramda';
-import {getTodayDate} from '../../Lib/Utils'
+import {getTodayDate, getUUID} from '../../Lib/Utils'
 import TaskServices from '../../Database/TaskServices'
 
 
@@ -46,7 +46,8 @@ class TakePhotoSelfie extends Component{
           // trackInspeksi,
           kondisiBaris1,
           kondisiBaris2,
-          dataUsual
+          dataUsual,
+          pathCache:''
         }
     }
 
@@ -60,15 +61,20 @@ class TakePhotoSelfie extends Component{
     }
 
     setParameter(){
-      var imgCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-IS-'+TaskServices.getTotalData('TR_IMAGE')+1;
-      var trCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-DS-'+TaskServices.getTotalData('TR_IMAGE')+1;
-      var imageName = 'IMG-'+imgCode+'.jpg';
+      var UNIQ_CODE = getUUID();
+      UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
+      var imgCode = 'P'+this.state.dataUsual.NIK+UNIQ_CODE;
+
+      UNIQ_CODE = getUUID();
+      UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
+      var trCode = 'I'+this.state.dataUsual.NIK+UNIQ_CODE;
+      var imageName = imgCode+'.jpg';
       
       var image = {
           IMAGE_CODE: imgCode,
           TR_CODE: trCode,
           IMAGE_NAME:imageName,
-          IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi',
+          IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie',
           STATUS_IMAGE: '', 
           STATUS_SYNC: 'N'
       }
@@ -78,7 +84,7 @@ class TakePhotoSelfie extends Component{
   
     handleBackButtonClick =()=> {
       if(this.state.hasPhoto){
-        RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME)
+        RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie'+this.state.dataModel.IMAGE_NAME)
           .then(() => {
             console.log('FILE DELETED');
         });
@@ -95,8 +101,9 @@ class TakePhotoSelfie extends Component{
           this.insertDB() 
         }else{
           const data = await this.camera.takePictureAsync();
-          this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi', hasPhoto: true });      
-          RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME);
+          this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie', hasPhoto: true });
+          RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie/'+this.state.dataModel.IMAGE_NAME);
+          this.resize(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie/'+this.state.dataModel.IMAGE_NAME)
         }
         
       } catch (err) {
@@ -104,7 +111,24 @@ class TakePhotoSelfie extends Component{
       }
     };
 
-    insertDB(){ 
+    resize(data) {
+      ImageResizer.createResizedImage(data, 640, 480, 'JPEG', 80, 0, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie').then((response) => {
+        // response.uri is the URI of the new image that can now be displayed, uploaded...
+        // response.path is the path of the new image
+        // response.name is the name of the new image with the extension
+        // response.size is the size of the new image  
+        RNFS.copyFile(response.path, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie/'+this.state.dataModel.IMAGE_NAME);
+        this.setState({
+          path: response.uri,
+          pathCache: response.path
+        }); 
+      }).catch((err) => {
+        console.log(err)
+      });
+    }
+
+    insertDB(){      
+      RNFS.unlink(this.state.pathCache);
       this.props.navigation.navigate('KondisiBarisAkhir',{
         fotoSelfie: this.state.dataModel,
         inspeksiHeader: this.state.inspeksiHeader, 

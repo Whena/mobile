@@ -17,8 +17,24 @@ import MapView, {PROVIDER_GOOGLE, ProviderPropType, Marker, AnimatedRegion } fro
 import {convertTimestampToDate, getTodayDate, getUUID} from '../../Lib/Utils'
 import TaskService from '../../Database/TaskServices';
 // import KeyboardListener from 'react-native-keyboard-listener';
+import Autocomplete from 'react-native-autocomplete-input';
 import { utils } from 'redux-saga';
 var uuid = require('react-native-uuid');
+import Geojson from 'react-native-geojson';
+
+const alcatraz = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [-122.42305755615234, 37.82687023785448],
+        }
+      }
+    ]
+  };
 
 class BuatInspeksiRedesign extends Component{
     constructor(props){
@@ -66,9 +82,10 @@ class BuatInspeksiRedesign extends Component{
 			(position) => {
                 var lat = parseFloat(position.coords.latitude);
                 var lon = parseFloat(position.coords.longitude);
-                const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
+                // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
                 // console.log(timestamp);
                 this.setState({latitude:lat, longitude:lon});
+                // alert(position.coords.latitude)
 
 			},
 			(error) => {
@@ -77,8 +94,8 @@ class BuatInspeksiRedesign extends Component{
 				if (error && error.message == "No location provider available.") {
 					message = "Mohon nyalakan GPS anda terlebih dahulu.";
 				}
-				// Alert.alert('Informasi', message);
-				console.log(message);
+				Alert.alert('Informasi', message);
+				// console.log(message);
 			}, // go here if error while fetch location
 			{ enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position 
         );
@@ -192,7 +209,15 @@ class BuatInspeksiRedesign extends Component{
                     <Card style={[styles.cardContainer]}>
                         <CardItem>
                             <View style={{flex:1}}>
-                                <Text style={{color:'#696969'}}>Blok</Text>
+                            <Text style={{color:'#696969'}}>Blok</Text>
+                            {/* <Autocomplete
+                                    containerStyle={styles.autocompleteContainer}
+                                    autoCapitalize={'characters'}
+                                    underlineColorAndroid={'transparent'}
+                                    // style={styles.searchInput}
+                                    value={this.state.blok.toLocaleUpperCase()}
+                                    onChangeText={(text)=>{this.setState({blok:text})}}
+                                /> */}
                                 <TextInput
                                     autoCapitalize={'characters'}
                                     underlineColorAndroid={'transparent'}
@@ -219,6 +244,14 @@ class BuatInspeksiRedesign extends Component{
                 <Text style = {styles.textLabel}>
                     Pastikan kamu telah berada dilokasi yang benar
                 </Text>
+
+{/* <View style={styles.containerMap}>
+<MapView
+style={styles.map}>
+    <Geojson geojson={alcatraz} />
+  </MapView>
+</View> */}
+                
 
 
                 {!!this.state.latitude && !!this.state.longitude &&
@@ -263,10 +296,6 @@ class BuatInspeksiRedesign extends Component{
     }
 }
 
-// BuatInspeksiRedesign.propTypes = {
-//     provider: ProviderPropType,
-// };
-
 export default BuatInspeksiRedesign;
 
 const styles = {
@@ -307,6 +336,18 @@ const styles = {
         borderBottomWidth:1,
         borderBottomColor:'#808080',
         color: 	'#808080',
+    },
+    autocompleteContainer: {
+        flex: 1,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 20,
+        zIndex: 1
+    //     borderRadius: 4,
+    // borderColor: '#cccccc',
+    // borderWidth: 1,
+    // marginBottom: 18,
     },
     textLabel:
         [Fonts.style.caption,{color:Colors.brand, textAlign:'center', fontSize:16, marginTop:10, marginRight:20, marginLeft:20}]

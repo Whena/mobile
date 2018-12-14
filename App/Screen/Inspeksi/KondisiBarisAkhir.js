@@ -32,14 +32,6 @@ class KondisiBarisAkhir extends Component{
         let kondisiBaris2 = R.clone(params.kondisiBaris2);
         let dataUsual = R.clone(params.dataUsual);
 
-        // console.log(fotoBaris)
-        // console.log(fotoSelfie)
-        // console.log(inspeksiHeader)
-        // console.log(trackInspeksi)
-        // console.log(kondisiBaris1)
-        // console.log(kondisiBaris2)
-        // console.log(dataUsual)
-
 
         this.state = {
             latitude:null,
@@ -177,8 +169,8 @@ class KondisiBarisAkhir extends Component{
         let param = [nilai.toString(), result, getTodayDate('DD MMM YYYY HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
         TaskService.updateInspectionHScore(this.state.inspeksiHeader.BLOCK_INSPECTION_CODE, param);
         
-        // this.navigateScreen('BuatInspeksi', '', '');
-        this.props.navigation.goBack(null);
+        this.navigateScreen('BuatInspeksi', '', '');
+        // this.props.navigation.goBack(null);
 
     }
 

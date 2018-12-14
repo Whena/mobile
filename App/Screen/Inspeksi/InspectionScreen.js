@@ -128,22 +128,22 @@ class InspectionScreen extends Component {
   }
 }
 
-// const mapStateToProps = state => {
-// 	return {
-// 		inspeksi: state.inspeksi
-// 	};
-// };
+const mapStateToProps = state => {
+	return {
+		inspeksi: state.inspeksi
+	};
+};
 
-// const mapDispatchToProps = dispatch => {
-// 	return {
-// 		postInspeksi: obj => dispatch(InspeksiAction.postInspeksi(obj)),
-// 		postInspeksiDtl: obj => dispatch(InspeksiAction.postInspeksiDtl(obj))
-// 	};
-// };
+const mapDispatchToProps = dispatch => {
+	return {
+		postInspeksi: obj => dispatch(InspeksiAction.postInspeksi(obj)),
+		postInspeksiDtl: obj => dispatch(InspeksiAction.postInspeksiDtl(obj))
+	};
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(InspectionScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(InspectionScreen);
 
-export default InspectionScreen;
+// export default InspectionScreen;
 
 
 

@@ -18,9 +18,10 @@ const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 import imgTakePhoto from '../../Images/icon/ic_take_photo.png';
 import imgNextPhoto from '../../Images/icon/ic_next_photo.png';
 import { RNCamera as Camera } from 'react-native-camera';
-import {getTodayDate} from '../../Lib/Utils'
+import {getTodayDate, getUUID} from '../../Lib/Utils'
 import TaskServices from '../../Database/TaskServices';
 import { NavigationActions, StackActions  } from 'react-navigation';
+import ImageResizer from 'react-native-image-resizer';
 
 const moment = require('moment');
 var RNFS = require('react-native-fs');
@@ -46,9 +47,9 @@ class TakePhotoBaris extends Component {
       pathImg: null,
       dataModel: null,
       inspeksiHeader,
-      // trackInspeksi,
       dataUsual,
-      from
+      from,
+      pathCache:''
     };
   }
 
@@ -64,7 +65,7 @@ class TakePhotoBaris extends Component {
   handleBackButtonClick() { 
     if(this.state.hasPhoto){
 
-      RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME)
+      RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/'+this.state.dataModel.IMAGE_NAME)
         .then(() => {
           console.log('FILE DELETED');
       });
@@ -87,18 +88,21 @@ class TakePhotoBaris extends Component {
     return true;
   }
 
-  setParameter(){
-    var imgCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-I-'+
-      (parseInt(TaskServices.getTotalData('TR_IMAGE'))+1);
-    var trCode = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+'-'+this.state.dataUsual.AFD+'-D-'+
-      (parseInt(TaskServices.getTotalData('TR_IMAGE'))+1);
-    var imageName = 'IMG-'+imgCode+'.jpg';
+  setParameter(){    
+    var UNIQ_CODE = getUUID();
+    UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
+    var imgCode = 'P'+this.state.dataUsual.NIK+UNIQ_CODE;
+
+    UNIQ_CODE = getUUID();
+    UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
+    var trCode = 'I'+this.state.dataUsual.NIK+UNIQ_CODE;
+    var imageName = imgCode+'.jpg';
     
     var image = {
         IMAGE_CODE: imgCode,
         TR_CODE: trCode,
         IMAGE_NAME:imageName,
-        IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi',
+        IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris',
         STATUS_IMAGE: '', 
         STATUS_SYNC: 'N'
     }
@@ -113,14 +117,31 @@ class TakePhotoBaris extends Component {
         this.insertDB();     
       }else{
         const data = await this.camera.takePictureAsync();
-        this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi', hasPhoto: true });
-        RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/'+this.state.dataModel.IMAGE_NAME);
+        this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris', hasPhoto: true });
+        RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/'+this.state.dataModel.IMAGE_NAME);
+        this.resize(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/'+this.state.dataModel.IMAGE_NAME)
       }
       
     } catch (err) {
       console.log('err: ', err);
     }
   };
+
+  resize(data) {
+    ImageResizer.createResizedImage(data, 640, 480, 'JPEG', 80, 0, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris').then((response) => {
+      // response.uri is the URI of the new image that can now be displayed, uploaded...
+      // response.path is the path of the new image
+      // response.name is the name of the new image with the extension
+      // response.size is the size of the new image
+      RNFS.copyFile(response.path, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/'+this.state.dataModel.IMAGE_NAME);
+      this.setState({
+        path: response.uri,
+        pathCache: response.path
+      }); 
+    }).catch((err) => {
+      console.log(err)
+    });
+  }
 
   renderCamera() {
     return (
@@ -138,6 +159,7 @@ class TakePhotoBaris extends Component {
   }
 
   insertDB(){
+    RNFS.unlink(this.state.pathCache);
     this.props.navigation.navigate('KondisiBaris1',
     {fotoBaris:this.state.dataModel, inspeksiHeader: this.state.inspeksiHeader, dataUsual: this.state.dataUsual});
   }
@@ -166,7 +188,6 @@ class TakePhotoBaris extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {/* {this.state.path ? this.renderImage() : this.renderCamera()} */}
         <View style={{flex:2}}>
            {this.state.path ? this.renderImage() : this.renderCamera()}
         </View>
