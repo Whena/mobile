@@ -1,6 +1,6 @@
 import RealmSchemas from './RealmSchema'
 
-let TaskServices = {
+const TaskServices = {
 
   getPath: function () {
     return RealmSchemas.path;
@@ -169,8 +169,28 @@ let TaskServices = {
       data.LAT_END_INSPECTION = param[3];
       data.LONG_END_INSPECTION = param[4];
     });
-  }
+  },
+
+  deleteTmRegionByRegionCode: function (value) {
+    let total = RealmSchemas.objects('TM_REGION');
+    for (var i = 0; i < total.length; i++) {
+      if (value === total[i].REGION_CODE) {
+        RealmSchemas.write(() => {
+          RealmSchemas.delete(RealmSchemas.objects('TM_REGION')[i]);
+        });
+      }
+    }
+  },
+
+  updateTmRegionByRegionCode: function (regionCode, param) {
+    let data = RealmSchemas.objects('TM_REGION').filtered('REGION_CODE == \"' + regionCode + '\" ')[0];
+    RealmSchemas.write(() => {
+      data.NATIONAL = param[0];
+      data.REGION_CODE = param[1];
+      data.REGION_NAME = param[2];
+    });
+  },
 
 };
 
-module.exports = TaskServices;
+export default TaskServices;
