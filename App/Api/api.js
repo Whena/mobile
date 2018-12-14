@@ -26,13 +26,18 @@ const create = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/contacts')
     }
+    const getRegion = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/region')
+    }
+
 
     return {
         api,
         login,
         getCategory,
-        getContact
-
+        getContact,
+        getRegion
     };
 };
 

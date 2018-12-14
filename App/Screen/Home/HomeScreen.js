@@ -8,6 +8,7 @@ import homeData from '../../Data/home'
 import TaskServices from '../../Database/TaskServices'
 import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
+import RegionAction from '../../Redux/RegionRedux'
 
 class HomeScreen extends React.Component {
 
@@ -58,6 +59,10 @@ class HomeScreen extends React.Component {
 
     if (TaskServices.getTotalData('TR_CONTACT') == 0) {
       this.props.contactRequest();
+    }
+
+    if (TaskServices.getTotalData('TM_REGION') == 0){
+      this.props.regionRequest(); 
     }
   }
 
@@ -116,7 +121,6 @@ class HomeScreen extends React.Component {
               ))
             }
           </ScrollView>
-
         </Content>
       </Container>
     )
@@ -157,7 +161,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
-    contactRequest: () => dispatch(ContactAction.contactRequest())
+    contactRequest: () => dispatch(ContactAction.contactRequest()),
+    regionRequest:() => dispatch(RegionAction.regionRequest())
   };
 };
 

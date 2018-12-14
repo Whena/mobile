@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import TaskServices from '../Database/TaskServices'
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
+import RegionAction from '../Redux/RegionRedux'
 var RNFS = require('react-native-fs');
 import { dirPicutures } from '../Lib/dirStorage'
 
@@ -49,6 +50,7 @@ class SplashScreen extends Component {
 
                     this.props.categoryRequest();
                     this.props.contactRequest();
+                    this.props.regionRequest();
 
                     this.navigateScreen('MainMenu');
 
@@ -85,7 +87,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
-        contactRequest: () => dispatch(ContactAction.contactRequest())
+        contactRequest: () => dispatch(ContactAction.contactRequest()),
+        regionRequest: () => dispatch(RegionAction.regionRequest())
     };
 };
 

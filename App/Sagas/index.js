@@ -9,12 +9,14 @@ import { StartupTypes } from '../Redux/StartupRedux';
 import { AuthTypes } from '../Redux/AuthRedux';
 import { CategoryTypes } from '../Redux/CategoryRedux';
 import { ContactTypes } from '../Redux/ContactRedux';
+import { RegionTypes } from '../Redux/RegionRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
+import { getRegion } from './RegionSagas'
 import TaskServices from '../Database/TaskServices'
 
 /* ------------- API ------------- */
@@ -34,6 +36,7 @@ export default function* root() {
 		takeLatest(AuthTypes.AUTH_USER_UPDATE, userUpdate, miApi),
 		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, miApi),
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
+		takeLatest(RegionTypes.REGION_REQUEST, getRegion, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);
