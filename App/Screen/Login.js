@@ -119,6 +119,7 @@ class Login extends Component{
 	}
 
     render(){
+        console.log('sagijbnfokfhnfasklfhbasnf,sa;kfn')
         return(
             <ImageBackground source={require('../Images/background.png')} style={styles.container}>
                 <KeyboardAvoidingView
