@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Text, Keyboard, Alert, TextInput, TouchableOpacity, View, Image, StatusBar,
-    KeyboardAvoidingView ,} from 'react-native';
+    KeyboardAvoidingView ,BackHandler} from 'react-native';
 import {
 	Container,
 	Content,  
@@ -17,6 +17,7 @@ import MapView, {PROVIDER_GOOGLE, ProviderPropType, Marker, AnimatedRegion } fro
 import {convertTimestampToDate, getTodayDate, getUUID} from '../../Lib/Utils'
 import TaskService from '../../Database/TaskServices';
 // import KeyboardListener from 'react-native-keyboard-listener';
+import Dialog from "react-native-dialog";
 import Autocomplete from 'react-native-autocomplete-input';
 import { utils } from 'redux-saga';
 var uuid = require('react-native-uuid');
@@ -37,10 +38,11 @@ const alcatraz = {
   };
 
 class BuatInspeksiRedesign extends Component{
-    constructor(props){
-        
+    constructor(props){        
         // let params = props.navigation.state.params;
         super(props);
+        
+        // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.state = {
             latitude:null,
             longitude:null,
@@ -51,7 +53,8 @@ class BuatInspeksiRedesign extends Component{
             blok:'',
             baris:'',
             inspectionCode:'',
-            keyboardOpen: false
+            keyboardOpen: false,
+            showConfirm: false
         };
     }
 
@@ -75,7 +78,18 @@ class BuatInspeksiRedesign extends Component{
 
     componentDidMount(){
         this.getLocation()
+        // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
+
+    // componentWillUnmount(){
+    //     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    // }
+    
+    // handleBackButtonClick() { 
+    //     this.setState({showConfirm:false})
+    //     this.props.navigation.goBack(null);  
+    //     return true;
+    // }
 
     getLocation(){
 		navigator.geolocation.getCurrentPosition(
@@ -101,18 +115,18 @@ class BuatInspeksiRedesign extends Component{
         );
     }
 
-    validation(){
+    validation(param){
         if(this.state.blok === ''){
             Alert.alert('Blok Belum diisi !');
         }else if(this.state.baris === ''){
             Alert.alert('Baris Belum diisi !');
         }else{
-            this.insertDB();
+            this.insertDB(param);
         }   
         // this.props.navigation.dispatch({ type: 'Navigation/BACK' })  ;   
     }
 
-    insertDB(){
+    insertDB(param){
         let dataLogin = TaskService.getAllData('TR_LOGIN');
         var NIK = dataLogin[0].NIK;
         var DATE = getTodayDate('YYYYMMDD');
@@ -129,12 +143,12 @@ class BuatInspeksiRedesign extends Component{
             WERKS: BA,
             AFD_CODE: AFD,
             BLOCK_CODE: BLOK,
-            INSPECTION_DATE: getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
+            INSPECTION_DATE: getTodayDate('YYYY-MM-DD  HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
             INSPECTION_SCORE:'string',
             INSPECTION_RESULT:'string',
             STATUS_SYNC:'N',
             SYNC_TIME:'',
-            START_INSPECTION: getTodayDate('DD MMM YYYY HH:mm:ss'),
+            START_INSPECTION: getTodayDate('YYYY-MM-DD  HH:mm:ss'),//getTodayDate('DD MMM YYYY HH:mm:ss'),
             END_INSPECTION:'',
             LAT_START_INSPECTION: this.state.latitude.toString(),
             LONG_START_INSPECTION: this.state.longitude.toString(),
@@ -142,14 +156,6 @@ class BuatInspeksiRedesign extends Component{
             LONG_END_INSPECTION:'',
             ASSIGN_TO:''
         }
-
-        // let modelTrack = {
-        //     TRACK_INSPECTION_CODE: track_ins_code,
-        //     BLOCK_INSPECTION_CODE: blok_inspection_code_h,
-        //     DATE_TRACK: getTodayDate('DD MMM YYYY HH:mm:ss'),
-        //     LAT_TRACK: this.state.latitude.toString(),
-        //     LONG_TRACK: this.state.longitude.toString()
-        // }
 
         let  params = {
             NIK: NIK,
@@ -160,13 +166,29 @@ class BuatInspeksiRedesign extends Component{
             BLOCK_INSPECTION_CODE: blok_inspection_code_h
         }
 
-        this.setState({inspectionCode:blok_inspection_code_h})
-        this.props.navigation.navigate('TakeFotoBaris', {inspeksiHeader:modelInspeksiH, dataUsual: params});
+        this.setState({inspectionCode:blok_inspection_code_h, showConfirm:false})
+        // this.props.navigation.navigate('KondisiBaris2', {inspeksiHeader:modelInspeksiH, dataUsual: params, statusBlok: param});
+        this.props.navigation.navigate('TakeFotoBaris', {inspeksiHeader:modelInspeksiH, dataUsual: params, statusBlok: param});
     }
 
     render(){
         return(
             <View style={styles.mainContainer}>
+
+                <View>
+                    <Dialog.Container visible={this.state.showConfirm}>
+                    <Dialog.Title>Informasi</Dialog.Title>
+                    <Dialog.Description>
+                        Apa status blok yang kamu inspeksi ?
+                    </Dialog.Description>
+                    <Dialog.Button label="Cancel" onPress={()=>{this.setState({showConfirm:false})}}/>
+                    <Dialog.Button label="TM" onPress={()=>{this.validation('TM')}} />
+                    <Dialog.Button label="TBM1" onPress={()=>{this.validation('TBM1')}} />
+                    <Dialog.Button label="TBM2" onPress={()=>{this.validation('TBM2')}} />
+                    <Dialog.Button label="TBM3" onPress={()=>{this.validation('TBM3')}} />
+                    </Dialog.Container>
+                </View>
+
                 <View style={{flexDirection:'row', marginLeft:20, marginRight:20, marginTop:10}}>
                     <View style={styles.containerStepper}>
                         <View style={[styles.stepperNumber,{backgroundColor:Colors.brand}]}>
@@ -282,8 +304,8 @@ style={styles.map}>
 
                         {!this.state.keyboardOpen &&
                             <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.validation()}}>
-                                    <Text style={styles.buttonText}>Mulai Inspeksi</Text>
+                                <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
+                                    <Text style={styles.buttonText}>Mulain Inspeksi</Text>
                                 </TouchableOpacity>                        
                             </View>
                         }

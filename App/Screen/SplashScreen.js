@@ -38,7 +38,8 @@ class SplashScreen extends Component {
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
             //buat folder internal      
-            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi');
+            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
+            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
             
             RNFS.mkdir(dirPicutures);
 
