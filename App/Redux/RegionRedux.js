@@ -5,6 +5,7 @@ import Immutable from 'seamless-immutable';
 
 const { Types, Creators } = createActions({
 	regionRequest: null,
+	regionPost: null,
 	regionSuccess: ['payload'],
 	regionFailure: null
 });
@@ -30,6 +31,7 @@ export const RegionSelectors = {
 
 // request the data from an api
 export const request = (state, { data }) => state.merge({ fetching: true, error: null, region: null });
+export const postRegion = (state, { data }) => state.merge({ fetching: true, error: null, regionPost: null });
 
 // successful api lookup
 export const success = (state, action) => {
@@ -44,6 +46,7 @@ export const failure = state => state.merge({ fetching: false, error: true, payl
 
 export const reducer = createReducer(INITIAL_STATE, {
 	[Types.REGION_REQUEST]: request,
+	[Types.REGION_POST]: postRegion,
 	[Types.REGION_SUCCESS]: success,
 	[Types.REGION_FAILURE]: failure
 });

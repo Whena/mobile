@@ -4,6 +4,7 @@ import { isEmpty, isNil } from 'ramda';
 
 export function* getAuth(api, action) {
 	const { data } = action;
+	console.log("Data Param get AUTH : " + data);
 	const response = yield call(api.login, data);
 
 	if (typeof atob !== 'undefined') {
@@ -23,7 +24,7 @@ export function* getAuth(api, action) {
 				break;
 		}
 	} else {
-		if(response.data !== null){
+		if (response.data !== null) {
 			if (response.data.status == 500) {
 				return yield put(AuthActions.authFailure({
 					path: 'Sign In',
@@ -31,11 +32,11 @@ export function* getAuth(api, action) {
 				}));
 			}
 			yield put(AuthActions.authFailure('Username atau Password Salah !'));
-		}else{
+		} else {
 			yield put(AuthActions.authFailure('Terjadi Kesalahan Koneksi !'));
 		}
-		
-		
+
+
 	}
 }
 
@@ -73,6 +74,7 @@ export function* getAuth(api, action) {
 
 export function* userUpdate(api, action) {
 	const { data } = action;
+	console.log("Data Param userUpdate : " + data);
 	const response = yield call(api.userUpdate, { userProfileDTO: data });
 
 	if (typeof atob !== 'undefined') {

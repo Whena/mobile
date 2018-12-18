@@ -45,3 +45,30 @@ export function* getRegion(api, action) {
         yield put(RegionActions.regionFailure(response.problem));
     }
 }
+
+export function* postRegion(api, action) {
+    const { data } = action;
+    console.log("Data Param POST REGION : " + data);
+    const response = yield call(api.postRegion, data);
+
+    if (typeof atob !== 'undefined') {
+        console.log(response);
+        console.log('^^^ POST REGION RETURN ^^^');
+    }
+
+    if (response.ok) {
+		switch (response.data.status) {
+			case false:
+				yield put(RegionActions.regionFailure('Username atau Password Salah !'));
+				break;
+			case true:
+                yield put(RegionActions.regionSuccess(response.data.data));
+                console.log(response.data.status);
+				break;
+			default:
+				yield put(RegionActions.regionFailure('Unknown responseType'));
+				break;
+		}
+	} 
+}
+

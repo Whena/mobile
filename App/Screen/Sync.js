@@ -1,10 +1,18 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import ProgressCircle from 'react-native-progress-circle'
 import { Container, Content } from 'native-base'
+
+import ProgressCircle from 'react-native-progress-circle'
 import Colors from '../Constant/Colors';
 
-export default class SyncScreen extends React.Component {
+import RegionAction from '../Redux/RegionRedux';
+import { connect } from 'react-redux';
+import { isNil } from 'ramda';
+
+const IMEI = require('react-native-imei');
+
+
+class SyncScreen extends React.Component {
 
     static navigationOptions = ({ navigation }) => ({
         headerStyle: {
@@ -20,6 +28,28 @@ export default class SyncScreen extends React.Component {
         headerTintColor: '#fff'
     })
 
+    constructor() {
+        super();
+        this.state = {
+            progressValue: 0.00,
+            tglMobileSync: "",
+            tabelUpdate: '',
+            imei: ''
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        // if (!isNil(newProps.auth)) {
+        //     this.setState({ fetching: newProps.auth.fetching });
+        // }
+
+        // this.props.regionPost();
+
+        // if (!isNil(newProps.auth.user)) {
+        //     this.props.regionPost();
+        // }
+    }
+
     _insertTM_Region(data) {
         var dataTable = {
             NIK: data.NIK,
@@ -28,6 +58,25 @@ export default class SyncScreen extends React.Component {
         };
 
         TaskServices.saveData('TM_REGION', dataTable);
+    }
+
+    _get_IMEI_Number() {
+        var IMEI_2 = IMEI.getImei();
+        this.setState({ imei: IMEI_2 });
+        return IMEI_2;
+    }
+
+    _onSync(tglMobileSync, tabelUpdate) {
+        var Imei = this._get_IMEI_Number();
+        console.log("Imei Sync : " + Imei)
+
+        this.props.regionPost({
+            tglMobileSync: tglMobileSync,
+            tabelUpdate: tabelUpdate,
+            imei: Imei
+        });
+
+        this.props.regionPost();
     }
 
     render() {
@@ -74,7 +123,7 @@ export default class SyncScreen extends React.Component {
                     </View>
 
                     <View style={{ flex: 1, marginTop: 48 }}>
-                        <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('TulisKeterangan')}>
+                        <TouchableOpacity style={styles.button} onPress={() => this._onSync("2018-12-17 00:00:00", "hectare-statement/region")}>
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
                     </View>
@@ -83,6 +132,18 @@ export default class SyncScreen extends React.Component {
         );
     }
 }
+
+const mapStateToProps = state => {
+    return { region: state.region };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        regionPost: () => dispatch(RegionAction.regionPost())
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SyncScreen);
 
 const styles = StyleSheet.create({
     section: {

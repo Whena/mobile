@@ -25,6 +25,7 @@
     "react-native-custom-radio-group": "^1.0.1",
     "react-native-dash": "0.0.9",
     "react-native-device-info": "^0.24.3",
+    "react-native-dialog": "^5.5.0",
     "react-native-fast-image": "^5.1.1",
     "react-native-floating-action": "^1.13.0",
     "react-native-fs": "^2.12.1",

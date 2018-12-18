@@ -11,6 +11,7 @@ export const reducers = combineReducers({
 	auth: require('./AuthRedux').reducer,
 	category: require('./CategoryRedux').reducer,	
 	contact: require('./ContactRedux').reducer,
+	region:require('./RegionRedux').reducer,
 	network
 });
 
@@ -22,7 +23,6 @@ export default () => {
 		const persistConfig = ReduxPersist.storeConfig;
 		finalReducers = persistReducer(persistConfig, reducers);
 	}
-
 
 	let { store, sagasManager, sagaMiddleware } = configureStore(finalReducers, rootSaga);
 

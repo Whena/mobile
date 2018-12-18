@@ -17,6 +17,11 @@ const create = () => {
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
+    const postRegion =  body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
     //GET
     const getCategory = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
@@ -26,6 +31,9 @@ const create = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/contacts')
     }
+
+
+
     const getRegion = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/mobile-sync/hectare-statement/region')
@@ -37,7 +45,8 @@ const create = () => {
         login,
         getCategory,
         getContact,
-        getRegion
+        getRegion,
+        postRegion
     };
 };
 

@@ -8,7 +8,7 @@ const TaskServices = {
 
   saveData: function (table, obj) {
     var saved = null;
-    console.log('save(): ' + table + ' ' + JSON.stringify(obj));
+    console.log('save() : ' + table + ' ' + JSON.stringify(obj));
     RealmSchemas.write(() => {
       saved = RealmSchemas.create(table, obj, true);
     })

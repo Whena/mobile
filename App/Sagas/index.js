@@ -16,7 +16,7 @@ import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
-import { getRegion } from './RegionSagas'
+import { getRegion, postRegion } from './RegionSagas'
 import TaskServices from '../Database/TaskServices'
 
 /* ------------- API ------------- */
@@ -37,6 +37,7 @@ export default function* root() {
 		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, miApi),
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
 		takeLatest(RegionTypes.REGION_REQUEST, getRegion, miApi),
+		takeLatest(RegionTypes.REGION_POST, postRegion, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);
