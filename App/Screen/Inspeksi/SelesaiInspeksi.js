@@ -33,7 +33,12 @@ class SelesaiInspeksi extends React.Component {
             kondisiBaris1,
             kondisiBaris2,
             dataUsual,
-            jmlBaris : ''
+            jmlBaris : '',
+            nilaiPiringan: '',
+            nilaiSarkul: '',
+            nilaiTph: '',
+            nilaiGwg: '',
+            nilaiPrun: '',
         };
     }
 
@@ -53,14 +58,82 @@ class SelesaiInspeksi extends React.Component {
     };
 
     loadData(){
-        let baris = [];
-        let dataBaris = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE)
+        let dataBaris = Taskservices.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE)
+        let barisPembagi = dataBaris.length;
         let str = '';
-        for(var i=0; dataBaris.length; i++){
-            
-            baris.push(dataBaris[i].VALUE);
+        for(var i=0; dataBaris.length; i++){ 
+            if(i=0){
+                str = dataBaris.length + ' ('+dataBaris[i].VALUE
+            } else if (i > 0){
+                str = str + ','+ dataBaris[i].VALUE;
+            }         
         }
+        if(str !== ''){
+            str = str+')';
+        }
+        this.setState({jmlBaris: str});
+        
+        let bobotPiringan = 4;
+        let bobotSarkul = 5;
+        let bobotTph = 1;
+        let bobotGwg = 3;
+        let bobotPrun = 2;
 
+        var piringan = TaskServices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], ['CC0007', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);        
+        var sarkul = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0008', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var tph = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0009', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var gawangan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0010', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var prunning = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0011', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);   
+
+        var jmlNilaiPiringan = this.getTotalNilaiComponent(piringan);
+        var jmlNilaiSarkul = this.getTotalNilaiComponent(sarkul);
+        var jmlNilaiTph = this.getTotalNilaiComponent(tph);
+        var jmlNilaiGwg = this.getTotalNilaiComponent(gawangan);
+        var jmlNilaiPrun = this.getTotalNilaiComponent(prunning);
+
+        var avg_piringan = jmlNilaiPiringan/barisPembagi;
+        var avg_sarkul = jmlNilaiSarkul/barisPembagi;
+        var avg_tph = jmlNilaiTph/barisPembagi;
+        var avg_gwg = jmlNilaiGwg/barisPembagi;
+        var avg_prun = jmlNilaiPrun/barisPembagi;
+
+        var nilaiPiringan =  this.getKonversiNilaiKeHuruf(avg_piringan);
+        var nilaiSarkul =  this.getKonversiNilaiKeHuruf(avg_sarkul);
+        var nilaiTph =  this.getKonversiNilaiKeHuruf(avg_tph);
+        var nilaiGwg =  this.getKonversiNilaiKeHuruf(avg_gwg);
+        var nilaiPrun =  this.getKonversiNilaiKeHuruf(avg_prun);
+
+        this.setState({
+            nilaiPiringan: nilaiPiringan,
+            nilaiSarkul: nilaiSarkul,
+            nilaiTph: nilaiTph,
+            nilaiGwg: nilaiGwg,
+            nilaiPrun: nilaiPrun
+        })
+    }
+
+    getTotalNilaiComponent(allComponent){
+        var val = 0;
+        for(var i=0; i < allComponent.length; i++){
+            if(i==0){
+                val = this.getKonversiNilai(allComponent[i].VALUE);
+            }else{
+                val = val + this.getKonversiNilai(allComponent[i].VALUE);
+            }
+        }
+        return val;
+    }
+
+    getKonversiNilaiKeHuruf(param){
+        if(param > 2.5 && param <= 3){
+            return 'A';
+        }else if(param > 2 && param <= 2.5){
+            return 'B';
+        }else if(param > 1 && param <= 2){
+            return 'C';
+        }else if(param >= 0 && param <= 1){
+            return 'F';
+        }
     }
 
     componentDidMount(){
@@ -76,7 +149,7 @@ class SelesaiInspeksi extends React.Component {
                         <View style={styles.lineDivider} />
                         <View style={styles.sectionRow}>
                             <View >
-                                <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>2 (Baris 15, 25)</Text>
+                                <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.jmlBaris}</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Jumlah Baris</Text>
                             </View>
                             <View >
@@ -94,23 +167,23 @@ class SelesaiInspeksi extends React.Component {
                         <View style={styles.lineDivider} />
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Piringan</Text>
-                            <Text style={styles.textContent}>A/4</Text>
+                            <Text style={styles.textContent}>{this.state.nilaiPiringan}</Text>
                         </View>
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pasar Pikul</Text>
-                            <Text style={styles.textContent}>B/3</Text>
+                            <Text style={styles.textContent}>{this.state.nilaiSarkul}</Text>
                         </View>
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>TPH</Text>
-                            <Text style={styles.textContent}>A</Text>
+                            <Text style={styles.textContent}>{this.state.nilaiTph}</Text>
                         </View>
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Gawangan</Text>
-                            <Text style={styles.textContent}>B/3</Text>
+                            <Text style={styles.textContent}>{this.state.nilaiGwg}</Text>
                         </View>
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Prunning</Text>
-                            <Text style={styles.textContent}>C</Text>
+                            <Text style={styles.textContent}>{this.state.nilaiPrun}</Text>
                         </View>
                     </View>
 

@@ -36,7 +36,8 @@ class TakePhotoBaris extends Component {
     let inspeksiHeader = R.clone(params.inspeksiHeader);
     let dataUsual = R.clone(params.dataUsual);
     let from = R.clone(params.from);
-    let statusBlok = R.clone(params.statusBlok);
+    let statusBlok = R.clone(params.statusBlok);    
+    let waktu = R.clone(params.waktu);
 
     // console.log(dataUsual)
 
@@ -51,7 +52,8 @@ class TakePhotoBaris extends Component {
       dataUsual,
       from,
       pathCache:'',
-      statusBlok
+      statusBlok,
+      waktu
     };
   }
 

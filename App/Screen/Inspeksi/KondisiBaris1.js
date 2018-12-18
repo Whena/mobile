@@ -25,7 +25,8 @@ class KondisiBaris1 extends Component{
         let fotoBaris = R.clone(params.fotoBaris);
         let inspeksiHeader = R.clone(params.inspeksiHeader);
         let dataUsual = R.clone(params.dataUsual);
-        let statusBlok = R.clone(params.statusBlok);
+        let statusBlok = R.clone(params.statusBlok);   
+        let waktu = R.clone(params.waktu);
 
         this.state = {  
             jumlahPokok : '0',    
@@ -37,7 +38,8 @@ class KondisiBaris1 extends Component{
             fotoBaris,
             inspeksiHeader,
             dataUsual,
-            statusBlok
+            statusBlok,
+            waktu
         }
     }
 
@@ -199,6 +201,7 @@ class KondisiBaris1 extends Component{
                     sum = parseInt(this.state.brondolTPH)-1;
                     this.setState({brondolTPH: sum.toString()})       
                 }
+                break;
             case 'PTP':
                 if(parseInt(this.state.pokokTdkPupuk)>0){
                     sum = parseInt(this.state.pokokTdkPupuk)-1;

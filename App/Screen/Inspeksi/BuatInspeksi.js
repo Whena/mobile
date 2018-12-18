@@ -167,8 +167,12 @@ class BuatInspeksiRedesign extends Component{
         }
 
         this.setState({inspectionCode:blok_inspection_code_h, showConfirm:false})
-        // this.props.navigation.navigate('KondisiBaris2', {inspeksiHeader:modelInspeksiH, dataUsual: params, statusBlok: param});
-        this.props.navigation.navigate('TakeFotoBaris', {inspeksiHeader:modelInspeksiH, dataUsual: params, statusBlok: param});
+        this.props.navigation.navigate('TakeFotoBaris', {
+            inspeksiHeader:modelInspeksiH, 
+            dataUsual: params, 
+            statusBlok: param,
+            waktu : getTodayDate('YYYY-MM-DD  HH:mm:ss')
+        });
     }
 
     render(){

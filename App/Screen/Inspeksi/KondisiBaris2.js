@@ -24,7 +24,8 @@ class KondisiBaris2 extends Component{
         // let trackInspeksi = R.clone(params.trackInspeksi);
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let dataUsual = R.clone(params.dataUsual);
-        let statusBlok = R.clone(params.statusBlok);
+        let statusBlok = R.clone(params.statusBlok);   
+        let waktu = R.clone(params.waktu);
 
         this.state = { 
             
@@ -108,6 +109,7 @@ class KondisiBaris2 extends Component{
             dataUsual, 
             // kondisiBaris2:[]
             statusBlok,
+            waktu,
 
             showPiringan: false,
             showSarkul: false,

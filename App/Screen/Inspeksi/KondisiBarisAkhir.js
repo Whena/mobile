@@ -171,24 +171,11 @@ class KondisiBarisAkhir extends Component{
         var gawangan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0010', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
         var prunning = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0011', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);        
         
-
-        console.log(JSON.stringify(piringan))
-        console.log(JSON.stringify(sarkul))
-        console.log(JSON.stringify(tph))
-        console.log(JSON.stringify(gawangan))
-        console.log(JSON.stringify(prunning))
-
         var jmlNilaiPiringan = this.getTotalNilaiComponent(piringan);
         var jmlNilaiSarkul = this.getTotalNilaiComponent(sarkul);
         var jmlNilaiTph = this.getTotalNilaiComponent(tph);
         var jmlNilaiGwg = this.getTotalNilaiComponent(gawangan);
         var jmlNilaiPrun = this.getTotalNilaiComponent(prunning);
-
-        console.log(jmlNilaiPiringan)
-        console.log(jmlNilaiSarkul)
-        console.log(jmlNilaiTph)
-        console.log(jmlNilaiGwg)
-        console.log(jmlNilaiPrun)
 
         var avg_piringan = jmlNilaiPiringan/barisPembagi;
         var avg_sarkul = jmlNilaiSarkul/barisPembagi;
@@ -215,7 +202,8 @@ class KondisiBarisAkhir extends Component{
             kondisiBaris1: this.state.kondisiBaris1, 
             kondisiBaris2: this.state.kondisiBaris2, 
             dataUsual: this.state.dataUsual,
-            statusBlok:this.state.statusBlok});
+            statusBlok:this.state.statusBlok
+        });
             
         // this.props.navigation.navigate('SelesaiInspeksi');
         // this.props.navigation.goBack(null);
@@ -354,8 +342,13 @@ class KondisiBarisAkhir extends Component{
         const navigation = this.props.navigation;
         const resetAction = StackActions.reset({
             index: 0,            
-			actions: [NavigationActions.navigate({ routeName: screenName, params : { dataUsual : params, inspeksiHeader: inspeksiH, from: 'kondisiBaris', 
-            statusBlok:this.state.statusBlok } })]
+			actions: [NavigationActions.navigate({ routeName: screenName, params : { 
+                dataUsual : params, 
+                inspeksiHeader: inspeksiH, 
+                from: 'kondisiBaris', 
+                waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss'),
+                statusBlok:this.state.statusBlok } 
+            })]
         });
         navigation.dispatch(resetAction);
     }
