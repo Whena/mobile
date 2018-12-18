@@ -15,13 +15,13 @@ export function* getRegion(api, action) {
     console.log(response.data.data.insert.length);
     console.log(response.data.data.update.length);
 
-    if (response.data.data.delete.length != 0) {
+    if (response.data.data.delete.length > 0) {
         yield put(RegionActions.regionSuccess(response.data));
         response.data.data.delete.map(item => {
             TaskServices.deleteTmRegionByRegionCode(item.REGION_CODE)
         })
 
-        console.log("Delete : " + TaskServices.getAllData('TM_REGION'));
+        console.log("Delete Region : " + TaskServices.getAllData('TM_REGION'));
     }
     else if (response.data.data.insert.length > 0) {
         yield put(RegionActions.regionSuccess(response.data));
@@ -29,7 +29,7 @@ export function* getRegion(api, action) {
             TaskServices.saveData('TM_REGION', item);
         })
 
-        console.log(TaskServices.getAllData('TM_REGION'));
+        console.log("Insert Region : " + TaskServices.getAllData('TM_REGION'));
     }
     else if (response.data.data.update.length > 0) {
         yield put(RegionActions.regionSuccess(response.data));
@@ -39,7 +39,7 @@ export function* getRegion(api, action) {
             TaskServices.saveData(item.REGION_CODE, data);
         })
 
-        console.log("Update : " + TaskServices.getAllData('TM_REGION'));
+        console.log("Update Region : " + TaskServices.getAllData('TM_REGION'));
     }
     else {
         yield put(RegionActions.regionFailure(response.problem));
@@ -48,27 +48,21 @@ export function* getRegion(api, action) {
 
 export function* postRegion(api, action) {
     const { data } = action;
-    console.log("Data Param POST REGION : " + data);
     const response = yield call(api.postRegion, data);
 
     if (typeof atob !== 'undefined') {
         console.log(response);
-        console.log('^^^ POST REGION RETURN ^^^');
+        console.log('^^^ POST REGION ^^^');
     }
 
     if (response.ok) {
-		switch (response.data.status) {
-			case false:
-				yield put(RegionActions.regionFailure('Username atau Password Salah !'));
-				break;
-			case true:
-                yield put(RegionActions.regionSuccess(response.data.data));
-                console.log(response.data.status);
-				break;
-			default:
-				yield put(RegionActions.regionFailure('Unknown responseType'));
-				break;
-		}
-	} 
+        yield put(RegionActions.regionSuccess({ payload: response.data, change: true }));
+    } else {
+        yield put(RegionActions.regionFailure({
+            path: 'Complete Post Region',
+            message: response.data.message ? response.data.message : '',
+            response
+        }));
+    }
 }
 

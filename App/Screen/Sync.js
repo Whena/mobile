@@ -69,14 +69,10 @@ class SyncScreen extends React.Component {
     _onSync(tglMobileSync, tabelUpdate) {
         var Imei = this._get_IMEI_Number();
         console.log("Imei Sync : " + Imei)
-
         this.props.regionPost({
-            tglMobileSync: tglMobileSync,
-            tabelUpdate: tabelUpdate,
-            imei: Imei
+            TGL_MOBILE_SYNC: tglMobileSync,
+            TABEL_UPDATE: tabelUpdate
         });
-
-        this.props.regionPost();
     }
 
     render() {
@@ -134,12 +130,14 @@ class SyncScreen extends React.Component {
 }
 
 const mapStateToProps = state => {
-    return { region: state.region };
+    return {
+        region: state.region
+    };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        regionPost: () => dispatch(RegionAction.regionPost())
+        regionPost: obj => dispatch(RegionAction.regionPost(obj))
     };
 };
 
