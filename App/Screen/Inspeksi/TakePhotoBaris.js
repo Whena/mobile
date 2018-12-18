@@ -36,6 +36,7 @@ class TakePhotoBaris extends Component {
     let inspeksiHeader = R.clone(params.inspeksiHeader);
     let dataUsual = R.clone(params.dataUsual);
     let from = R.clone(params.from);
+    let statusBlok = R.clone(params.statusBlok);
 
     // console.log(dataUsual)
 
@@ -49,12 +50,14 @@ class TakePhotoBaris extends Component {
       inspeksiHeader,
       dataUsual,
       from,
-      pathCache:''
+      pathCache:'',
+      statusBlok
     };
   }
 
   componentDidMount(){
     this.setParameter();
+    console.log(this.state.statusBlok)
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
@@ -92,11 +95,13 @@ class TakePhotoBaris extends Component {
     var UNIQ_CODE = getUUID();
     UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
     var imgCode = 'P'+this.state.dataUsual.NIK+UNIQ_CODE;
+    console.log(imgCode)
 
     UNIQ_CODE = getUUID();
     UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
     var trCode = 'I'+this.state.dataUsual.NIK+UNIQ_CODE;
     var imageName = imgCode+'.jpg';
+    console.log(trCode)
     
     var image = {
         IMAGE_CODE: imgCode,
@@ -161,7 +166,7 @@ class TakePhotoBaris extends Component {
   insertDB(){
     RNFS.unlink(this.state.pathCache);
     this.props.navigation.navigate('KondisiBaris1',
-    {fotoBaris:this.state.dataModel, inspeksiHeader: this.state.inspeksiHeader, dataUsual: this.state.dataUsual});
+    {fotoBaris:this.state.dataModel, inspeksiHeader: this.state.inspeksiHeader, dataUsual: this.state.dataUsual, statusBlok: this.state.statusBlok});
   }
 
   renderImage() {

@@ -24,6 +24,7 @@ class KondisiBaris2 extends Component{
         // let trackInspeksi = R.clone(params.trackInspeksi);
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let dataUsual = R.clone(params.dataUsual);
+        let statusBlok = R.clone(params.statusBlok);
 
         this.state = { 
             
@@ -68,6 +69,20 @@ class KondisiBaris2 extends Component{
             btnTIPAKurang: BtnStyles.btnBiasa,
             btnTIPASedang: BtnStyles.btnBiasa,
             btnTIPABaik: BtnStyles.btnBiasa,
+
+            //KASTRASI
+            KASTRASI:'',
+            btnKastrasiRehab: BtnStyles.btnBiasa,
+            btnKastrasiKurang: BtnStyles.btnBiasa,
+            btnKastrasiSedang: BtnStyles.btnBiasa,
+            btnKastrasiBaik: BtnStyles.btnBiasa,
+
+            //SANITASI
+            SANITASI:'',
+            btnSanitasiRehab: BtnStyles.btnBiasa,
+            btnSanitasiKurang: BtnStyles.btnBiasa,
+            btnSanitasiSedang: BtnStyles.btnBiasa,
+            btnSanitasiBaik: BtnStyles.btnBiasa,
             
             //SISTEM PENABURAN
             PENABUR:'',
@@ -92,11 +107,70 @@ class KondisiBaris2 extends Component{
             kondisiBaris1,
             dataUsual, 
             // kondisiBaris2:[]
+            statusBlok,
+
+            showPiringan: false,
+            showSarkul: false,
+            showTph: false,
+            showGwg: false,
+            showPrun: false,
+            showTipa: false,
+            showKastrasi: false,
+            showSanitasi: false,
  
         }
     }
 
     componentDidMount(){
+        this.hideAndShow()
+    }
+
+    hideAndShow(){
+        if(this.state.statusBlok == 'TM'){
+            this.setState({
+                showPiringan: true,
+                showSarkul: true,
+                showTph: true,
+                showGwg: true,
+                showPrun: true,
+                showTipa: true,
+                showKastrasi: false,
+                showSanitasi: false,
+            });
+        }else if(this.state.statusBlok == 'TBM1'){
+            this.setState({
+                showPiringan: true,
+                showSarkul: true,
+                showTph: false,
+                showGwg: true,
+                showPrun: false,
+                showTipa: false,
+                showKastrasi: false,
+                showSanitasi: false,
+            });
+        }else if(this.state.statusBlok == 'TBM2'){
+            this.setState({
+                showPiringan: true,
+                showSarkul: true,
+                showTph: false,
+                showGwg: true,
+                showPrun: false,
+                showTipa: false,
+                showKastrasi: false,
+                showSanitasi: false,
+            });
+        }else if(this.state.statusBlok == 'TBM3'){
+            this.setState({
+                showPiringan: true,
+                showSarkul: true,
+                showTph: true,
+                showGwg: true,
+                showPrun: false,
+                showTipa: true,
+                showKastrasi: true,
+                showSanitasi: true,
+            });
+        }
     }
 
     changeColor(param, value){        
@@ -109,13 +183,13 @@ class KondisiBaris2 extends Component{
         }else if(param == 'PIRINGAN' && value == 'BAIK'){
             this.setState({btnPiringanRehab: BtnStyles.btnBiasa, btnPiringanKurang:BtnStyles.btnBiasa, btnPiringanSedang:BtnStyles.btnBiasa, btnPiringanBaik:BtnStyles.btnBaik, piringan: 'BAIK'});
         }else if(param == 'SARKUL' && value == 'REHAB'){
-            this.setState({btnSarkulRehab: BtnStyles.btnRehab, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnBiasa, btnSarKulBaik:BtnStyles.btnBiasa, sarKul: 'REHAB'});
+            this.setState({btnSarkulRehab: BtnStyles.btnRehab, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnBiasa, btnSarkulBaik:BtnStyles.btnBiasa, sarKul: 'REHAB'});
         }else if(param == 'SARKUL' && value == 'KURANG'){
-            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnKurang, btnSarkulSedang:BtnStyles.btnBiasa, btnSarKulBaik:BtnStyles.btnBiasa, sarKul: 'KURANG'});
+            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnKurang, btnSarkulSedang:BtnStyles.btnBiasa, btnSarkulBaik:BtnStyles.btnBiasa, sarKul: 'KURANG'});
         }else if(param == 'SARKUL' && value == 'SEDANG'){
-            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnSedang, btnSarKulBaik:BtnStyles.btnBiasa, sarKul: 'SEDANG'});
+            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnSedang, btnSarkulBaik:BtnStyles.btnBiasa, sarKul: 'SEDANG'});
         }else if(param == 'SARKUL' && value == 'BAIK'){
-            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnBiasa, btnSarKulBaik:BtnStyles.btnBaik, sarKul: 'BAIK'});
+            this.setState({btnSarkulRehab: BtnStyles.btnBiasa, btnSarkulKurang:BtnStyles.btnBiasa, btnSarkulSedang:BtnStyles.btnBiasa, btnSarkulBaik:BtnStyles.btnBaik, sarKul: 'BAIK'});
         }else if(param == 'TPH' && value == 'REHAB'){
             this.setState({btnTPHRehab: BtnStyles.btnRehab, btnTPHKurang:BtnStyles.btnBiasa, btnTPHSedang:BtnStyles.btnBiasa, btnTPHBaik:BtnStyles.btnBiasa, TPH: 'REHAB'});
         }else if(param == 'TPH' && value == 'KURANG'){
@@ -165,13 +239,32 @@ class KondisiBaris2 extends Component{
         }else if(param == 'PUPUK' && value == 'BAIK'){
             this.setState({btnPUPUKRehab: BtnStyles.btnBiasa, btnPUPUKKurang:BtnStyles.btnBiasa, btnPUPUKSedang:BtnStyles.btnBiasa, btnPUPUKBaik:BtnStyles.btnBaik, PUPUK: 'BAIK'});
         }
+
+        else if(param == 'KAS' && value == 'REHAB'){
+            this.setState({btnKastrasiRehab: BtnStyles.btnRehab, btnKastrasiKurang:BtnStyles.btnBiasa, btnKastrasiSedang:BtnStyles.btnBiasa, btnKastrasiBaik:BtnStyles.btnBiasa, KASTRASI: 'REHAB'});
+        }else if(param == 'KAS' && value == 'KURANG'){
+            this.setState({btnKastrasiRehab: BtnStyles.btnBiasa, btnKastrasiKurang:BtnStyles.btnKurang, btnKastrasiSedang:BtnStyles.btnBiasa, btnKastrasiBaik:BtnStyles.btnBiasa, KASTRASI: 'KURANG'});
+        }else if(param == 'KAS' && value == 'SEDANG'){
+            this.setState({btnKastrasiRehab: BtnStyles.btnBiasa, btnKastrasiKurang:BtnStyles.btnBiasa, btnKastrasiSedang:BtnStyles.btnSedang, btnKastrasiBaik:BtnStyles.btnBiasa, KASTRASI: 'SEDANG'});
+        }else if(param == 'KAS' && value == 'BAIK'){
+            this.setState({btnKastrasiRehab: BtnStyles.btnBiasa, btnKastrasiKurang:BtnStyles.btnBiasa, btnKastrasiSedang:BtnStyles.btnBiasa, btnKastrasiBaik:BtnStyles.btnBaik, KASTRASI: 'BAIK'});
+        }
+
+        else if(param == 'SANIT' && value == 'REHAB'){
+            this.setState({btnSanitasiRehab: BtnStyles.btnRehab, btnSanitasiKurang:BtnStyles.btnBiasa, btnSanitasiSedang:BtnStyles.btnBiasa, btnSanitasiBaik:BtnStyles.btnBiasa, SANITASI: 'REHAB'});
+        }else if(param == 'SANIT' && value == 'KURANG'){
+            this.setState({btnSanitasiRehab: BtnStyles.btnBiasa, btnSanitasiKurang:BtnStyles.btnKurang, btnSanitasiSedang:BtnStyles.btnBiasa, btnSanitasiBaik:BtnStyles.btnBiasa, SANITASI: 'KURANG'});
+        }else if(param == 'SANIT' && value == 'SEDANG'){
+            this.setState({btnSanitasiRehab: BtnStyles.btnBiasa, btnSanitasiKurang:BtnStyles.btnBiasa, btnSanitasiSedang:BtnStyles.btnSedang, btnSanitasiBaik:BtnStyles.btnBiasa, SANITASI: 'SEDANG'});
+        }else if(param == 'SANIT' && value == 'BAIK'){
+            this.setState({btnSanitasiRehab: BtnStyles.btnBiasa, btnSanitasiKurang:BtnStyles.btnBiasa, btnSanitasiSedang:BtnStyles.btnBiasa, btnSanitasiBaik:BtnStyles.btnBaik, SANITASI: 'BAIK'});
+        }
     }
     
 
     onSlideRight = () => {
         //perform Action on slide success.
         this.validation()
-        // this.navigateScreen('BuatInspeksi');
     };
 
     validation(){
@@ -190,11 +283,6 @@ class KondisiBaris2 extends Component{
         }else{
             this.insertDB();
         }
-        // else if(this.state.PENABUR == ''){
-
-        // }else if(this.state.PUPUK == ''){
-
-        // }
     }
 
     insertDB(){
@@ -305,7 +393,8 @@ class KondisiBaris2 extends Component{
             // trackInspeksi: this.state.trackInspeksi,
             kondisiBaris1: this.state.kondisiBaris1, 
             kondisiBaris2: listBaris2, 
-            dataUsual: this.state.dataUsual});    
+            dataUsual: this.state.dataUsual,
+            statusBlok:this.state.statusBlok});    
     }
 
     navigateScreen(screenName) {
@@ -380,6 +469,7 @@ class KondisiBaris2 extends Component{
                     <Text>Perawatan</Text>
                     <View style={{height: 1, backgroundColor:'#989898', marginBottom:5, marginTop:5}}/>
 
+                    {this.state.showPiringan && 
                     <View style={{marginTop:15}}>
                         <Text style={{color:'grey'}}>Piringan</Text>
                         <View style={{flexDirection:'row', marginTop:10}}>
@@ -400,8 +490,9 @@ class KondisiBaris2 extends Component{
                                 <Text style={styles.buttonText}>Baik</Text>
                             </TouchableOpacity>
                         </View>                            
-                    </View>
+                    </View>}
 
+                    {this.state.showSarkul && 
                     <View style={{marginTop:15}}>
                         <Text style={{color:'grey'}}>Pasar Pikul</Text>
                         <View style={{flexDirection:'row', marginTop:10}}>
@@ -422,10 +513,11 @@ class KondisiBaris2 extends Component{
                                 <Text style={styles.buttonText}>Baik</Text>
                             </TouchableOpacity>
                         </View>                            
-                    </View>
+                    </View>}
 
                     {/* <SwitchSelector options={options} initial={0} borderWidth={2} borderColor={Colors.brand} onPress={value => console.log(`Call onPress with value: ${value}`)} /> */}
 
+                    {this.state.showTph && 
                     <View style={{marginTop:15}}>
                         <View style={{flex:1, flexDirection:'row'}}>
                             <Text style={{color:'grey'}}>TPH</Text>
@@ -455,8 +547,9 @@ class KondisiBaris2 extends Component{
                                 </TouchableOpacity>
                             </View>     
                         }                        
-                    </View>
+                    </View>}
 
+                    {this.state.showGwg && 
                     <View style={{marginTop:15}}>
                         <Text style={{color:'grey'}}>Gawangan</Text>
                         <View style={{flexDirection:'row', marginTop:10}}>
@@ -477,8 +570,9 @@ class KondisiBaris2 extends Component{
                                 <Text style={styles.buttonText}>Baik</Text>
                             </TouchableOpacity>
                         </View>                            
-                    </View>
+                    </View>}
 
+                    {this.state.showPrun &&
                     <View style={{marginTop:15}}>
                         <Text style={{color:'grey'}}>Prunning</Text>
                         <View style={{flexDirection:'row', marginTop:10}}>
@@ -499,8 +593,9 @@ class KondisiBaris2 extends Component{
                                 <Text style={styles.buttonText}>Baik</Text>
                             </TouchableOpacity>
                         </View>                        
-                    </View>
+                    </View>}
 
+                    {this.state.showTipa && 
                     <View style={{marginTop:15}}>
                         <View style={{flex:1, flexDirection:'row'}}>
                             <Text style={{color:'grey'}}>Titi Panen</Text>
@@ -530,7 +625,54 @@ class KondisiBaris2 extends Component{
                                 </TouchableOpacity>
                             </View> 
                         }                          
-                    </View>
+                    </View>}
+
+
+                    {this.state.showKastrasi && 
+                    <View style={{marginTop:15}}>
+                        <Text style={{color:'grey'}}>Kastrasi</Text>
+                        <View style={{flexDirection:'row', marginTop:10}}>
+                            <TouchableOpacity style={this.state.btnKastrasiRehab}
+                                onPress={() => this.changeColor('KAS','REHAB')}>
+                                <Text style={styles.buttonText}>Rehab</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnKastrasiKurang}
+                                onPress={() => this.changeColor('KAS','KURANG')}>
+                                <Text style={styles.buttonText}>Kurang</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnKastrasiSedang}
+                                onPress={() => this.changeColor('KAS','SEDANG')}>
+                                <Text style={styles.buttonText}>Sedang</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnKastrasiBaik}
+                                onPress={() => this.changeColor('KAS','BAIK')}>
+                                <Text style={styles.buttonText}>Baik</Text>
+                            </TouchableOpacity>
+                        </View>                        
+                    </View>}
+
+                    {this.state.showSanitasi && 
+                    <View style={{marginTop:15}}>
+                        <Text style={{color:'grey'}}>Sanitasi</Text>
+                        <View style={{flexDirection:'row', marginTop:10}}>
+                            <TouchableOpacity style={this.state.btnSanitasiRehab}
+                                onPress={() => this.changeColor('SANIT','REHAB')}>
+                                <Text style={styles.buttonText}>Rehab</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnSanitasiKurang}
+                                onPress={() => this.changeColor('SANIT','KURANG')}>
+                                <Text style={styles.buttonText}>Kurang</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnSanitasiSedang}
+                                onPress={() => this.changeColor('SANIT','SEDANG')}>
+                                <Text style={styles.buttonText}>Sedang</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={this.state.btnSanitasiBaik}
+                                onPress={() => this.changeColor('SANIT','BAIK')}>
+                                <Text style={styles.buttonText}>Baik</Text>
+                            </TouchableOpacity>
+                        </View>                        
+                    </View>}
                 </View>
 
                 

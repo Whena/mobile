@@ -191,6 +191,23 @@ const TaskServices = {
     });
   },
 
+  findByWithList: function(table, listWhereClause, listValueClause){
+    let list = RealmSchemas.objects(table);
+    let str = '';
+
+    for(var i= 0; i < listWhereClause.length; i++){
+        if(i == 0){
+            str = listWhereClause[i] + '= "'+listValueClause[i]+'" '
+        }
+        else{
+            str = str + ' AND ' +listWhereClause[i] + '= "'+listValueClause[i]+'" '
+        }
+    }
+    // console.log(str)
+    return list.filtered(str);
+    // return list.filtered(param+' == \"'+ value +'\" AND BLOCK_INSPECTION_CODE == \"'+blokInsCode+ '\"');
+  },
+
 };
 
 export default TaskServices;

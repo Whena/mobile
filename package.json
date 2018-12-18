@@ -9,6 +9,7 @@
   "dependencies": {
     "@mapbox/polyline": "^1.0.0",
     "apisauce": "^1.0.0",
+    "geolib": "^2.0.24",
     "moment": "^2.22.2",
     "native-base": "^2.8.1",
     "prop-types": "^15.6.2",
@@ -25,6 +26,7 @@
     "react-native-custom-radio-group": "^1.0.1",
     "react-native-dash": "0.0.9",
     "react-native-device-info": "^0.24.3",
+    "react-native-dialog": "^5.5.0",
     "react-native-fast-image": "^5.1.1",
     "react-native-floating-action": "^1.13.0",
     "react-native-fs": "^2.12.1",

@@ -10,6 +10,7 @@ import { AuthTypes } from '../Redux/AuthRedux';
 import { CategoryTypes } from '../Redux/CategoryRedux';
 import { ContactTypes } from '../Redux/ContactRedux';
 import { RegionTypes } from '../Redux/RegionRedux';
+import { InspeksiTypes } from '../Redux/InspeksiRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
@@ -17,6 +18,7 @@ import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
 import { getRegion } from './RegionSagas'
+import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas'
 import TaskServices from '../Database/TaskServices'
 
 /* ------------- API ------------- */
@@ -37,6 +39,10 @@ export default function* root() {
 		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, miApi),
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
 		takeLatest(RegionTypes.REGION_REQUEST, getRegion, miApi),
+
+		
+		takeLatest(InspeksiTypes.POST_INSPEKSI, postInspeksiHeader, miApi),
+		takeLatest(InspeksiTypes.POST_DETAIL_INSPEKSI, postInspeksiDetail, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

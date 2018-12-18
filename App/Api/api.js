@@ -17,6 +17,17 @@ const create = () => {
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
+    //insepksi
+    const postInspeksiHeader = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
+        api.post('/inspection-header', body);
+    };
+    const postInspeksiDetail = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
+        api.post('/inspection-detail', body);
+    }
+
+
     //GET
     const getCategory = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
@@ -37,7 +48,9 @@ const create = () => {
         login,
         getCategory,
         getContact,
-        getRegion
+        getRegion,
+        postInspeksiHeader,
+        postInspeksiDetail
     };
 };
 
