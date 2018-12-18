@@ -17,13 +17,11 @@ const create = () => {
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
-<<<<<<< HEAD
     const postRegion =  body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.post('/mobile-sync', body);
     }
 
-=======
     //insepksi
     const postInspeksiHeader = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
@@ -35,7 +33,6 @@ const create = () => {
     }
 
 
->>>>>>> 9940a5e84025b9dc0ca0fbb8a836fd5fc5da8346
     //GET
     const getCategory = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
@@ -60,12 +57,9 @@ const create = () => {
         getCategory,
         getContact,
         getRegion,
-<<<<<<< HEAD
-        postRegion
-=======
+        postRegion,
         postInspeksiHeader,
         postInspeksiDetail
->>>>>>> 9940a5e84025b9dc0ca0fbb8a836fd5fc5da8346
     };
 };
 

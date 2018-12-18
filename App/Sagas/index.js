@@ -17,12 +17,8 @@ import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
-<<<<<<< HEAD
 import { getRegion, postRegion } from './RegionSagas'
-=======
-import { getRegion } from './RegionSagas'
 import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas'
->>>>>>> 9940a5e84025b9dc0ca0fbb8a836fd5fc5da8346
 import TaskServices from '../Database/TaskServices'
 
 /* ------------- API ------------- */
@@ -44,8 +40,6 @@ export default function* root() {
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
 		takeLatest(RegionTypes.REGION_REQUEST, getRegion, miApi),
 		takeLatest(RegionTypes.REGION_POST, postRegion, miApi),
-
-		
 		takeLatest(InspeksiTypes.POST_INSPEKSI, postInspeksiHeader, miApi),
 		takeLatest(InspeksiTypes.POST_DETAIL_INSPEKSI, postInspeksiDetail, miApi),
 

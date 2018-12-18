@@ -11,11 +11,8 @@ export const reducers = combineReducers({
 	auth: require('./AuthRedux').reducer,
 	category: require('./CategoryRedux').reducer,	
 	contact: require('./ContactRedux').reducer,
-<<<<<<< HEAD
 	region:require('./RegionRedux').reducer,
-=======
 	inspeksi : require('./InspeksiRedux').reducer,
->>>>>>> 9940a5e84025b9dc0ca0fbb8a836fd5fc5da8346
 	network
 });
 
