@@ -20,6 +20,7 @@ import TaskServices from '../../Database/TaskServices'
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 const moment = require('moment');
 var RNFS = require('react-native-fs');
+import ImageResizer from 'react-native-image-resizer';
 
 class TakePhotoSelfie extends Component{
 
@@ -33,6 +34,7 @@ class TakePhotoSelfie extends Component{
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let kondisiBaris2 = R.clone(params.kondisiBaris2);
         let dataUsual = R.clone(params.dataUsual);
+        let statusBlok = R.clone(params.statusBlok);
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -47,7 +49,8 @@ class TakePhotoSelfie extends Component{
           kondisiBaris1,
           kondisiBaris2,
           dataUsual,
-          pathCache:''
+          pathCache:'',
+          statusBlok
         }
     }
 
@@ -136,7 +139,8 @@ class TakePhotoSelfie extends Component{
         // trackInspeksi: this.state.trackInspeksi,
         kondisiBaris1: this.state.kondisiBaris1, 
         kondisiBaris2: this.state.kondisiBaris2, 
-        dataUsual: this.state.dataUsual});    
+        dataUsual: this.state.dataUsual,
+        statusBlok:this.state.statusBlok});    
 
     }
   

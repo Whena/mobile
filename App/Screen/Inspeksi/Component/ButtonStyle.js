@@ -25,7 +25,7 @@ const btnBaik = {
 
 const btnSedang ={
     width:70,
-    backgroundColor: 'orange',
+    backgroundColor: '#feb236',
     borderRadius: 25, 
     margin:5,  
     padding:10 ,
@@ -36,7 +36,7 @@ const btnSedang ={
 
 const btnKurang ={
     width:70,
-    backgroundColor: 'yellow',
+    backgroundColor: '#ff7b25',
     borderRadius: 25, 
     margin:5,  
     padding:10 ,

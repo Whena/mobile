@@ -79,7 +79,8 @@ const TR_BARIS_INSPECTION = {
     primaryKey: 'ID',
     properties: {
         ID: 'int',
-        BLOCK_INSPECTION_CODE: 'string'
+        BLOCK_INSPECTION_CODE: 'string',
+        VALUE: 'string'
     }
 }
 

@@ -20,6 +20,26 @@ var uuid = require('react-native-uuid');
 // 	);
 // }
 
+export function getCalculateTime(date1, date2){
+	//date1 is today
+	// var today = new Date();
+	// var Christmas = new Date("12-25-2012");
+	// var diffMs = (Christmas - today); // milliseconds between now & Christmas
+	// var diffDays = Math.floor(diffMs / 86400000); // days
+	// var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+	// var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+	// alert(diffDays + " days, " + diffHrs + " hours, " + diffMins + " minutes until Christmas 2009 =)");
+
+	console.log(date1);
+	console.log(date2)
+	var diffMs = (date1-date2); //millisecond between now and last
+	var diffDays = Math.floor(diffMs / 86400000); // days
+	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+	return diffMins
+}
+
 export async function getPermission(){
 	try{
 		const phone =  await PermissionsAndroid.request(

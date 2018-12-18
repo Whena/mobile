@@ -24,8 +24,8 @@ class KondisiBaris1 extends Component{
         let params = props.navigation.state.params;
         let fotoBaris = R.clone(params.fotoBaris);
         let inspeksiHeader = R.clone(params.inspeksiHeader);
-        // let trackInspeksi = R.clone(params.trackInspeksi);
         let dataUsual = R.clone(params.dataUsual);
+        let statusBlok = R.clone(params.statusBlok);
 
         this.state = {  
             jumlahPokok : '0',    
@@ -36,8 +36,8 @@ class KondisiBaris1 extends Component{
             pokokTdkPupuk: '0',
             fotoBaris,
             inspeksiHeader,
-            // trackInspeksi,
-            dataUsual
+            dataUsual,
+            statusBlok
         }
     }
 
@@ -128,9 +128,9 @@ class KondisiBaris1 extends Component{
         this.props.navigation.navigate('KondisiBaris2',{
             fotoBaris: this.state.fotoBaris,
             inspeksiHeader: this.state.inspeksiHeader, 
-            // trackInspeksi: this.state.trackInspeksi,
             kondisiBaris1: kondisiBaris1, 
-            dataUsual: this.state.dataUsual}
+            dataUsual: this.state.dataUsual,
+            statusBlok:this.state.statusBlok}
         );    
     }
 
