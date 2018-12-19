@@ -16,7 +16,7 @@ export default createStackNavigator({
   TakeFotoSelfie: {screen: TakeFotoSelfie},
   KondisiBarisAkhir: {screen: KondisiBarisAkhir}
 }, {
-    headerMode: 'none',
+    headerMode: 'screen',
     initialRouteName: 'BuatInspeksi',
     transitionConfig: () => ({ screenInterpolator: () => null }),
   }
