@@ -40,16 +40,31 @@ class SyncScreen extends React.Component {
         }
     }
 
-    componentWillReceiveProps(newProps) {
-        console.log(newProps.region.region);
+    _crudTM_Region(data) {
+        if (data.data.delete.length > 0) {
+            data.data.delete.map(item => {
+                TaskServices.deleteTmRegionByRegionCode(item.REGION_CODE)
+            })
+            console.log("Delete Block : " + TaskServices.getAllData('TM_REGION'));
+        }
         
-        // this._insertTM_Region(newProps.region.region)
-    }
-
-    _insertTM_Region(data) {
-        data.insert.map(item => {
-            TaskServices.saveData('TM_BLOCK', item);
-        })
+         if (data.data.insert.length > 0) {
+            data.data.insert.map(item => {
+                TaskServices.saveData('TM_BLOCK', item);
+            })
+    
+            console.log("Insert Block : " + TaskServices.getAllData('TM_BLOCK'));
+        }
+    
+        if (data.data.update.length > 0) {
+            data.data.update.map(item => {
+                var data = [item.NATIONAL, item.REGION_CODE, item.REGION_NAME];
+                console.log(data);
+                TaskServices.saveData(item.REGION_CODE, data);
+            })
+    
+            console.log("Update Block : " + TaskServices.getAllData('TM_REGION'));
+        }
     }
 
     _get_IMEI_Number() {
@@ -59,15 +74,22 @@ class SyncScreen extends React.Component {
     }
 
     _onSync() {
-        this.props.regionPost({
-            TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-            TABEL_UPDATE: "hectare-statement/region"
-        });
+        // this.props.regionPost({
+        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
+        //     TABEL_UPDATE: "hectare-statement/region"
+        // });
+        this.props.regionRequest();
         // this.props.blockRequest();
-        this.props.blockPost({
-            TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-            TABEL_UPDATE: "hectare-statement/block"
-        });
+        // this.props.blockPost({
+        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
+        //     TABEL_UPDATE: "hectare-statement/block"
+        // });
+    }
+
+    componentWillUpdate(newProps){
+        console.log("Masuk Sini");
+        console.log("Masuk Sini LOL : " + newProps.region.region);
+        this._crudTM_Region(newProps.region.region);
     }
 
     render() {

@@ -74,8 +74,8 @@ class LoginScreen extends React.Component {
             this.insertUser(newProps.auth.user);
             this.props.categoryRequest();
             this.props.contactRequest();
-            this.props.regionRequest();
-            this.props.blockRequest();
+            // this.props.regionRequest();
+            // this.props.blockRequest();
             this.navigateScreen('MainMenu');
         }
     }
