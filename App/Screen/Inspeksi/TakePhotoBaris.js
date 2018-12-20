@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Image,
-  CameraRoll,
-  Platform,
-  BackHandler,
-  Alert,
-  Dimensions,
-  TouchableHighlight,
-  Text
-} from 'react-native';
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    Image,
+    CameraRoll,
+    Platform,
+    BackHandler,
+    Alert,
+    Dimensions,
+    TouchableHighlight,
+    Text
+  } from 'react-native';
 import Colors from '../../Constant/Colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
@@ -70,22 +70,21 @@ class TakePhotoBaris extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount(){
     this.setParameter();
-    console.log(this.state.statusBlok)
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(){
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
-  handleBackButtonClick() {
-    if (this.state.hasPhoto) {
+  handleBackButtonClick() { 
+    if(this.state.hasPhoto){
 
-      RNFS.unlink(FILE_PREFIX + RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/' + this.state.dataModel.IMAGE_NAME)
+      RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/'+this.state.dataModel.IMAGE_NAME)
         .then(() => {
-          console.log('FILE DELETED');
+          console.log(`FILE ${this.state.dataModel.IMAGE_NAME} DELETED`);
         });
       RNFS.unlink(this.state.path)
       this.setState({ path: null, hasPhoto: false });
@@ -133,10 +132,15 @@ class TakePhotoBaris extends Component {
 
   takePicture = async () => {
     try {
-      if (this.state.hasPhoto) {
-        this.insertDB();
-      } else {
-        const data = await this.camera.takePictureAsync();
+      if(this.state.hasPhoto){  
+        this.insertDB();     
+      }else{
+        const takeCameraOptions = {
+          // quality : 0.5,  //just in case want to reduce the quality too
+          skipProcessing: false,
+          fixOrientation: true
+        };
+        const data = await this.camera.takePictureAsync(takeCameraOptions);
         this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris', hasPhoto: true });
         RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/' + this.state.dataModel.IMAGE_NAME);
         this.resize(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris/' + this.state.dataModel.IMAGE_NAME)

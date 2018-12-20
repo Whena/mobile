@@ -136,8 +136,19 @@ class KondisiBaris2 extends Component {
         }
     }
 
-    componentDidMount() {
-        this.hideAndShow()
+    componentDidMount(){
+        this.hideAndShow();
+    }
+
+    kodisiPemupukanIsOn(){        
+		const data = this.state.kondisiBaris1;
+        let indexPkkTdkPupuk = R.findIndex(R.propEq('CONTENT_INSPECTION_CODE','CC0006'))(data);
+        let mdl = data[indexPkkTdkPupuk];
+        if(mdl.VALUE == ''){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     hideAndShow() {
@@ -151,6 +162,7 @@ class KondisiBaris2 extends Component {
                 showTipa: true,
                 showKastrasi: false,
                 showSanitasi: false,
+                switchTPH: true,
             });
         } else if (this.state.statusBlok == 'TBM1') {
             this.setState({
@@ -184,6 +196,7 @@ class KondisiBaris2 extends Component {
                 showTipa: true,
                 showKastrasi: true,
                 showSanitasi: true,
+                switchTPH: true
             });
         }
     }
@@ -282,20 +295,35 @@ class KondisiBaris2 extends Component {
         this.validation()
     };
 
-    validation() {
-        if (this.state.piringan == '') {
-            Alert.alert('Piringan belim dipilih');
-        } else if (this.state.sarKul == '') {
-            Alert.alert('Pasar Pikul belim dipilih');
-        } else if (this.state.TPH == '' && this.state.switchTPH == true) {
-            Alert.alert('TPH belim dipilih');
-        } else if (this.state.GWG == '') {
-            Alert.alert('Gawangan belim dipilih');
-        } else if (this.state.PRUN == '') {
-            Alert.alert('Prunning belim dipilih');
-        } else if (this.state.TIPA == '' && this.state.switchTIPA == true) {
-            Alert.alert('Titi Panen belim dipilih');
-        } else {
+    validation(){
+        //TM dan TBM3 TPH mandatory
+        //TM Prunning mandatory
+        //titi panen jika switch on wajib dipilih
+        //TBM3 kastrasi dan sanitasi mandatory
+        //
+        if(this.state.piringan == ''){
+            alert('Piringan belim dipilih');
+        }else if(this.state.sarKul == ''){
+            alert('Pasar Pikul belim dipilih');
+        }else if((this.state.statusBlok == 'TM' || this.state.statusBlok == 'TBM3') && this.state.TPH == ''){
+            alert('TPH belum dipilih')
+        }else if(this.state.TPH == '' && this.state.switchTPH == true){
+            alert('TPH belim dipilih');
+        }else if(this.state.GWG == ''){
+            alert('Gawangan belim dipilih');
+        }else if(this.state.PRUN == '' && this.state.statusBlok == 'TM'){
+            alert('Prunning belim dipilih');
+        }else if(this.state.TIPA == '' && this.state.switchTIPA == true){
+            alert('Titi Panen belim dipilih');
+        }else if(this.state.KASTRASI == '' && this.state.statusBlok == 'TBM3'){
+            alert('Kastrasi belum dipilih')
+        }else if(this.state.SANITASI == '' && this.state.statusBlok == 'TBM3'){
+            alert('Sanitasi belum dipilih')
+        }else if(this.kodisiPemupukanIsOn() && this.state.PENABUR == ''){
+            alert('Sistem Penaburan belum dipilih')
+        }else if(this.kodisiPemupukanIsOn() && this.state.PUPUK == ''){
+            alert('Kondisi Pupuk belum dipilih')
+        }else{
             this.insertDB();
         }
     }

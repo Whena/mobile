@@ -7,6 +7,7 @@ import KondisiBaris2 from '../KondisiBaris2';
 import TakeFotoBaris from '../TakePhotoBaris';
 import TakeFotoSelfie from '../TakePhotoSelfie';
 import KondisiBarisAkhir from '../KondisiBarisAkhir';
+import SelesaiInspeksi from '../SelesaiInspeksi';
 
 export default createStackNavigator({
   BuatInspeksi: {screen: BuatInspeksi},
@@ -14,7 +15,8 @@ export default createStackNavigator({
   KondisiBaris1: {screen: KondisiBaris1},
   KondisiBaris2: {screen: KondisiBaris2},
   TakeFotoSelfie: {screen: TakeFotoSelfie},
-  KondisiBarisAkhir: {screen: KondisiBarisAkhir}
+  KondisiBarisAkhir: {screen: KondisiBarisAkhir},
+  SelesaiInspeksi: {screen: SelesaiInspeksi}
 }, {
     headerMode: 'none',
     initialRouteName: 'BuatInspeksi',

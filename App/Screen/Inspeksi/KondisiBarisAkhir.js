@@ -16,8 +16,25 @@ import TaskService from '../../Database/TaskServices';
 import {getTodayDate, getCalculateTime} from '../../Lib/Utils'
 import { NavigationActions, StackActions  } from 'react-navigation';
 import R from 'ramda';
-import goelib from 'geolib'
+import geolib from 'geolib';
+import Geojson from 'react-native-geojson';
 
+
+const alcatraz = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [-6.2292229, 106.8253967],
+          latitudeDelta:0.015,
+          longitudeDelta:0.0121 //[-122.42305755615234, 37.82687023785448],
+        }
+      }
+    ]
+};
 
 class KondisiBarisAkhir extends Component{
 
@@ -116,8 +133,9 @@ class KondisiBarisAkhir extends Component{
         );
     }
 
-    changeColorSlide(){  
-        var btn;        
+    changeColorSlide(){          
+        // this.props.navigation.navigate('SelesaiInspeksi');
+        // var btn;        
         let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
         if(total >= 1){
             this.setState({fulFillMandatory:true})
@@ -325,8 +343,8 @@ class KondisiBarisAkhir extends Component{
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE
         }
 
-        console.log(JSON.stringify(params));
-        console.log(JSON.stringify(modelInspeksiH));
+        // console.log(JSON.stringify(params));
+        // console.log(JSON.stringify(modelInspeksiH));
 
         if(this.state.fulFillMandatory){
             this.calculate();
@@ -395,21 +413,11 @@ class KondisiBarisAkhir extends Component{
                 </View>
 
                 {/*MAPS*/}
-                {!!this.state.latitude && !!this.state.longitude &&
                     <View style={styles.containerMap}>
-                        <MapView 
-                            style={styles.map}
-                            initialRegion={{
-                                latitude:this.state.latitude,
-                                longitude:this.state.longitude,
-                                latitudeDelta:0.015,
-                                longitudeDelta:0.0121
-                            }}
-                            // initialRegion={this.state.initialPosition}
-                            >
-
-                            {/* <MapView.Marker coordinate={this.state.initialMarker}>
-                            </MapView.Marker> */}
+                        {!!this.state.latitude && !!this.state.longitude &&
+                        <MapView
+                            style={styles.map}>
+                            <Geojson geojson={alcatraz} />
                             <Marker
                                 coordinate={{
                                 latitude: this.state.latitude,
@@ -420,6 +428,26 @@ class KondisiBarisAkhir extends Component{
                             >
                             </Marker>
                         </MapView>
+                        // <MapView 
+                        //     style={styles.map}
+                        //     initialRegion={{
+                        //         latitude:this.state.latitude,
+                        //         longitude:this.state.longitude,
+                        //         latitudeDelta:0.015,
+                        //         longitudeDelta:0.0121
+                        //     }}
+                        //     >
+                        //     <Marker
+                        //         coordinate={{
+                        //         latitude: this.state.latitude,
+                        //         longitude: this.state.longitude,
+                        //         }}
+                        //         centerOffset={{ x: -42, y: -60 }}
+                        //         anchor={{ x: 0.84, y: 1 }}
+                        //     >
+                        //     </Marker>
+                        // </MapView>
+                        }
 
                         <View style={{height:250, marginLeft:20, marginRight:20}}>
                             <Card style={[styles.cardContainer]}>
@@ -468,7 +496,7 @@ class KondisiBarisAkhir extends Component{
                         </View>
                     
                     </View>
-                }
+                
             </View>
         )
     }

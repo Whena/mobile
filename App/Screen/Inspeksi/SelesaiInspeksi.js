@@ -137,7 +137,7 @@ class SelesaiInspeksi extends React.Component {
     }
 
     componentDidMount(){
-
+        // this.loadData()
     }
     
     render() {

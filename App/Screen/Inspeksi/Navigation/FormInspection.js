@@ -10,7 +10,7 @@ class FormInspection extends Component{
         headerStyle: {
             backgroundColor: Colors.tintColor
         },
-        title: 'Buat Laporan Inspeksi',
+        title: 'Buat Inspeksi',
         headerTintColor: '#fff',
         headerTitleStyle: {
             flex: 1,
