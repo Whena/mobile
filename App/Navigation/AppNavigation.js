@@ -35,7 +35,7 @@ const main = createStackNavigator({
         screen: FormInspectionNavigator 
     }
 }, {
-        headerMode: 'none',
+        headerMode: 'screen',
         initialRouteName: 'SplashScreen',
         navigationOptions: {
 

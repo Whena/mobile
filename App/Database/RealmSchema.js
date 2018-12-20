@@ -20,7 +20,8 @@ let realmSchema = new Realm({
         ModelTables.TR_LOG_FINDING,
         ModelTables.TR_IMAGE_FINDING,
         ModelTables.T_LOG_IMAGE,
-        ModelTables.TM_REGION
+        ModelTables.TM_REGION,
+        ModelTables.TM_BLOCK
     ]
 });
 

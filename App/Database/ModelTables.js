@@ -224,6 +224,94 @@ const TM_REGION = {
     }
 }
 
+const TM_BLOCK = {
+    name: 'TM_BLOCK',
+    properties: {
+        REGION_CODE: 'string',
+        COMP_CODE: 'string',
+        EST_CODE: 'string',
+        WERKS: 'string',
+        AFD_CODE: 'string',
+        BLOCK_CODE: 'string',
+        BLOCK_NAME:'string',
+        WERKS_AFD_CODE:'string',
+        WERKS_AFD_BLOCK_CODE: 'string',
+        LATITUDE_BLOCK: 'string',
+        LONGITUDE_BLOCK: 'string'
+    }
+}
+
+const TM_EST = {
+    name: 'TM_EST',
+    properties: {
+        REGION_CODE: 'string',
+        COMP_CODE: 'string',
+        EST_CODE: 'string',
+        WERKS: 'string',
+        EST_NAME: 'string',
+        CITY: 'string',
+        START_VALID: 'string',
+        END_VALID: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        FLAG_UPDATE: 'string'
+    }
+}
+
+const TM_KRITERIA = {
+    name: 'TM_KRITERIA',
+    properties: {
+        KRITERIA_CODE: 'string',
+        CONTENT_LABEL_CODE: 'string',
+        VALUE: 'string',
+        COLOR: 'string',
+        GRADE: 'string',
+        BATAS_ATAS: 'string',
+        BATAS_BAWAH: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        DELETE_USER: 'string',
+        DELETE_TIME: 'string'
+    }
+}
+
+const TM_USER_AUTH = {
+    name: 'TM_USER_AUTH',
+    properties: {
+        USER_AUTH_CODE: 'string',
+        EMPLOYEE_NIK: 'string',
+        USER_ROLE: 'string',
+        REFFERENCE_ROLE: 'string',
+        LOCATION_CODE: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        DELETE_USER: 'string',
+        DELETE_TIME: 'string'
+    }
+}
+
+const TM_PJS = {
+    name: 'TM_PJS',
+    properties: {
+        EMPLOYEE_NIK: 'string',
+        USERNAME: 'string',
+        NAMA_LENGKAP: 'string',
+        JOB_CODE: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string',
+        UPDATE_USER: 'string',
+        UPDATE_TIME: 'string',
+        DELETE_USER: 'string',
+        DELETE_TIME: 'string'
+    }
+}
+
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -238,5 +326,12 @@ export default {
     T_LOG_IMAGE,
     TR_CATEGORY,
     TR_CONTACT,
-    TM_REGION
+
+    //Add by Aminju
+    TM_REGION,
+    TM_BLOCK,
+    TM_EST,
+    TM_KRITERIA,
+    TM_USER_AUTH,
+    TM_PJS
 }

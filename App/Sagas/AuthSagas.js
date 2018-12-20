@@ -35,8 +35,6 @@ export function* getAuth(api, action) {
 		} else {
 			yield put(AuthActions.authFailure('Terjadi Kesalahan Koneksi !'));
 		}
-
-
 	}
 }
 

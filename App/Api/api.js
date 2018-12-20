@@ -22,6 +22,11 @@ const create = () => {
         return api.post('/mobile-sync', body);
     }
 
+    const postBlock =  body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
     //insepksi
     const postInspeksiHeader = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
@@ -32,20 +37,43 @@ const create = () => {
         api.post('/inspection-detail', body);
     }
 
-
     //GET
     const getCategory = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/category')
     }
+    
     const getContact = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/contacts')
     }
 
-
-
     const getRegion = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/region')
+    }
+
+    const getBlock = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/block')
+    }
+
+    const getUserAuth = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/region')
+    }
+
+    const getEst = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/region')
+    }
+
+    const getKriteria = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/region')
+    }
+
+    const getAfd = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/mobile-sync/hectare-statement/region')
     }
@@ -59,7 +87,14 @@ const create = () => {
         getRegion,
         postRegion,
         postInspeksiHeader,
-        postInspeksiDetail
+        postInspeksiDetail,
+
+        //Add by Aminju
+        //Post
+        postBlock,
+        //Get
+        getBlock
+
     };
 };
 

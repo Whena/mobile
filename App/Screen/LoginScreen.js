@@ -21,6 +21,7 @@ import TaskServices from '../Database/TaskServices';
 import CategoryAction from '../Redux/CategoryRedux';
 import ContactAction from '../Redux/ContactRedux';
 import RegionAction from '../Redux/RegionRedux';
+import BlockAction from '../Redux/BlockRedux';
 const IMEI = require('react-native-imei');
 
 
@@ -74,6 +75,7 @@ class LoginScreen extends React.Component {
             this.props.categoryRequest();
             this.props.contactRequest();
             this.props.regionRequest();
+            this.props.blockRequest();
             this.navigateScreen('MainMenu');
         }
     }
@@ -129,7 +131,8 @@ class LoginScreen extends React.Component {
 const mapStateToProps = state => {
     return {
         auth: state.auth,
-        region: state.region
+        // region: state.region,
+        // block:state.block
     };
 };
 
@@ -138,8 +141,10 @@ const mapDispatchToProps = dispatch => {
         authRequest: obj => dispatch(AuthAction.authRequest(obj)),
         categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
         contactRequest: () => dispatch(ContactAction.contactRequest()),
-        regionRequest: () => dispatch(RegionAction.regionRequest()),
-        regionPost: () => dispatch(RegionAction.regionPost())
+        // regionRequest: () => dispatch(RegionAction.regionRequest()),
+        // regionPost: obj => dispatch(RegionAction.regionPost(obj)),
+        // blockRequest: () => dispatch(BlockAction.blockRequest()),
+        // blockPost: obj => dispatch(BlockAction.blockPost(obj))
     };
 };
 

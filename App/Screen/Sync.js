@@ -6,6 +6,8 @@ import ProgressCircle from 'react-native-progress-circle'
 import Colors from '../Constant/Colors';
 
 import RegionAction from '../Redux/RegionRedux';
+import BlockAction from '../Redux/BlockRedux';
+
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 
@@ -39,25 +41,15 @@ class SyncScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        // if (!isNil(newProps.auth)) {
-        //     this.setState({ fetching: newProps.auth.fetching });
-        // }
-
-        // this.props.regionPost();
-
-        // if (!isNil(newProps.auth.user)) {
-        //     this.props.regionPost();
-        // }
+        console.log(newProps.region.region);
+        
+        // this._insertTM_Region(newProps.region.region)
     }
 
     _insertTM_Region(data) {
-        var dataTable = {
-            NIK: data.NIK,
-            ACCESS_TOKEN: data.ACCESS_TOKEN,
-            JOB_CODE: data.JOB_CODE
-        };
-
-        TaskServices.saveData('TM_REGION', dataTable);
+        data.insert.map(item => {
+            TaskServices.saveData('TM_BLOCK', item);
+        })
     }
 
     _get_IMEI_Number() {
@@ -66,12 +58,15 @@ class SyncScreen extends React.Component {
         return IMEI_2;
     }
 
-    _onSync(tglMobileSync, tabelUpdate) {
-        var Imei = this._get_IMEI_Number();
-        console.log("Imei Sync : " + Imei)
+    _onSync() {
         this.props.regionPost({
-            TGL_MOBILE_SYNC: tglMobileSync,
-            TABEL_UPDATE: tabelUpdate
+            TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
+            TABEL_UPDATE: "hectare-statement/region"
+        });
+        // this.props.blockRequest();
+        this.props.blockPost({
+            TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
+            TABEL_UPDATE: "hectare-statement/block"
         });
     }
 
@@ -119,7 +114,7 @@ class SyncScreen extends React.Component {
                     </View>
 
                     <View style={{ flex: 1, marginTop: 48 }}>
-                        <TouchableOpacity style={styles.button} onPress={() => this._onSync("2018-12-17 00:00:00", "hectare-statement/region")}>
+                        <TouchableOpacity style={styles.button} onPress={() => this._onSync()}>
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
                     </View>
@@ -131,13 +126,18 @@ class SyncScreen extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        region: state.region
+        region: state.region,
+        block: state.block
+
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        regionPost: obj => dispatch(RegionAction.regionPost(obj))
+        regionRequest: () => dispatch(RegionAction.regionRequest()),
+        regionPost: obj => dispatch(RegionAction.regionPost(obj)),
+        blockRequest: () => dispatch(BlockAction.blockRequest()),
+        blockPost: obj => dispatch(BlockAction.blockPost(obj))
     };
 };
 

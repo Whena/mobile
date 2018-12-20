@@ -13,6 +13,7 @@ export const reducers = combineReducers({
 	contact: require('./ContactRedux').reducer,
 	region:require('./RegionRedux').reducer,
 	inspeksi : require('./InspeksiRedux').reducer,
+	block: require('./BlockRedux').reducer,
 	network
 });
 
