@@ -13,14 +13,15 @@ import {
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconLoc from 'react-native-vector-icons/FontAwesome5';
 import Icons from 'react-native-vector-icons/Ionicons';
 import CardView from 'react-native-cardview';
-// import MapView,{ PROVIDER_GOOGLE } from 'react-native-maps'
-import MapView, { PROVIDER_GOOGLE, ProviderPropType, Marker, AnimatedRegion } from 'react-native-maps';
-import { convertTimestampToDate, getTodayDate, getUUID } from '../../Lib/Utils'
+import MapView, {PROVIDER_GOOGLE, ProviderPropType, Marker, AnimatedRegion } from 'react-native-maps';
+import {convertTimestampToDate, getTodayDate, getUUID} from '../../Lib/Utils'
 import TaskService from '../../Database/TaskServices';
 // import KeyboardListener from 'react-native-keyboard-listener';
 import Dialog from "react-native-dialog";
+import { ProgressDialog } from 'react-native-simple-dialogs';
 import Autocomplete from 'react-native-autocomplete-input';
 import { utils } from 'redux-saga';
 var uuid = require('react-native-uuid');
@@ -29,14 +30,16 @@ import Geojson from 'react-native-geojson';
 const alcatraz = {
     type: 'FeatureCollection',
     features: [
-        {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-                type: 'Point',
-                coordinates: [-122.42305755615234, 37.82687023785448],
-            }
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [-6.2292229, 106.8253967],
+          latitudeDelta:0.015,
+          longitudeDelta:0.0121 //[-122.42305755615234, 37.82687023785448],
         }
+      }
     ]
 };
 
@@ -76,7 +79,8 @@ class BuatInspeksiRedesign extends Component {
             baris: '',
             inspectionCode: '',
             keyboardOpen: false,
-            showConfirm: false
+            showConfirm: false,
+            fetchLocation: false
         };
     }
 
@@ -120,7 +124,9 @@ class BuatInspeksiRedesign extends Component {
                 var lon = parseFloat(position.coords.longitude);
                 // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
                 // console.log(timestamp);
-                this.setState({ latitude: lat, longitude: lon });
+                console.log(lat + ' ' + lon);
+                alert(lat + ' ' + lon);
+                this.setState({latitude:lat, longitude:lon, fetchLocation: false});
                 // alert(position.coords.latitude)
 
             },
@@ -130,7 +136,8 @@ class BuatInspeksiRedesign extends Component {
                 if (error && error.message == "No location provider available.") {
                     message = "Mohon nyalakan GPS anda terlebih dahulu.";
                 }
-                Alert.alert('Informasi', message);
+                this.setState({fetchLocation:false})
+                alert('Informasi', message);
                 // console.log(message);
             }, // go here if error while fetch location
             { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
@@ -144,8 +151,7 @@ class BuatInspeksiRedesign extends Component {
             Alert.alert('Baris Belum diisi !');
         } else {
             this.insertDB(param);
-        }
-        // this.props.navigation.dispatch({ type: 'Navigation/BACK' })  ;   
+        }    
     }
 
     insertDB(param) {
@@ -156,8 +162,8 @@ class BuatInspeksiRedesign extends Component {
         var AFD = 'H';
         var BLOK = this.state.blok;
         var UNIQ_CODE = getUUID();
-        UNIQ_CODE = UNIQ_CODE.substring(0, UNIQ_CODE.indexOf('-'));
-        var blok_inspection_code_h = NIK + "-INS-" + DATE + '-' + BA + '-' + AFD + '-' + BLOK + '-' + UNIQ_CODE;
+        UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
+        var blok_inspection_code_h = NIK+"-INS-"+DATE+'-'+BA+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
         // var track_ins_code = NIK+"-"+DATE+'-'+BA+'-'+AFD+'-'+BLOK+'-T-'+ (parseInt(TaskService.getTotalData('TR_TRACK_INSPECTION'))+1);
 
         let modelInspeksiH = {
@@ -293,52 +299,87 @@ class BuatInspeksiRedesign extends Component {
                     Pastikan kamu telah berada dilokasi yang benar
                 </Text>
 
-                {/* <View style={styles.containerMap}>
-<MapView
-style={styles.map}>
-    <Geojson geojson={alcatraz} />
-  </MapView>
-</View> */}
 
-
-
+                
+                <View style={styles.containerMap}>
                 {!!this.state.latitude && !!this.state.longitude &&
-                    <View style={styles.containerMap}>
-                        <MapView
-                            style={styles.map}
-                            initialRegion={{
+                    <MapView
+                        style={styles.map}>
+                        <Geojson geojson={alcatraz} />
+                        <Marker
+                                coordinate={{
                                 latitude: this.state.latitude,
                                 longitude: this.state.longitude,
-                                latitudeDelta: 0.015,
-                                longitudeDelta: 0.0121
-                            }}
-                        // initialRegion={this.state.initialPosition}
-                        >
+                                }}
+                                centerOffset={{ x: -42, y: -60 }}
+                                anchor={{ x: 0.84, y: 1 }}
+                            >
+                            </Marker>                      
+                    </MapView>
+                }
+                    
 
-                            {/* <MapView.Marker coordinate={this.state.initialMarker}>
-                            </MapView.Marker> */}
+                    <IconLoc
+                        onPress={()=>{this.setState({fetchLocation: true}); this.getLocation()}}
+                        name="location-arrow"
+                        size={24}
+                        style={{margin: 15, alignSelf:'flex-end'}}/>  
+
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
+                            <Text style={styles.buttonText}>Mulai Inspeksi</Text>
+                        </TouchableOpacity>                        
+                    </View>
+                </View>
+                
+
+
+                {/* {!!this.state.latitude && !!this.state.longitude &&
+                    <View style={styles.containerMap}>
+                        <MapView 
+                            style={styles.map}
+                            initialRegion={{
+                                latitude:this.state.latitude,
+                                longitude:this.state.longitude,
+                                latitudeDelta:0.015,
+                                longitudeDelta:0.0121
+                            }}
+                            // initialRegion={this.state.initialPosition}
+                            >
+                            
                             <Marker
                                 coordinate={{
-                                    latitude: this.state.latitude,
-                                    longitude: this.state.longitude,
+                                latitude: this.state.latitude,
+                                longitude: this.state.longitude,
                                 }}
                                 centerOffset={{ x: -42, y: -60 }}
                                 anchor={{ x: 0.84, y: 1 }}
                             >
                             </Marker>
+                            
+                            <IconLoc
+                                onPress={()=>{this.setState({fetchLocation: true}); this.getLocation()}}
+                                name="location-arrow"
+                                size={24}
+                                style={{margin: 15, alignSelf:'flex-end'}}/>
                         </MapView>
 
                         {!this.state.keyboardOpen &&
                             <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.bubble, styles.button]} onPress={() => { this.setState({ showConfirm: true }) }}>
+                                <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
                                     <Text style={styles.buttonText}>Mulain Inspeksi</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity>                        
                             </View>
                         }
-
+                    
                     </View>
-                }
+                }*/}
 
+                <ProgressDialog
+                        visible={this.state.fetchLocation}
+                        activityIndicatorSize="large"
+                        message="Mencari Lokasi..."
+                    /> 
             </View>
         )
     }

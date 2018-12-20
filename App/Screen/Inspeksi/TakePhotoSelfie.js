@@ -91,7 +91,7 @@ class TakePhotoSelfie extends Component{
       if(this.state.hasPhoto){
         RNFS.unlink(FILE_PREFIX+RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie'+this.state.dataModel.IMAGE_NAME)
           .then(() => {
-            console.log('FILE DELETED');
+            console.log(` FILE ${this.state.dataModel.IMAGE_NAME} DELETED`);
         });
         RNFS.unlink(this.state.path)
         this.setState({path: null, hasPhoto:false});
@@ -105,7 +105,12 @@ class TakePhotoSelfie extends Component{
         if(this.state.hasPhoto){    
           this.insertDB() 
         }else{
-          const data = await this.camera.takePictureAsync();
+          const takeCameraOptions = {
+            // quality : 0.5,  //just in case want to reduce the quality too
+            skipProcessing: false,
+            fixOrientation: true
+          };
+          const data = await this.camera.takePictureAsync(takeCameraOptions);
           this.setState({ path: data.uri, pathImg: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie', hasPhoto: true });
           RNFS.copyFile(data.uri, RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie/'+this.state.dataModel.IMAGE_NAME);
           this.resize(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie/'+this.state.dataModel.IMAGE_NAME)
