@@ -9,8 +9,10 @@ import TaskServices from '../../Database/TaskServices'
 import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
 import RegionAction from '../../Redux/RegionRedux'
+var RNFS = require('react-native-fs');
 
 class HomeScreen extends React.Component {
+  
 
   constructor(props) {
     super(props);
@@ -48,23 +50,23 @@ class HomeScreen extends React.Component {
     )
   });
 
-  componentWillMount() {
-
+  async componentDidMount() {
+    RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
   }
 
-  componentDidMount() {
-    if (TaskServices.getTotalData('TR_CATEGORY') == 0) {
-      this.props.categoryRequest();
-    }
+  // componentDidMount() {
+  //   if (TaskServices.getTotalData('TR_CATEGORY') == 0) {
+  //     // this.props.categoryRequest();
+  //   }
 
-    if (TaskServices.getTotalData('TR_CONTACT') == 0) {
-      this.props.contactRequest();
-    }
+  //   if (TaskServices.getTotalData('TR_CONTACT') == 0) {
+  //     // this.props.contactRequest();
+  //   }
 
-    if (TaskServices.getTotalData('TM_REGION') == 0){
-      this.props.regionRequest(); 
-    }
-  }
+  //   if (TaskServices.getTotalData('TM_REGION') == 0){
+  //     // this.props.regionRequest(); 
+  //   }
+  // }
 
   alertItemName = (item) => {
     alert(item.status)

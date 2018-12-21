@@ -9,11 +9,19 @@ import { persistReducer } from 'redux-persist';
 export const reducers = combineReducers({
 	nav: require('./NavigationRedux').reducer,
 	auth: require('./AuthRedux').reducer,
-	category: require('./CategoryRedux').reducer,	
+	category: require('./CategoryRedux').reducer,
 	contact: require('./ContactRedux').reducer,
-	region:require('./RegionRedux').reducer,
-	inspeksi : require('./InspeksiRedux').reducer,
+	region: require('./RegionRedux').reducer,
+	inspeksi: require('./InspeksiRedux').reducer,
 	block: require('./BlockRedux').reducer,
+	userAuth: require('./UserAuthRedux').reducer,
+	est: require('./EstRedux').reducer,
+	afd: require('./AfdRedux').reducer,
+	kriteria: require('./KriteriaRedux').reducer,
+	landUse: require('./LandUseRedux').reducer,
+	comp: require('./CompRedux').reducer,
+	content: require('./ContentRedux').reducer,
+
 	network
 });
 

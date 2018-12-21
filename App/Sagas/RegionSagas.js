@@ -16,8 +16,9 @@ export function* getRegion(api, action) {
                 yield put(RegionActions.regionFailure('Paramater Salah'));
                 break;
             case true:
-                console.log("Data Response Region : " + response.data);
-                yield put(RegionActions.regionSuccess(response.data));
+
+                console.log('^^^ Succes REGION ^^^');
+                yield put(RegionActions.regionSuccess(response.data.data));
                 break;
             default:
                 yield put(RegionActions.regionFailure('Unknown responseType'));

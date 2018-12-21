@@ -7,11 +7,20 @@ import Colors from '../Constant/Colors';
 
 import RegionAction from '../Redux/RegionRedux';
 import BlockAction from '../Redux/BlockRedux';
+import AfdAction from '../Redux/AfdRedux';
+import EstAction from '../Redux/EstRedux';
+import KriteriaAction from '../Redux/KriteriaRedux';
+import UserAuthAction from '../Redux/UserAuthRedux';
+import LandUseAction from '../Redux/LandUseRedux';
+import CompAction from '../Redux/CompRedux';
+import ContentAction from '../Redux/ContentRedux';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 
 const IMEI = require('react-native-imei');
+
+import TaskServices from '../Database/TaskServices'
 
 
 class SyncScreen extends React.Component {
@@ -41,29 +50,97 @@ class SyncScreen extends React.Component {
     }
 
     _crudTM_Region(data) {
-        if (data.data.delete.length > 0) {
-            data.data.delete.map(item => {
-                TaskServices.deleteTmRegionByRegionCode(item.REGION_CODE)
+
+        console.log("Masuk Lokal DB REGION");
+        console.log("Simpan REGION: " + data.simpan.length);
+        console.log("Ubah REGION: " + data.hapus.length);
+        console.log("Delete REGION: " + data.hapus.length);
+
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_REGION', item);
             })
-            console.log("Delete Block : " + TaskServices.getAllData('TM_REGION'));
+
+            console.log("All Data :" + TaskServices.getAllData('TM_REGION'));
         }
-        
-         if (data.data.insert.length > 0) {
-            data.data.insert.map(item => {
+
+        if (data.ubah.length > 0) {
+            data.ubah.map(item => {
+                TaskServices.updatedDataNew('TM_REGION', item.REGION_CODE, item);
+            })
+        }
+
+        // if (data.hapus.length > 0) {
+        //     data.ubah.map(item => {
+        //         TaskServices.deleteDataNew('TM_REGION', item.REGION_CODE, item);
+        //     })
+        //     console.log("All Data" + TaskServices.getAllData('TM_REGION'));
+        // }
+    }
+
+    _crudTM_Afd(data) {
+        console.log("Masuk Lokal DB AFD");
+        console.log("Simpan AFD : " + data.simpan.length);
+
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_AFD', item);
+            })
+        }
+    }
+
+    _crudTM_Block(data) {
+        console.log("Masuk Lokal DB Block");
+        console.log("Simpan Block : " + data.simpan.length);
+
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
             })
-    
-            console.log("Insert Block : " + TaskServices.getAllData('TM_BLOCK'));
         }
-    
-        if (data.data.update.length > 0) {
-            data.data.update.map(item => {
-                var data = [item.NATIONAL, item.REGION_CODE, item.REGION_NAME];
-                console.log(data);
-                TaskServices.saveData(item.REGION_CODE, data);
+    }
+
+    _crudTM_Est(data) {
+        console.log("Masuk Lokal DB Est");
+        console.log("Simpan Est : " + data.insert.length);
+
+        if (data.insert.length > 0) {
+            data.insert.map(item => {
+                TaskServices.saveData('TM_EST', item);
             })
-    
-            console.log("Update Block : " + TaskServices.getAllData('TM_REGION'));
+        }
+    }
+
+    _crudTM_LandUse(data) {
+        console.log("Masuk Lokal DB Land Use");
+        console.log("Simpan Land Use : " + data.simpan.length);
+
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_LAND_USE', item);
+            })
+        }
+    }
+
+    _crudTM_Comp(data) {
+        console.log("Masuk Lokal DB Comp");
+        console.log("Simpan Comp : " + data.simpan.length);
+
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_COMP', item);
+            })
+        }
+    }
+
+    _crudTM_Content(data) {
+        console.log("Masuk Lokal DB Content");
+        console.log("Simpan Content : " + data.length);
+
+        if (data.length > 0) {
+            data.map(item => {
+                TaskServices.saveData('TM_CONTENT', item);
+            })
         }
     }
 
@@ -74,22 +151,67 @@ class SyncScreen extends React.Component {
     }
 
     _onSync() {
+
+        // POST MOBILE SYNC
         // this.props.regionPost({
         //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
         //     TABEL_UPDATE: "hectare-statement/region"
         // });
-        this.props.regionRequest();
-        // this.props.blockRequest();
+
         // this.props.blockPost({
         //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
         //     TABEL_UPDATE: "hectare-statement/block"
         // });
+
+        // GET DATA MASTER
+        this.props.regionRequest();
+        this.props.afdRequest();
+        this.props.blockRequest();
+        this.props.estRequest();
+        this.props.landUseRequest();
+        this.props.compRequest();
+        this.props.contentRequest();
     }
 
-    componentWillUpdate(newProps){
-        console.log("Masuk Sini");
-        console.log("Masuk Sini LOL : " + newProps.region.region);
-        this._crudTM_Region(newProps.region.region);
+    componentWillReceiveProps(newProps) {
+        // console.log("Masuk Sini");
+        // console.log(JSON.stringify(newProps));
+
+        if (newProps.region.region != null) {
+            let dataJSON = newProps.region.region;
+            console.log(dataJSON)
+            this._crudTM_Region(dataJSON);
+        }
+
+        if (newProps.afd.afd != null) {
+            let dataJSON = newProps.afd.afd;
+            this._crudTM_Afd(dataJSON);
+        }
+
+        if (newProps.block.block != null) {
+            let dataJSON = newProps.block.block;
+            this._crudTM_Block(dataJSON);
+        }
+
+        if (newProps.est.est != null) {
+            let dataJSON = newProps.est.est;
+            this._crudTM_Est(dataJSON);
+        }
+
+        if (newProps.landUse.landUse != null) {
+            let dataJSON = newProps.landUse.landUse;
+            this._crudTM_LandUse(dataJSON);
+        }
+
+        if (newProps.comp.comp != null) {
+            let dataJSON = newProps.comp.comp;
+            this._crudTM_Comp(dataJSON);
+        }
+
+        if (newProps.content.content != null) {
+            let dataJSON = newProps.content.content;
+            this._crudTM_Content(dataJSON);
+        }
     }
 
     render() {
@@ -149,8 +271,12 @@ class SyncScreen extends React.Component {
 const mapStateToProps = state => {
     return {
         region: state.region,
-        block: state.block
-
+        block: state.block,
+        afd: state.afd,
+        est: state.est,
+        landUse: state.landUse,
+        comp: state.comp,
+        content: state.content
     };
 };
 
@@ -159,7 +285,21 @@ const mapDispatchToProps = dispatch => {
         regionRequest: () => dispatch(RegionAction.regionRequest()),
         regionPost: obj => dispatch(RegionAction.regionPost(obj)),
         blockRequest: () => dispatch(BlockAction.blockRequest()),
-        blockPost: obj => dispatch(BlockAction.blockPost(obj))
+        blockPost: obj => dispatch(BlockAction.blockPost(obj)),
+        afdRequest: () => dispatch(AfdAction.afdRequest()),
+        afdPost: obj => dispatch(AfdAction.afdPost(obj)),
+        estRequest: () => dispatch(EstAction.estRequest()),
+        estPost: obj => dispatch(EstAction.estPost(obj)),
+        kriteriaRequest: () => dispatch(KriteriaAction.kriteriaRequest()),
+        kriteriaPost: obj => dispatch(KriteriaAction.kriteriaPost(obj)),
+        userAuthRequest: () => dispatch(UserAuthAction.userAuthRequest()),
+        userAuthPost: obj => dispatch(UserAuthAction.userAuthPost(obj)),
+        landUseRequest: () => dispatch(LandUseAction.landUseRequest()),
+        landUsePost: obj => dispatch(LandUseAction.landUsePost(obj)),
+        compRequest: () => dispatch(CompAction.compRequest()),
+        compPost: obj => dispatch(CompAction.compPost(obj)),
+        contentRequest: () => dispatch(ContentAction.contentRequest()),
+        contentPost: obj => dispatch(ContentAction.contentPost(obj))
     };
 };
 

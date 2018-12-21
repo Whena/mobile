@@ -10,16 +10,17 @@ import KondisiBarisAkhir from '../KondisiBarisAkhir';
 import SelesaiInspeksi from '../SelesaiInspeksi';
 
 export default createStackNavigator({
-  BuatInspeksi: {screen: BuatInspeksi},
-  TakeFotoBaris: {screen: TakeFotoBaris},
-  KondisiBaris1: {screen: KondisiBaris1},
-  KondisiBaris2: {screen: KondisiBaris2},
-  TakeFotoSelfie: {screen: TakeFotoSelfie},
-  KondisiBarisAkhir: {screen: KondisiBarisAkhir},
-  SelesaiInspeksi: {screen: SelesaiInspeksi}
+  BuatInspeksi: { screen: BuatInspeksi },
+  TakeFotoBaris: { screen: TakeFotoBaris },
+  KondisiBaris1: { screen: KondisiBaris1 },
+  KondisiBaris2: { screen: KondisiBaris2 },
+  TakeFotoSelfie: { screen: TakeFotoSelfie },
+  KondisiBarisAkhir: { screen: KondisiBarisAkhir },
+  SelesaiInspeksi: { screen: SelesaiInspeksi }
 }, {
-    headerMode: 'none',
+    headerMode: 'screen',
     initialRouteName: 'BuatInspeksi',
-    transitionConfig: () => ({ screenInterpolator: () => null }),
+    transitionConfig: 
+    () => ({ screenInterpolator: () => null }),
   }
 );

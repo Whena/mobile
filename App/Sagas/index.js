@@ -12,6 +12,14 @@ import { ContactTypes } from '../Redux/ContactRedux';
 import { RegionTypes } from '../Redux/RegionRedux';
 import { InspeksiTypes } from '../Redux/InspeksiRedux';
 import { BlockTypes } from '../Redux/BlockRedux';
+import { AfdTypes } from '../Redux/AfdRedux';
+import { EstTypes } from '../Redux/EstRedux';
+import { KriteriaTypes } from '../Redux/KriteriaRedux';
+import { UserAuthTypes } from '../Redux/UserAuthRedux';
+import { LandUseTypes } from '../Redux/LandUseRedux';
+import { CompTypes } from '../Redux/CompRedux';
+import { ContentTypes } from '../Redux/ContentRedux';
+
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
@@ -20,6 +28,13 @@ import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
 import { getRegion, postRegion } from './RegionSagas';
 import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas';
+import { getAfd, postAfd } from './AfdSagas';
+import { getEst, postEst } from './EstSagas';
+import { getKriteria, postKriteria } from './KriteriaSagas';
+import { getUserAuth, postUserAuth } from './UserAuthSagas';
+import { getLandUse, postLandUse } from './LandUseSagas';
+import { getComp, postComp } from './CompSagas';
+import { getContent, postContent } from './ContentSagas';
 import TaskServices from '../Database/TaskServices'
 
 //Add by Aminju
@@ -48,6 +63,20 @@ export default function* root() {
 		takeLatest(InspeksiTypes.POST_DETAIL_INSPEKSI, postInspeksiDetail, miApi),
 		takeLatest(BlockTypes.BLOCK_REQUEST, getBlock, miApi),
 		takeLatest(BlockTypes.BLOCK_POST, postBlock, miApi),
+		takeLatest(AfdTypes.AFD_REQUEST, getAfd, miApi),
+		takeLatest(AfdTypes.AFD_POST, postAfd, miApi),
+		takeLatest(EstTypes.EST_REQUEST, getEst, miApi),
+		takeLatest(EstTypes.EST_POST, postEst, miApi),
+		takeLatest(KriteriaTypes.KRITERIA_REQUEST, getKriteria, miApi),
+		takeLatest(KriteriaTypes.KRITERIA_POST, postKriteria, miApi),
+		takeLatest(UserAuthTypes.USER_AUTH_REQUEST, getUserAuth, miApi),
+		takeLatest(UserAuthTypes.USER_AUTH_POST, postUserAuth, miApi),
+		takeLatest(LandUseTypes.LAND_USE_REQUEST, getLandUse, miApi),
+		takeLatest(LandUseTypes.LAND_USE_POST, postLandUse, miApi),
+		takeLatest(CompTypes.COMP_REQUEST, getComp, miApi),
+		takeLatest(CompTypes.COMP_POST, postComp, miApi),
+		takeLatest(ContentTypes.CONTENT_REQUEST, getContent, miApi),
+		takeLatest(ContentTypes.CONTENT_POST, postContent, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

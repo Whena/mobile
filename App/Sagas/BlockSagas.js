@@ -1,6 +1,5 @@
 import { call, put } from 'redux-saga/effects';
-import BlockActions from '../Redux/BlockRedux';
-import TaskServices from '../Database/TaskServices'
+import BlockAction from '../Redux/BlockRedux';
 
 export function* getBlock(api, action) {
     const { data } = action;
@@ -10,56 +9,40 @@ export function* getBlock(api, action) {
         console.log(response);
         console.log('^^^ GET ALL BLOCK ^^^');
     }
+    if (response.ok) {
+        switch (response.data.status) {
+            case false:
+                yield put(BlockAction.blockFailure('Paramater Salah'));
+                break;
+            case true:
 
-    console.log(response.data.data.delete.length);
-    console.log(response.data.data.insert.length);
-    console.log(response.data.data.update.length);
-
-    if (response.data.data.delete.length > 0) {
-        yield put(BlockActions.blockSuccess(response.data));
-        response.data.data.delete.map(item => {
-            TaskServices.deleteTmRegionByRegionCode(item.REGION_CODE)
-        })
-
-        console.log("Delete Block : " + TaskServices.getAllData('TM_REGION'));
+                console.log('^^^ SUCCESS BLOCK ^^^');
+                yield put(BlockAction.blockSuccess(response.data.data));
+                break;
+            default:
+                yield put(BlockAction.blockFailure('Unknown responseType'));
+                break;
+        }
+    } else {
+        yield put(BlockAction.blockFailure(response.problem));
     }
-    else if (response.data.data.insert.length > 0) {
-        yield put(BlockActions.blockSuccess(response.data));
-        response.data.data.insert.map(item => {
-            TaskServices.saveData('TM_BLOCK', item);
-        })
 
-        console.log("Insert Block : " + TaskServices.getAllData('TM_BLOCK'));
-    }
-    else if (response.data.data.update.length > 0) {
-        yield put(BlockActions.blockSuccess(response.data));
-        response.data.data.update.map(item => {
-            var data = [item.NATIONAL, item.REGION_CODE, item.REGION_NAME];
-            console.log(data);
-            TaskServices.saveData(item.REGION_CODE, data);
-        })
-
-        console.log("Update Block : " + TaskServices.getAllData('TM_REGION'));
-    }
-    else {
-        yield put(BlockActions.blockFailed(response.problem));
-    }
 }
 
 export function* postBlock(api, action) {
     const { data } = action;
-    const response = yield call(api.postRegion, data);
+    const response = yield call(api.postBlock, data);
 
     if (typeof atob !== 'undefined') {
         console.log(response);
-        console.log('^^^ POST REGION ^^^');
+        console.log('^^^ POST BLOCK ^^^');
     }
 
     if (response.ok) {
-        yield put(BlockActions.blockSuccess({ payload: response.data, change: true }));
+        yield put(BlockAction.blockSuccess({ payload: response.data, change: true }));
     } else {
-        yield put(BlockActions.blockFailed({
-            path: 'Complete Post Region',
+        yield put(BlockAction.blockFailure({
+            path: 'Complete Post Block',
             message: response.data.message ? response.data.message : '',
             response
         }));

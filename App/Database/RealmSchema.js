@@ -21,7 +21,12 @@ let realmSchema = new Realm({
         ModelTables.TR_IMAGE_FINDING,
         ModelTables.T_LOG_IMAGE,
         ModelTables.TM_REGION,
-        ModelTables.TM_BLOCK
+        ModelTables.TM_BLOCK,
+        ModelTables.TM_EST,
+        ModelTables.TM_USER_AUTH,
+        ModelTables.TM_LAND_USE,
+        ModelTables.TM_COMP,
+        ModelTables.TM_CONTENT
     ]
 });
 

@@ -31,8 +31,11 @@ const main = createStackNavigator({
     Sync: { screen: SyncScreen },
     Inbox: { screen: InboxScreen },
     DetailFinding: { screen: DetailFindingScreen },
-    FormInspection: { 
-        screen: FormInspectionNavigator 
+    FormInspection: {
+        screen: FormInspectionNavigator,
+        navigationOptions: {
+            header: null
+        },
     }
 }, {
         headerMode: 'screen',

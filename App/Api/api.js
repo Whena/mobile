@@ -17,12 +17,57 @@ const create = () => {
     const login = body => api.post('/login', body);
     const logout = body => api.post('/logut', body);
 
-    const postRegion =  body => {
+    const postRegion = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.post('/mobile-sync', body);
     }
 
-    const postBlock =  body => {
+    const postBlock = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postUserAuth = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postEst = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postKriteria = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postAfd = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postPjs = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postEmployeeHris = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postComp = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postLandUse = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postContent = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.post('/mobile-sync', body);
     }
@@ -42,7 +87,7 @@ const create = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/category')
     }
-    
+
     const getContact = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('/contacts')
@@ -60,12 +105,12 @@ const create = () => {
 
     const getUserAuth = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.get('/mobile-sync/hectare-statement/region')
+        return api.get('/mobile-sync/hectare-statement/user-authorization')
     }
 
     const getEst = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.get('/mobile-sync/hectare-statement/region')
+        return api.get('/mobile-sync/hectare-statement/est')
     }
 
     const getKriteria = () => {
@@ -75,9 +120,33 @@ const create = () => {
 
     const getAfd = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.get('/mobile-sync/hectare-statement/region')
+        return api.get('/mobile-sync/hectare-statement/afdeling')
     }
 
+    const getPjs = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/afdeling')
+    }
+
+    const getEmployeeHris = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/employee-hris')
+    }
+
+    const getLandUse = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/land-use')
+    }
+
+    const getComp = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/hectare-statement/comp')
+    }
+
+    const getContent = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/content')
+    }
 
     return {
         api,
@@ -92,8 +161,27 @@ const create = () => {
         //Add by Aminju
         //Post
         postBlock,
+        postUserAuth,
+        postEst,
+        postKriteria,
+        postAfd,
+        postLandUse,
+        postPjs,
+        postEmployeeHris,
+        postComp,
+        postContent,
+
         //Get
-        getBlock
+        getBlock,
+        getUserAuth,
+        getEst,
+        getKriteria,
+        getAfd,
+        getLandUse,
+        getPjs,
+        getEmployeeHris,
+        getComp,
+        getContent
 
     };
 };

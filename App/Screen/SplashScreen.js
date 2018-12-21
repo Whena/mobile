@@ -40,7 +40,7 @@ class SplashScreen extends Component {
             //buat folder internal      
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
-            
+
             RNFS.mkdir(dirPicutures);
 
             //buat Folder DiExtrnal

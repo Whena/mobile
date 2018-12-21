@@ -88,22 +88,22 @@ const TM_AFD = {
     name: 'TM_AFD',
     // primaryKey: 'ID',
     properties: {
-        REGION_CODE: 'int',
-        COMP_CODE: 'int',
-        EST_CODE: 'int',
-        WERKS: 'int',
+        REGION_CODE: 'string',
+        COMP_CODE: 'string',
+        EST_CODE: 'string',
+        WERKS: 'string',
         AFD_CODE: 'string',
         AFD_NAME: 'string',
-        WERKS_AFD_CODE: 'string',
-        START_VALID: 'string',
-        END_VALID: 'string',
-        INSERT_TIME_DW: 'string',
-        UPDATE_TIME_DW: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        FLAG_UPDATE: 'string',
+        WERKS_AFD_CODE: 'string'
+        // START_VALID: 'string',
+        // END_VALID: 'string',
+        // INSERT_TIME_DW: 'string',
+        // UPDATE_TIME_DW: 'string',
+        // INSERT_USER: 'string',
+        // INSERT_TIME: 'string',
+        // UPDATE_USER: 'string',
+        // UPDATE_TIME: 'string',
+        // FLAG_UPDATE: 'string',
     }
 }
 
@@ -216,7 +216,7 @@ const T_LOG_IMAGE = {
 
 const TM_REGION = {
     name: 'TM_REGION',
-    // primaryKey: 'ID',
+    primaryKey: 'REGION_CODE',
     properties: {
         NATIONAL: 'string',
         REGION_CODE: 'string',
@@ -233,8 +233,8 @@ const TM_BLOCK = {
         WERKS: 'string',
         AFD_CODE: 'string',
         BLOCK_CODE: 'string',
-        BLOCK_NAME:'string',
-        WERKS_AFD_CODE:'string',
+        BLOCK_NAME: 'string',
+        WERKS_AFD_CODE: 'string',
         WERKS_AFD_BLOCK_CODE: 'string',
         LATITUDE_BLOCK: 'string',
         LONGITUDE_BLOCK: 'string'
@@ -247,16 +247,9 @@ const TM_EST = {
         REGION_CODE: 'string',
         COMP_CODE: 'string',
         EST_CODE: 'string',
-        WERKS: 'string',
         EST_NAME: 'string',
-        CITY: 'string',
-        START_VALID: 'string',
-        END_VALID: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        FLAG_UPDATE: 'string'
+        WERKS: 'string',
+        CITY: 'string'
     }
 }
 
@@ -312,6 +305,65 @@ const TM_PJS = {
     }
 }
 
+const TM_LAND_USE = {
+    name: 'TM_LAND_USE',
+    properties: {
+        NATIONAL: 'string',
+        REGION_CODE: 'string',
+        COMP_CODE: 'string',
+        WERKS: 'string',
+        SUB_BA_CODE: 'string',
+        KEBUN_CODE: 'string',
+        AFD_CODE: 'string',
+        AFD_NAME: 'string',
+        WERKS_AFD_CODE: 'string',
+        BLOCK_CODE: 'string',
+        BLOCK_NAME: 'string',
+        WERKS_AFD_BLOCK_CODE: 'string',
+        LAND_USE_CODE: 'string',
+        LAND_USE_NAME: 'string',
+        LAND_USE_CODE_GIS: 'string',
+        SPMON: {type: 'int', default: 0},
+        LAND_CAT: 'string',
+        LAND_CAT_L1_CODE: 'string',
+        LAND_CAT_L1: 'string',
+        LAND_CAT_L2_CODE: 'string',
+        MATURITY_STATUS: 'string',
+        SCOUT_STATUS: 'string',
+        AGES: {type: 'int', default: 0},
+        HA_SAP: 'string',
+        PALM_SAP: 'string',
+        SPH_SAP: 'string',
+        HA_GIS: 'string',
+        PALM_GIS: {type: 'int', default: 0},
+        SPH_GIS: {type: 'int', default: 0}
+    }
+}
+
+const TM_CONTENT = {
+    name: 'TM_CONTENT',
+    properties: {
+        CONTENT_CODE: 'string',
+        GROUP_CATEGORY: 'string',
+        CATEGORY: 'string',
+        CONTENT_NAME: 'string',
+        UOM: 'string',
+        FLAG_TYPE: 'string',
+        URUTAN: 'string'
+    }
+}
+
+const TM_COMP = {
+    name: 'TM_COMP',
+    properties: {
+        NATIONAL: 'string',
+        REGION_CODE: 'string',
+        COMP_CODE: 'string',
+        COMP_NAME: 'string',
+        ADDRESS: 'string'
+    }
+}
+
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -333,5 +385,8 @@ export default {
     TM_EST,
     TM_KRITERIA,
     TM_USER_AUTH,
-    TM_PJS
+    TM_PJS,
+    TM_LAND_USE,
+    TM_COMP,
+    TM_CONTENT
 }

@@ -8,11 +8,32 @@ const TaskServices = {
 
   saveData: function (table, obj) {
     var saved = null;
-    console.log('save() : ' + table + ' ' + JSON.stringify(obj));
+    console.log('Save Data : ' + table + ' ' + JSON.stringify(obj));
+
     RealmSchemas.write(() => {
       saved = RealmSchemas.create(table, obj, true);
     })
     return saved;
+  },
+
+  updatedDataNew: function (table, primary_key, obj) {
+    var updated = null;
+    console.log('Update Data : ' + table + ' ' + JSON.stringify(obj));
+
+    RealmSchemas.write(() => {
+      updated = RealmSchemas.create(table, { REGION_CODE: primary_key, obj }, true);
+    })
+    return updated;
+  },
+
+  deleteDataNew: function (table, primary_key, obj) {
+    var deleted = null;
+    console.log('Delete Data : ' + table + ' ' + JSON.stringify(obj));
+
+    RealmSchemas.write(() => {
+      deleted = RealmSchemas.delete(table, { REGION_CODE: primary_key, obj }, true);
+    })
+    return deleted;
   },
 
   getAllData: function (table) {
@@ -191,17 +212,17 @@ const TaskServices = {
     });
   },
 
-  findByWithList: function(table, listWhereClause, listValueClause){
+  findByWithList: function (table, listWhereClause, listValueClause) {
     let list = RealmSchemas.objects(table);
     let str = '';
 
-    for(var i= 0; i < listWhereClause.length; i++){
-        if(i == 0){
-            str = listWhereClause[i] + '= "'+listValueClause[i]+'" '
-        }
-        else{
-            str = str + ' AND ' +listWhereClause[i] + '= "'+listValueClause[i]+'" '
-        }
+    for (var i = 0; i < listWhereClause.length; i++) {
+      if (i == 0) {
+        str = listWhereClause[i] + '= "' + listValueClause[i] + '" '
+      }
+      else {
+        str = str + ' AND ' + listWhereClause[i] + '= "' + listValueClause[i] + '" '
+      }
     }
     // console.log(str)
     return list.filtered(str);

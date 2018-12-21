@@ -4,13 +4,13 @@ import Immutable from 'seamless-immutable';
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-	regionRequest: null,
-	regionPost: ['data'],
-	regionSuccess: ['payload'],
-	regionFailure: null
+	contentRequest: null,
+	contentPost: ['data'],
+	contentSuccess: ['payload'],
+	contentFailure: null
 });
 
-export const RegionTypes = Types;
+export const ContentTypes = Types;
 export default Creators;
 
 /* ------------- Initial State ------------- */
@@ -18,12 +18,12 @@ export default Creators;
 export const INITIAL_STATE = Immutable({
 	fetching: null,
 	error: null,
-	region: null
+	content: null
 });
 
 /* ------------- Selectors ------------- */
 
-export const RegionSelectors = {
+export const ContentSelectors = {
 	getData: state => state.data
 };
 
@@ -31,13 +31,13 @@ export const RegionSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, region: null });
-export const postRegion = (state, { data }) => state.merge({ fetching: true, data, region: null });
+export const request = (state, { data }) => state.merge({ fetching: true, error: null, content: null });
+export const postContent = (state, { data }) => state.merge({ fetching: true, data, content: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, region: payload });
+	return state.merge({ fetching: false, error: null, content: payload });
 };
 
 // Something went wrong somewhere.
@@ -46,8 +46,8 @@ export const failure = state => state.merge({ fetching: false, error: true, payl
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-	[Types.REGION_REQUEST]: request,
-	[Types.REGION_POST]: postRegion,
-	[Types.REGION_SUCCESS]: success,
-	[Types.REGION_FAILURE]: failure
+	[Types.CONTENT_REQUEST]: request,
+	[Types.CONTENT_POST]: postContent,
+	[Types.CONTENT_SUCCESS]: success,
+	[Types.CONTENT_FAILURE]: failure
 });

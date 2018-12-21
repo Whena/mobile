@@ -4,13 +4,13 @@ import Immutable from 'seamless-immutable';
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-	regionRequest: null,
-	regionPost: ['data'],
-	regionSuccess: ['payload'],
-	regionFailure: null
+	compRequest: null,
+	compPost: ['data'],
+	compSuccess: ['payload'],
+	compFailure: null
 });
 
-export const RegionTypes = Types;
+export const CompTypes = Types;
 export default Creators;
 
 /* ------------- Initial State ------------- */
@@ -18,12 +18,12 @@ export default Creators;
 export const INITIAL_STATE = Immutable({
 	fetching: null,
 	error: null,
-	region: null
+	comp: null
 });
 
 /* ------------- Selectors ------------- */
 
-export const RegionSelectors = {
+export const CompSelectors = {
 	getData: state => state.data
 };
 
@@ -31,13 +31,13 @@ export const RegionSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, region: null });
-export const postRegion = (state, { data }) => state.merge({ fetching: true, data, region: null });
+export const request = (state, { data }) => state.merge({ fetching: true, error: null, comp: null });
+export const postComp = (state, { data }) => state.merge({ fetching: true, data, comp: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, region: payload });
+	return state.merge({ fetching: false, error: null, comp: payload });
 };
 
 // Something went wrong somewhere.
@@ -46,8 +46,8 @@ export const failure = state => state.merge({ fetching: false, error: true, payl
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-	[Types.REGION_REQUEST]: request,
-	[Types.REGION_POST]: postRegion,
-	[Types.REGION_SUCCESS]: success,
-	[Types.REGION_FAILURE]: failure
+	[Types.COMP_REQUEST]: request,
+	[Types.COMP_POST]: postComp,
+	[Types.COMP_SUCCESS]: success,
+	[Types.COMP_FAILURE]: failure
 });
