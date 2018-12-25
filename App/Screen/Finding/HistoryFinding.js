@@ -22,8 +22,8 @@ export default class HistoryFinding extends Component {
   )
 
   _initData() {
-    var data = TaskServices.findBy('TR_FINDING', 'PROGRESS', 100)
-
+    //var data = TaskServices.findBy('TR_FINDING', 'PROGRESS', 100)
+    var data = TaskServices.getAllData('TR_FINDING')
     this.setState({ data })
   }
 
