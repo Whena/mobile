@@ -21,6 +21,7 @@ import RNFS from 'react-native-fs'
 import R, { isEmpty, isNil } from 'ramda'
 import ImagePickerCrop from 'react-native-image-crop-picker'
 import moment from 'moment'
+import DateTimePicker from 'react-native-modal-datetime-picker'
 
 export default class DetailFindingScreen extends Component {
 
@@ -40,7 +41,9 @@ export default class DetailFindingScreen extends Component {
             image: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
             bukti: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
             data,
-            progress: data.PROGRESS
+            progress: data.PROGRESS,
+            isDateTimePickerVisible: false,
+            updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE
         }
     }
 
@@ -100,6 +103,15 @@ export default class DetailFindingScreen extends Component {
         });
     }
 
+    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+    _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+    _handleDatePicked = (date) => {
+        this.setState({ updatedDueDate: moment(date).format("YYYY-MM-DD") })
+        this._hideDateTimePicker();
+    };
+
     _saveToDB() {
         var save = {
             FINDING_CODE: this.state.data.FINDING_CODE,
@@ -109,7 +121,7 @@ export default class DetailFindingScreen extends Component {
             FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
             FINDING_DESC: this.state.data.FINDING_DESC,
             FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
-            DUE_DATE: this.state.data.DUE_DATE,
+            DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,
             ASSIGN_TO: this.state.data.ASSIGN_TO,
             PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
@@ -224,8 +236,18 @@ export default class DetailFindingScreen extends Component {
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Batas Waktu </Text>
-                                <Text style={styles.item}>: {this.state.data.DUE_DATE} </Text>
+                                {isEmpty(this.state.data.DUE_DATE) && (
+                                    <Text style={styles.item} onPress={this._showDateTimePicker} style={{ fontSize: 14, color: '#999' }}>: {this.state.updatedDueDate} </Text>)}
+                                {!isEmpty(this.state.data.DUE_DATE) && (
+                                    <Text style={styles.item}>: {this.state.data.DUE_DATE} </Text>)}
                             </View>
+
+                            <DateTimePicker
+                                minimumDate={new Date()}
+                                isVisible={this.state.isDateTimePickerVisible}
+                                onConfirm={this._handleDatePicked}
+                                onCancel={this._hideDateTimePicker}
+                            />
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Ditugaskan Kepada </Text>
