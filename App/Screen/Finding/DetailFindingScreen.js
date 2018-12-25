@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-import { View, Image, TouchableOpacity, StyleSheet, Text } from 'react-native'
+import {
+    View, Image, TouchableOpacity, StyleSheet, Text,
+    Alert
+} from 'react-native'
 import Colors from '../../Constant/Colors'
 import FastImage from 'react-native-fast-image'
 import {
@@ -54,6 +57,13 @@ export default class DetailFindingScreen extends Component {
         title: 'Detail Temuan',
         headerTintColor: '#fff'
     };
+
+    _makeAlert(title, msg) {
+        Alert.alert(title, msg, [
+            {
+                text: 'OK'
+            }], { cancelable: false })
+    }
 
     _getStatus() {
         if (this.state.data.PROGRESS == 100) return "Selesai"
@@ -117,7 +127,7 @@ export default class DetailFindingScreen extends Component {
 
         this.setState({ data: save })
 
-        alert("Data berhasil di simpan")
+        this._makeAlert("Informasi", "Data berhasil di simpan")
     }
 
     _saveData() {
@@ -152,10 +162,13 @@ export default class DetailFindingScreen extends Component {
 
             }).catch((err) => {
                 console.tron.log("Error moveFile: " + err.message)
-                alert("Terjadi kesalahan, silahkan coba lagi")
+                this._makeAlert("Informasi", "Terjadi kesalahan, silahkan coba lagi")
             });
         } else {
-            this._saveToDB();
+            if (this.state.progress == 100 && isEmpty(this.state.image))
+                this._makeAlert("Peringatan", "Harus menyertakan foto saat progress 100%")
+            else
+                this._saveToDB();
         }
     }
 
@@ -227,8 +240,8 @@ export default class DetailFindingScreen extends Component {
                     <View style={{ flex: 1 }}>
                         <Text style={[styles.title, { marginBottom: 5 }]}>Progress:</Text>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
-
                             <Slider
+                                ref='sliderProgress'
                                 step={25}
                                 thumbTouchSize={{ width: 40, height: 40 }}
                                 disabled={this.state.PROGRESS == 100 ? true : false}
@@ -237,9 +250,24 @@ export default class DetailFindingScreen extends Component {
                                 style={{ height: 20, flex: 1 }}
                                 trackStyle={{ height: 5 }}
                                 value={this.state.progress}
-                                onValueChange={(value) => this.setState({
-                                    progress: parseInt(value)
-                                })} />
+                                onSlidingComplete={(value) => {
+                                    if (parseInt(value) < this.state.data.PROGRESS) {
+                                        var progress = R.clone(this.state.data.PROGRESS)
+                                        this.refs['sliderProgress']._setCurrentValue(progress)
+
+                                        this.setState({
+                                            progress
+                                        })
+
+                                        this._makeAlert('Peringatan', 'Progress tidak boleh dimundurkan!')
+
+                                    } else {
+                                        this.setState({
+                                            progress: parseInt(value)
+                                        })
+                                    }
+                                }}
+                            />
                             {/* <Progress.Bar showsText={true} height={20}
                                 color={Colors.brand} width={null} progress={0.6} /> */}
                             <Text style={{
