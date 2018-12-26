@@ -16,7 +16,6 @@ export function* getRegion(api, action) {
                 yield put(RegionActions.regionFailure('Paramater Salah'));
                 break;
             case true:
-
                 console.log('^^^ Succes REGION ^^^');
                 yield put(RegionActions.regionSuccess(response.data.data));
                 break;

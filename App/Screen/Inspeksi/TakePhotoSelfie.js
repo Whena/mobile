@@ -24,6 +24,19 @@ import ImageResizer from 'react-native-image-resizer';
 
 class TakePhotoSelfie extends Component{
 
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: Colors.tintColor
+    },
+    title: 'Ambil Foto Diri',
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      flex: 1,
+      fontSize: 18,
+      fontWeight: '400'
+    },
+  };
+
     constructor(props){
         super(props);
 
@@ -36,6 +49,8 @@ class TakePhotoSelfie extends Component{
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);   
         let waktu = R.clone(params.waktu);
+        let baris = R.clone(params.baris);
+
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -52,7 +67,8 @@ class TakePhotoSelfie extends Component{
           dataUsual,
           pathCache:'',
           statusBlok,
-          waktu
+          waktu,
+          baris
         }
     }
 
@@ -78,6 +94,7 @@ class TakePhotoSelfie extends Component{
       var image = {
           IMAGE_CODE: imgCode,
           TR_CODE: trCode,
+          BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
           IMAGE_NAME:imageName,
           IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie',
           STATUS_IMAGE: '', 
@@ -147,7 +164,9 @@ class TakePhotoSelfie extends Component{
         kondisiBaris1: this.state.kondisiBaris1, 
         kondisiBaris2: this.state.kondisiBaris2, 
         dataUsual: this.state.dataUsual,
-        statusBlok:this.state.statusBlok});    
+        statusBlok:this.state.statusBlok,
+        baris:this.state.baris
+      });    
 
     }
   

@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import CardView from 'react-native-cardview';
 import Colors from '../../Constant/Colors';
 import Taskservice from '../../Database/TaskServices'
 import { NavigationActions, StackActions  } from 'react-navigation';
+var RNFS = require('react-native-fs');
+const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 export default class HistoryInspection extends Component {
+
+  constructor(props){
+    super(props);
+  }
+
+  componentDidMount(){   
+    this.renderAll();
+  }
   
   renderAll =()=>{
     let data = Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
@@ -19,6 +29,20 @@ export default class HistoryInspection extends Component {
   }
 
   renderList = (data, index) => {
+    let status = '';
+    if (data.STATUS_SYNC == 'N'){
+      status = 'Belum Dikirim'
+    }else{
+      status = 'Sudah Terkirim'
+    }
+    
+    // let dataImage = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+    let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/test.jpg`;
+    // console.log(path);
+    // alert(path)
+    // if(dataImage.length > 0){
+    //   path = `${FILE_PREFIX}${dataImage.IMAGE_PATH}/${dataImage.IMAGE_NAME}`
+    // }
     return(
       <TouchableOpacity 
         style={{ marginTop: 12 }} 
@@ -28,16 +52,17 @@ export default class HistoryInspection extends Component {
             <View style={styles.sectionCardView}>
               <View style={{ flexDirection: 'row', height: 120 }} >
                 <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'yellow' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
+                <Image style={{ alignItems: 'stretch', width: 120 }} source={{uri: path}}></Image>
+                {/* <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image> */}
               </View>
               <View style={styles.sectionDesc} >
                 <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{data.WERKS}</Text>
                 <Text style={{ fontSize: 12 }}>{data.BLOCK_CODE.toLocaleUpperCase()}</Text>
                 <Text style={{ fontSize: 12 }}>{data.INSPECTION_DATE}</Text>
-                <Text style={{ fontSize: 12, color: 'red' }}>Belum Terkirim</Text>
+                <Text style={{ fontSize: 12, color: 'red' }}>{status}</Text>
               </View>
               <View style={styles.rightSection}>
-                <Text style={styles.textValue}>B</Text>
+                <Text style={styles.textValue}>{data.INSPECTION_RESULT}</Text>
               </View>
             </View>
           </CardView>
@@ -47,105 +72,13 @@ export default class HistoryInspection extends Component {
   }
 
   actionButtonClick(data) {
-    // this.props.navigation.navigate('FormHistoryInspection', {test: data});
     this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'FormHistoryInspection', params: { sport: 'x' }}))
-
-    // NavigationActions.navigate({
-    //   routeName: 'InspectionStack',
-    //   params: {test: data},
-    //   action: NavigationActions.navigate({
-    //     routeName: 'FormHistoryInspection',
-    //     params:  {test: data}
-    //   })
-    // });
   }
 
   render() {
-    return (
+    return (  
       <ScrollView style={styles.container}>
-
-        {this.renderAll()}
-
-        {/* <TouchableOpacity style={{ marginTop: 12 }} onPress={() => this.actionButtonClick()}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
-            <View style={styles.sectionCardView}>
-              <View style={{ flexDirection: 'row', height: 120 }} >
-                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'red' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
-              </View>
-              <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>GAWI INTI - 1</Text>
-                <Text style={{ fontSize: 12 }}>A-001/A01</Text>
-                <Text style={{ fontSize: 12 }}>01 Nov 2018, 10.56</Text>
-                <Text style={{ fontSize: 12, color: 'grey' }}>Sudah Terkirim</Text>
-              </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.textValue}>A</Text>
-              </View>
-            </View>
-          </CardView>
-        </TouchableOpacity> */}
-
-        {/* <View style={{ marginTop: 12 }}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
-            <View style={styles.sectionCardView}>
-              <View style={{ flexDirection: 'row', height: 120 }} >
-                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'red' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
-              </View>
-              <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>GAWI INTI - 1</Text>
-                <Text style={{ fontSize: 12 }}>A-001/A01</Text>
-                <Text style={{ fontSize: 12 }}>01 Nov 2018, 10.56</Text>
-                <Text style={{ fontSize: 12, color: 'grey' }}>Sudah Terkirim</Text>
-              </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.textValue}>A</Text>
-              </View>
-            </View>
-          </CardView>
-        </View>
-
-        <View style={{ marginTop: 12 }}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
-            <View style={styles.sectionCardView}>
-              <View style={{ flexDirection: 'row', height: 120 }} >
-                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'yellow' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
-              </View>
-              <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>GAWI INTI - 1</Text>
-                <Text style={{ fontSize: 12 }}>B-001/A01</Text>
-                <Text style={{ fontSize: 12 }}>01 Nov 2018, 10.56</Text>
-                <Text style={{ fontSize: 12, color: 'red' }}>Belum Terkirim</Text>
-              </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.textValue}>B</Text>
-              </View>
-            </View>
-          </CardView>
-        </View>
-
-        <View style={{ marginTop: 12 }}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
-            <View style={styles.sectionCardView}>
-              <View style={{ flexDirection: 'row', height: 120 }} >
-                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'green' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image>
-              </View>
-              <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>GAWI INTI - 1</Text>
-                <Text style={{ fontSize: 12 }}>C-001/A01</Text>
-                <Text style={{ fontSize: 12 }}>01 Nov 2018, 10.56</Text>
-                <Text style={{ fontSize: 12, color: 'grey' }}>Sudah Terkirim</Text>
-              </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.textValue}>C</Text>
-              </View>
-            </View>
-          </CardView>
-        </View> */}
-
+        {this.renderAll()}     
       </ScrollView >
     )
   }

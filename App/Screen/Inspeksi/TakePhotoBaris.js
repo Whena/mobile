@@ -33,7 +33,7 @@ class TakePhotoBaris extends Component {
     headerStyle: {
       backgroundColor: Colors.tintColor
     },
-    title: 'Ambil Photo Baris',
+    title: 'Ambil Foto Baris',
     headerTintColor: '#fff',
     headerTitleStyle: {
       flex: 1,
@@ -51,8 +51,9 @@ class TakePhotoBaris extends Component {
     let from = R.clone(params.from);
     let statusBlok = R.clone(params.statusBlok);
     let waktu = R.clone(params.waktu);
+    let baris = R.clone(params.baris);
 
-    // console.log(dataUsual)
+    console.log(inspeksiHeader)
 
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -66,7 +67,8 @@ class TakePhotoBaris extends Component {
       from,
       pathCache: '',
       statusBlok,
-      waktu
+      waktu,
+      baris
     };
   }
 
@@ -120,6 +122,7 @@ class TakePhotoBaris extends Component {
     var image = {
       IMAGE_CODE: imgCode,
       TR_CODE: trCode,
+      BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
       IMAGE_NAME: imageName,
       IMAGE_PATH: RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris',
       STATUS_IMAGE: '',
@@ -185,7 +188,12 @@ class TakePhotoBaris extends Component {
   insertDB() {
     RNFS.unlink(this.state.pathCache);
     this.props.navigation.navigate('KondisiBaris1',
-      { fotoBaris: this.state.dataModel, inspeksiHeader: this.state.inspeksiHeader, dataUsual: this.state.dataUsual, statusBlok: this.state.statusBlok });
+      { 
+        fotoBaris: this.state.dataModel, 
+        inspeksiHeader: this.state.inspeksiHeader, 
+        dataUsual: this.state.dataUsual, 
+        statusBlok: this.state.statusBlok,
+        baris:this.state.baris, });
   }
 
   renderImage() {

@@ -194,11 +194,13 @@ class BuatInspeksiRedesign extends Component {
             BLOCK_INSPECTION_CODE: blok_inspection_code_h
         }
 
-        this.setState({ inspectionCode: blok_inspection_code_h, showConfirm: false })
+        this.setState({ inspectionCode: blok_inspection_code_h, showConfirm: false });
+        
         this.props.navigation.navigate('TakeFotoBaris', {
             inspeksiHeader: modelInspeksiH,
             dataUsual: params,
             statusBlok: param,
+            baris:this.state.baris,
             waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss')
         });
     }
@@ -302,11 +304,11 @@ class BuatInspeksiRedesign extends Component {
 
                 
                 <View style={styles.containerMap}>
-                {!!this.state.latitude && !!this.state.longitude &&
-                    <MapView
-                        style={styles.map}>
-                        <Geojson geojson={alcatraz} />
-                        <Marker
+                    {!!this.state.latitude && !!this.state.longitude &&
+                        <MapView
+                            style={styles.map}>
+                            <Geojson geojson={alcatraz} />
+                            <Marker
                                 coordinate={{
                                 latitude: this.state.latitude,
                                 longitude: this.state.longitude,
@@ -315,15 +317,14 @@ class BuatInspeksiRedesign extends Component {
                                 anchor={{ x: 0.84, y: 1 }}
                             >
                             </Marker>                      
-                    </MapView>
-                }
-                    
+                        </MapView>
+                    }                 
 
                     <IconLoc
                         onPress={()=>{this.setState({fetchLocation: true}); this.getLocation()}}
                         name="location-arrow"
                         size={24}
-                        style={{margin: 15, alignSelf:'flex-end'}}/>  
+                        style={{ alignSelf: 'flex-end', marginBottom:130, marginRight: 10}}/>  
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
@@ -375,11 +376,11 @@ class BuatInspeksiRedesign extends Component {
                     </View>
                 }*/}
 
-                <ProgressDialog
+                {/* <ProgressDialog
                         visible={this.state.fetchLocation}
                         activityIndicatorSize="large"
                         message="Mencari Lokasi..."
-                    /> 
+                    />  */}
             </View>
         )
     }

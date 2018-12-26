@@ -49,9 +49,9 @@ class SplashScreen extends Component {
             setTimeout(() => {
                 if (TaskServices.getTotalData('TR_LOGIN') > 0) {
 
-                    this.props.categoryRequest();
-                    this.props.contactRequest();
-                    this.props.regionRequest();
+                    // this.props.categoryRequest();
+                    // this.props.contactRequest();
+                    // this.props.regionRequest();
 
                     this.navigateScreen('MainMenu');
 

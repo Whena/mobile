@@ -30,8 +30,6 @@ export function getCalculateTime(date1, date2){
 	// var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 	// alert(diffDays + " days, " + diffHrs + " hours, " + diffMins + " minutes until Christmas 2009 =)");
 
-	console.log(date1);
-	console.log(date2)
 	var diffMs = (date1-date2); //millisecond between now and last
 	var diffDays = Math.floor(diffMs / 86400000); // days
 	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours

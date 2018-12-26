@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import MapView, {PROVIDER_GOOGLE, ProviderPropType, Marker, AnimatedRegion } from 'react-native-maps';
 import {RNSlidingButton, SlideDirection} from 'rn-sliding-button';
 import TaskService from '../../Database/TaskServices';
-import {getTodayDate, getCalculateTime} from '../../Lib/Utils'
+import {getTodayDate, getCalculateTime, getUUID} from '../../Lib/Utils'
 import { NavigationActions, StackActions  } from 'react-navigation';
 import R from 'ramda';
 import geolib from 'geolib';
@@ -38,6 +38,19 @@ const alcatraz = {
 
 class KondisiBarisAkhir extends Component{
 
+    static navigationOptions = {
+        headerStyle: {
+          backgroundColor: Colors.tintColor
+        },
+        title: 'Buat Inspeksi',
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          flex: 1,
+          fontSize: 18,
+          fontWeight: '400'
+        },
+      };
+
     constructor(props){
         super(props);
 
@@ -50,7 +63,7 @@ class KondisiBarisAkhir extends Component{
         let kondisiBaris2 = R.clone(params.kondisiBaris2);
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
-
+        let barisBlok = R.clone(params.baris);
 
         this.state = {
             latitude:null,
@@ -77,7 +90,8 @@ class KondisiBarisAkhir extends Component{
             idBaris:0,
             menit:'',
             jarak: '',
-            statusBlok
+            statusBlok,
+            barisBlok
         };
     }
 
@@ -115,9 +129,8 @@ class KondisiBarisAkhir extends Component{
                 // });
                 // this.setState({initialPosition:initialRegion});
                 // this.setState({initialMarker:initialRegion});
-                let totalJarak = this.totalJarak(position.coords);
-                console.log(totalJarak)
-                this.setState({latitude:lat, longitude:lon, jarak:totalJarak.toString()});
+                let totalJarak = this.totalJarak({latitude:lat, longitude:lon});
+                this.setState({latitude:lat, longitude:lon, jarak: totalJarak.toString()});
 
 			},
 			(error) => {
@@ -129,13 +142,13 @@ class KondisiBarisAkhir extends Component{
 				// Alert.alert('Informasi', message);
 				console.log(message);
 			}, // go here if error while fetch location
-			{ enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position 
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, 
+            //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position 
         );
     }
 
     changeColorSlide(){          
-        // this.props.navigation.navigate('SelesaiInspeksi');
-        // var btn;        
+        // this.props.navigation.navigate('SelesaiInspeksi');    
         let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
         if(total >= 1){
             this.setState({fulFillMandatory:true})
@@ -213,18 +226,33 @@ class KondisiBarisAkhir extends Component{
         let param = [nilai.toString(), result, getTodayDate('YYYY-MM-DD  HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
         TaskService.updateInspectionHScore(this.state.inspeksiHeader.BLOCK_INSPECTION_CODE, param);
         
-        this.props.navigation.navigate('SelesaiInspeksi',{
-            fotoSelfie: this.state.fotoSelfie,
-            inspeksiHeader: this.state.inspeksiHeader, 
-            fotoBaris: this.state.fotoBaris,
-            kondisiBaris1: this.state.kondisiBaris1, 
-            kondisiBaris2: this.state.kondisiBaris2, 
-            dataUsual: this.state.dataUsual,
-            statusBlok:this.state.statusBlok
+        // this.props.navigation.navigate('SelesaiInspeksi',{
+        //     fotoSelfie: this.state.fotoSelfie,
+        //     inspeksiHeader: this.state.inspeksiHeader, 
+        //     fotoBaris: this.state.fotoBaris,
+        //     kondisiBaris1: this.state.kondisiBaris1, 
+        //     kondisiBaris2: this.state.kondisiBaris2, 
+        //     dataUsual: this.state.dataUsual,
+        //     statusBlok:this.state.statusBlok
+        // });
+
+        const navigation = this.props.navigation;
+        const resetAction = StackActions.reset({
+            index: 0,            
+			actions: [NavigationActions.navigate({ 
+                routeName: 'SelesaiInspeksi', 
+                params : { 
+                    // fotoSelfie: this.state.fotoSelfie,
+                    inspeksiHeader: this.state.inspeksiHeader, 
+                    // fotoBaris: this.state.fotoBaris,
+                    // kondisiBaris1: this.state.kondisiBaris1, 
+                    // kondisiBaris2: this.state.kondisiBaris2, 
+                    // dataUsual: this.state.dataUsual,
+                    // statusBlok:this.state.statusBlok
+                } 
+            })]
         });
-            
-        // this.props.navigation.navigate('SelesaiInspeksi');
-        // this.props.navigation.goBack(null);
+        navigation.dispatch(resetAction);
 
     }
 
@@ -285,7 +313,7 @@ class KondisiBarisAkhir extends Component{
             START_INSPECTION: this.state.inspeksiHeader.START_INSPECTION,//getTodayDate('DD MMM YYYY HH:mm:ss'),
             END_INSPECTION: endInspeksi,
             LAT_START_INSPECTION: this.state.inspeksiHeader.LAT_START_INSPECTION, //this.state.latitude.toString(),
-            LONG_START_INSPECTION: this.state.inspeksiHeader.LAT_START_INSPECTION,//this.state.longitude.toString(),
+            LONG_START_INSPECTION: this.state.inspeksiHeader.LONG_START_INSPECTION,//this.state.longitude.toString(),
             LAT_END_INSPECTION: endLat,
             LONG_END_INSPECTION: endLon,
             ASSIGN_TO:''
@@ -295,6 +323,7 @@ class KondisiBarisAkhir extends Component{
         var image = {
             IMAGE_CODE: this.state.fotoBaris.IMAGE_CODE,
             TR_CODE: this.state.fotoBaris.TR_CODE,
+            BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
             IMAGE_NAME: this.state.fotoBaris.IMAGE_NAME,
             IMAGE_PATH: this.state.fotoBaris.IMAGE_PATH,
             STATUS_IMAGE: '', 
@@ -305,6 +334,7 @@ class KondisiBarisAkhir extends Component{
         var selfie = {
             IMAGE_CODE: this.state.fotoSelfie.IMAGE_CODE,
             TR_CODE: this.state.fotoSelfie.TR_CODE,
+            BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
             IMAGE_NAME: this.state.fotoSelfie.IMAGE_NAME,
             IMAGE_PATH: this.state.fotoSelfie.IMAGE_PATH,
             STATUS_IMAGE: '', 
@@ -326,12 +356,16 @@ class KondisiBarisAkhir extends Component{
             }
         }
 
-        let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
+        // let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
         var baris = {
-            ID: parseInt(total+1),
+            ID: getUUID(),
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            VALUE: this.state.txtBaris
+            VALUE: this.state.barisBlok,
+            TIME: this.state.menit,
+            DISTANCE: this.state.jarak
         }
+        // console.log(this.state.barisBlok)
+        // console.log(JSON.stringify(baris))
         TaskService.saveData('TR_BARIS_INSPECTION', baris)
 
         var params = {
@@ -342,9 +376,6 @@ class KondisiBarisAkhir extends Component{
             BARIS: this.state.txtBaris,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE
         }
-
-        // console.log(JSON.stringify(params));
-        // console.log(JSON.stringify(modelInspeksiH));
 
         if(this.state.fulFillMandatory){
             this.calculate();
@@ -365,7 +396,9 @@ class KondisiBarisAkhir extends Component{
                 inspeksiHeader: inspeksiH, 
                 from: 'kondisiBaris', 
                 waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss'),
-                statusBlok:this.state.statusBlok } 
+                statusBlok:this.state.statusBlok,
+                baris: this.state.txtBaris
+             } 
             })]
         });
         navigation.dispatch(resetAction);

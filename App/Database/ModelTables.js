@@ -55,6 +55,7 @@ const TR_IMAGE = {
     properties: {
         IMAGE_CODE: 'string',
         TR_CODE: 'string',
+        BLOCK_INSPECTION_CODE: 'string',
         IMAGE_NAME: 'string',
         IMAGE_PATH: 'string',
         STATUS_IMAGE: 'string',
@@ -78,9 +79,11 @@ const TR_BARIS_INSPECTION = {
     name: 'TR_BARIS_INSPECTION',
     primaryKey: 'ID',
     properties: {
-        ID: 'int',
+        ID: 'string',
         BLOCK_INSPECTION_CODE: 'string',
-        VALUE: 'string'
+        VALUE: 'string',
+        TIME: 'string',
+        DISTANCE: 'string'
     }
 }
 

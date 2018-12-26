@@ -39,6 +39,7 @@ class KondisiBaris2 extends Component {
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
         let waktu = R.clone(params.waktu);
+        let baris = R.clone(params.baris);
 
         this.state = {
 
@@ -123,6 +124,7 @@ class KondisiBaris2 extends Component {
             // kondisiBaris2:[]
             statusBlok,
             waktu,
+            baris,
 
             showPiringan: false,
             showSarkul: false,
@@ -427,6 +429,30 @@ class KondisiBaris2 extends Component {
         }
         listBaris2.push(data);
 
+        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 15;
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE: 'CC0015',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.KASTRASI,
+            STATUS_SYNC: 'N'
+        }
+        listBaris2.push(data);
+
+        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 16;
+        data = {
+            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE: 'CC0016',
+            AREAL: this.state.dataUsual.BARIS,
+            VALUE: this.state.SANITASI,
+            STATUS_SYNC: 'N'
+        }
+        listBaris2.push(data);
+
         // blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
         // '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+115; 
 
@@ -437,7 +463,8 @@ class KondisiBaris2 extends Component {
             kondisiBaris1: this.state.kondisiBaris1,
             kondisiBaris2: listBaris2,
             dataUsual: this.state.dataUsual,
-            statusBlok: this.state.statusBlok
+            statusBlok: this.state.statusBlok,
+            baris:this.state.baris,
         });
     }
 

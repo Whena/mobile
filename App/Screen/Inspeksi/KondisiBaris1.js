@@ -40,6 +40,7 @@ class KondisiBaris1 extends Component {
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
         let waktu = R.clone(params.waktu);
+        let baris = R.clone(params.baris);
 
         this.state = {
             jumlahPokok: '0',
@@ -52,7 +53,8 @@ class KondisiBaris1 extends Component {
             inspeksiHeader,
             dataUsual,
             statusBlok,
-            waktu
+            waktu,
+            baris
         }
     }
 
@@ -145,7 +147,8 @@ class KondisiBaris1 extends Component {
             inspeksiHeader: this.state.inspeksiHeader,
             kondisiBaris1: kondisiBaris1,
             dataUsual: this.state.dataUsual,
-            statusBlok: this.state.statusBlok
+            statusBlok: this.state.statusBlok,
+            baris:this.state.baris,
         }
         );
     }

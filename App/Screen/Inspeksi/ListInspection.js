@@ -69,7 +69,7 @@ class ListInspection extends Component {
   }
 
   actionButtonClick() {
-    this.props.navigation.navigate('FormInspection')
+    this.props.navigation.navigate('FormInspection');
     // this.loadData()
   }
 
