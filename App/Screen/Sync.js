@@ -48,9 +48,15 @@ class SyncScreen extends React.Component {
             tglMobileSync: "",
             tabelUpdate: '',
             imei: '',
-
             progress: 0,
             indeterminate: false,
+            downloadRegion : false,
+            downloadAfd: false,
+            downloadBlok: false,
+            downloadEst: false,
+            downloadLandUse: false,
+            downloadComp: false,
+            downloadContent: false,
         }
     }
 
@@ -192,6 +198,16 @@ class SyncScreen extends React.Component {
         //     TABEL_UPDATE: "hectare-statement/block"
         // });
 
+        this.setState({
+            downloadRegion: false, 
+            downloadAfd: false,
+            downloadBlok: false,
+            downloadEst: false,
+            downloadLandUse: false,
+            downloadComp: false,
+            downloadContent: false
+
+        });
         // GET DATA MASTER
         // this.props.regionRequest();
         // this.props.afdRequest();
@@ -227,54 +243,43 @@ class SyncScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        // console.log("Masuk Sini");
-        // console.log(JSON.stringify(newProps));
 
-        // if (newProps.region.region != null) {
-        //     let dataJSON = newProps.region.region;
-        //     console.log(dataJSON)
-        //     this._crudTM_Region(dataJSON);
-        // }
-
-        // if (newProps.afd.afd != null) {
-        //     let dataJSON = newProps.afd.afd;
-        //     this._crudTM_Afd(dataJSON);
-        // }
-
-        if (newProps.block.block != null) {
+        if (!newProps.region.fetching && !this.state.downloadRegion) {
+            let dataJSON = newProps.region.region;
+            this.setState({downloadRegion:true})
+            this._crudTM_Region(dataJSON);
+        }
+        if (!newProps.afd.fetchingAfd && !this.state.downloadAfd) {
+            let dataJSON = newProps.afd.afd;            
+            this.setState({downloadAfd:true})
+            this._crudTM_Afd(dataJSON);
+        }
+        if (!newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
+            this.setState({downloadBlok:true})
             this._crudTM_Block(dataJSON);
         }
+        if (!newProps.est.fetchingEst && !this.state.downloadEst) {
+            let dataJSON = newProps.est.est;
+            this.setState({downloadEst:true})
+            this._crudTM_Est(dataJSON);
+        }
+        if (!newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+            let dataJSON = newProps.landUse.landUse;
+            this.setState({downloadLandUse:true})
+            this._crudTM_LandUse(dataJSON);
+        }
+        if (!newProps.comp.fetchingComp && !this.state.downloadComp) {
+            let dataJSON = newProps.comp.comp;
+            this.setState({downloadComp:true})
+            this._crudTM_Comp(dataJSON);
+        }
 
-        // if (newProps.est.est != null) {
-        //     let dataJSON = newProps.est.est;
-        //     this._crudTM_Est(dataJSON);
-        // }
-
-        // if (newProps.landUse.landUse != null) {
-        //     let dataJSON = newProps.landUse.landUse;
-        //     this._crudTM_LandUse(dataJSON);
-        // }
-
-        // if (newProps.comp.comp != null) {
-        //     let dataJSON = newProps.comp.comp;
-        //     this._crudTM_Comp(dataJSON);
-        // }
-
-        // if (newProps.content.content != null) {
-        //     let dataJSON = newProps.content.content;
-        //     this._crudTM_Content(dataJSON);
-        // }
-
-        // if (newProps.contentLabel.contentLabel != null) {
-        //     let dataJSON = newProps.contentLabel.contentLabel;
-        //     this._crudTM_ContentLabel(dataJSON);
-        // }
-
-        // if (newProps.kriteria.kriteria != null) {
-        //     let dataJSON = newProps.kriteria.kriteria;
-        //     this._crudTM_Kriteria(dataJSON);
-        // }
+        if (!newProps.content.fetchingContent && !this.state.downloadContent) {
+            let dataJSON = newProps.content.content;
+            this.setState({downloadContent:true})
+            this._crudTM_Content(dataJSON);
+        }
     }
 
     render() {

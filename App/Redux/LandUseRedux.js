@@ -16,7 +16,7 @@ export default Creators;
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-	fetching: null,
+	fetchingLandUse: null,
 	error: null,
 	landUse: null
 });
@@ -31,17 +31,17 @@ export const LandUseSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, landUse: null });
-export const postLandUse = (state, { data }) => state.merge({ fetching: true, data, landUse: null });
+export const request = (state, { data }) => state.merge({ fetchingLandUse: true, error: null, landUse: null });
+export const postLandUse = (state, { data }) => state.merge({ fetchingLandUse: true, data, landUse: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, landUse: payload });
+	return state.merge({ fetchingLandUse: false, error: null, landUse: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetching: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingLandUse: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 

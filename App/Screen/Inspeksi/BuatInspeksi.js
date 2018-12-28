@@ -103,6 +103,8 @@ class BuatInspeksiRedesign extends Component {
             showBaris: true,
             query: '',
             person:[],
+            werksAfdCode: '',
+            werksAfdBlokCode: ''
         };
     }
 
@@ -111,38 +113,20 @@ class BuatInspeksiRedesign extends Component {
             return [];
         }
         const { person } = this.state;
-        console.log(person)
         const regex = new RegExp(`${query.trim()}`, 'i');
-        console.log(regex)
-        return person.filter(person => person.nama.search(regex) >= 0);
+        // return person.filter(person => person.blokCode.search(regex) >= 0);
+        return person.filter(person => person.blokCode.search(regex) >= 0);
       }
 
     componentDidMount() {
-        var dssa = {
-            nama: 'akbar',
-            alamat: 'tangerang'
+        let data = TaskService.getAllData('TM_BLOCK');
+        for(var i=0; i<data.length; i++){
+            this.state.person.push({blokCode: data[i].BLOCK_CODE, blokName: data[i].BLOCK_NAME, werksAfdCode: data[i].WERKS_AFD_CODE, werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE});
         }
-        this.state.person.push(dssa);
-        dssa = {
-            nama: 'ferdinand',
-            alamat: 'solo'
-        }
-        this.state.person.push(dssa);
-        dssa = {
-            nama: 'sabrina',
-            alamat: 'semarang'
-        }
-        this.state.person.push(dssa);
-        dssa = {
-            nama: 'test',
-            alamat: 'jakarta'
-        }
-        this.state.person.push(dssa);
         this.getLocation();
     }
 
     hideAndShowBaris(param){
-        console.log(param)
         if(param.length > 0){
             this.setState({showBaris: false});
         }else{
@@ -177,30 +161,41 @@ class BuatInspeksiRedesign extends Component {
         );
     }
 
-    validation(param) {
+    validation() {
         if (this.state.blok === '') {
             Alert.alert('Blok Belum diisi !');
         } else if (this.state.baris === '') {
             Alert.alert('Baris Belum diisi !');
         } else {
-            this.insertDB(param);
+            this.insertDB();
         }    
     }
 
-    insertDB(param) {
+    getAfdeling(werk_afd_code){
+        let data = TaskService.findBy2('TM_AFD', 'WERKS_AFD_CODE', werk_afd_code);
+        return data.AFD_NAME.substring(data.AFD_NAME.indexOf(' '));
+    }
+
+    getStatusBlok(werk_afd_blok_code){
+        let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+        return data.MATURITY_STATUS;
+    }
+
+    insertDB() {
+        // alert(this.getStatusBlok(this.state.werksAfdBlokCode));
         let dataLogin = TaskService.getAllData('TR_LOGIN');
         var NIK = dataLogin[0].NIK;
         var DATE = getTodayDate('YYYYMMDD');
-        var BA = '4122';
-        var AFD = 'H';
+        var WERKS = TaskService.getWerks();
+        var AFD = this.getAfdeling(this.state.werksAfdCode);
         var BLOK = this.state.blok;
         var UNIQ_CODE = getUUID();
         UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
-        var blok_inspection_code_h = NIK+"-INS-"+DATE+'-'+BA+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
+        var blok_inspection_code_h = NIK+"-INS-"+DATE+'-'+WERKS+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
 
         let modelInspeksiH = {
             BLOCK_INSPECTION_CODE: blok_inspection_code_h,
-            WERKS: BA,
+            WERKS: WERKS,
             AFD_CODE: AFD,
             BLOCK_CODE: BLOK,
             INSPECTION_DATE: getTodayDate('YYYY-MM-DD HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
@@ -219,7 +214,7 @@ class BuatInspeksiRedesign extends Component {
 
         let params = {
             NIK: NIK,
-            BA: BA,
+            BA: WERKS,
             AFD: AFD,
             BLOK: this.state.blok,
             BARIS: this.state.baris,
@@ -231,7 +226,7 @@ class BuatInspeksiRedesign extends Component {
         this.props.navigation.navigate('TakeFotoBaris', {
             inspeksiHeader: modelInspeksiH,
             dataUsual: params,
-            statusBlok: param,
+            statusBlok: this.getStatusBlok(this.state.werksAfdBlokCode),
             baris:this.state.baris,
             waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss')
         });
@@ -243,7 +238,7 @@ class BuatInspeksiRedesign extends Component {
         const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
         return (
             <View style={styles.mainContainer}>
-                <View>
+                {/* <View>
                     <Dialog.Container visible={this.state.showConfirm}>
                         <Dialog.Title>Informasi</Dialog.Title>
                         <Dialog.Description>
@@ -255,7 +250,7 @@ class BuatInspeksiRedesign extends Component {
                         <Dialog.Button label="TBM2" onPress={() => { this.validation('TBM2') }} />
                         <Dialog.Button label="TBM3" onPress={() => { this.validation('TBM3') }} />
                     </Dialog.Container>
-                </View>
+                </View> */}
 
                 <View style={{ flexDirection: 'row', marginLeft: 20, marginRight: 20, marginTop: 10 }}>
                     <View style={styles.containerStepper}>
@@ -303,19 +298,22 @@ class BuatInspeksiRedesign extends Component {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 containerStyle={styles.autocompleteContainer}
-                                data={person.length === 1 && comp(query, person[0].nama) ? [] : person}
+                                data={person.length === 1 && comp(query, person[0].blokCode) ? [] : person}
                                 defaultValue={query}
-                                onChangeText={text => {this.setState({ query: text }); this.hideAndShowBaris(text)}}
-                                renderItem={({ nama, alamat }) => (
-                                    <TouchableOpacity onPress={() => {this.setState({ query: nama, showBaris: true }); alert('sadjnsakdas')}}>
+                                onChangeText={text => {
+                                    this.setState({ query: text, blok: text }); 
+                                    this.hideAndShowBaris(text)}
+                                }
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, }) => (
+                                    <TouchableOpacity onPress={() => {this.setState({ query: blokCode, werksAfdCode: werksAfdCode, werksAfdBlokCode:werksAfdBlokCode, showBaris: true })}}>
                                         <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{nama}. {alamat}</Text>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokCode}/{blokName}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
                             />
                         </View>
-                        {/* {this.state.showBaris &&  */}
+                        {this.state.showBaris && 
                         <View style={{ flex: 1, margin:10 }}>
                             <Text style={{ color: '#696969' }}>Baris</Text>
                             <TextInput
@@ -325,7 +323,7 @@ class BuatInspeksiRedesign extends Component {
                                 maxLength={3}
                                 value={this.state.baris}
                                 onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.setState({ baris: text }) }} />
-                        </View>
+                        </View>}
                     </Card>
                 </View>
 
@@ -357,7 +355,7 @@ class BuatInspeksiRedesign extends Component {
                         style={{ alignSelf: 'flex-end', marginBottom:130, marginRight: 10}}/>  
 
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
+                        <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.validation()}}>
                             <Text style={styles.buttonText}>Mulai Inspeksi</Text>
                         </TouchableOpacity>                        
                     </View>

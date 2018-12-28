@@ -16,7 +16,7 @@ export default Creators;
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-	fetching: null,
+	fetchingAfd: null,
 	error: null,
 	afd: null
 });
@@ -31,17 +31,17 @@ export const AfdSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, afd: null });
-export const postAfd = (state, { data }) => state.merge({ fetching: true, data, afd: null });
+export const request = (state, { data }) => state.merge({ fetchingAfd: true, error: null, afd: null });
+export const postAfd = (state, { data }) => state.merge({ fetchingAfd: true, data, afd: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, afd: payload });
+	return state.merge({ fetchingAfd: false, error: null, afd: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetching: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingAfd: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 

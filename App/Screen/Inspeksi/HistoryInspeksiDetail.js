@@ -34,7 +34,10 @@ class HistoryInspeksiDetail extends React.Component {
             barisPembagi:0,
             arrBaris: [],
             totalWaktu: '',
-            totalJarak: ''
+            totalJarak: '',
+            nilaiInspeksi: '',
+            nilaiScore: '',
+            estateName: Taskservices.getEstateName()
         };
     }
 
@@ -49,7 +52,7 @@ class HistoryInspeksiDetail extends React.Component {
             fontWeight: '400',
             marginHorizontal: 12
         },
-        title: 'Detail Inspeksi GAWI INTI - 1',
+        title: 'Detail Inspeksi',
         headerTintColor: '#fff',
     };   
 
@@ -80,7 +83,10 @@ class HistoryInspeksiDetail extends React.Component {
         if(str !== ''){
             str = `${str})`;
         }
-        this.setState({jmlBaris: str, totalWaktu: time.toString(), totalJarak: distance.toString()});
+        let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
+        // let dataEst = Taskservices.getEstateName()
+
+        this.setState({jmlBaris: str, totalWaktu: time.toString(), totalJarak: distance.toString(), nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, nilaiScore: dataHeader[0].INSPECTION_SCORE});
 
         var piringan = this.getTotalComponentBy('CC0007');        
         var sarkul = this.getTotalComponentBy('CC0008');
@@ -344,7 +350,11 @@ class HistoryInspeksiDetail extends React.Component {
             <ScrollView>
                 < View style={styles.container} >
                     <View style={styles.section}>
-                        <Text style={styles.textLokasi}>Gawi Inti 1 - A - A01/001</Text>
+
+                        <Text style={styles.textNilai}>{this.state.nilaiInspeksi}</Text> 
+                        <Text style={styles.textScore}>{this.state.nilaiScore}</Text>
+
+                        <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.data.AFD} - A01/001</Text>
                         <View style={styles.lineDivider} />
                         <View style={styles.sectionRow}>
                             <View >
@@ -487,6 +497,19 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         backgroundColor: 'transparent',
         justifyContent:'center'
+    },
+    textNilai: {
+        fontSize: 50,
+        fontWeight: '500',
+        alignContent: 'center',
+        textAlign: 'center',
+    },
+
+    textScore: {
+        fontSize: 25,
+        fontWeight: '300',
+        alignContent: 'center',
+        textAlign: 'center',
     },
 
 });

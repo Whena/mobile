@@ -166,7 +166,7 @@ class KondisiBaris2 extends Component {
                 showSanitasi: false,
                 switchTPH: true,
             });
-        } else if (this.state.statusBlok == 'TBM1') {
+        } else if (this.state.statusBlok == 'TBM 1') {
             this.setState({
                 showPiringan: true,
                 showSarkul: true,
@@ -177,7 +177,7 @@ class KondisiBaris2 extends Component {
                 showKastrasi: false,
                 showSanitasi: false,
             });
-        } else if (this.state.statusBlok == 'TBM2') {
+        } else if (this.state.statusBlok == 'TBM 2') {
             this.setState({
                 showPiringan: true,
                 showSarkul: true,
@@ -188,7 +188,7 @@ class KondisiBaris2 extends Component {
                 showKastrasi: false,
                 showSanitasi: false,
             });
-        } else if (this.state.statusBlok == 'TBM3') {
+        } else if (this.state.statusBlok == 'TBM 3') {
             this.setState({
                 showPiringan: true,
                 showSarkul: true,

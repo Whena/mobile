@@ -229,6 +229,52 @@ const TaskServices = {
     // return list.filtered(param+' == \"'+ value +'\" AND BLOCK_INSPECTION_CODE == \"'+blokInsCode+ '\"');
   },
 
+  getEstateName: function(){
+    let auth = this.getAllData('TR_LOGIN')[0];
+    let refCode = auth.REFFERENCE_ROLE;
+    let valueRefCode = auth.LOCATION_CODE
+    let est;
+    if(refCode === 'REGION_CODE'){      
+      let reg = this.findBy2('TM_REGION', 'REGION_CODE', valueRefCode);
+      let comp = this.findBy2('TM_COMP', 'REGION_CODE', reg.REGION_CODE);
+      est = this.findBy2('TM_EST', 'COMP_CODE', comp.COMP_CODE);
+      return est.EST_NAME;
+    }else if(refCode === 'COMP_CODE'){
+      est = this.findBy2('TM_EST', 'COMP_CODE', valueRefCode);
+      return est.EST_NAME
+    }else if(refCode === 'WERKS'){
+      est = this.findBy2('TM_EST', 'WERKS', valueRefCode);
+      return est.EST_NAME
+    }else if(refCode === 'WERKS_AFD_CODE'){
+      let afd = this.findBy2('TM_AFD', 'WERKS_AFD_CODE', valueRefCode);
+      est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
+      return est.EST_NAME
+    }
+  },
+
+  getWerks: function(){
+    let auth = this.getAllData('TR_LOGIN')[0];
+    let refCode = auth.REFFERENCE_ROLE;
+    let valueRefCode = auth.LOCATION_CODE
+    let est;
+    if(refCode === 'REGION_CODE'){      
+      let reg = this.findBy2('TM_REGION', 'REGION_CODE', valueRefCode);
+      let comp = this.findBy2('TM_COMP', 'REGION_CODE', reg.REGION_CODE);
+      est = this.findBy2('TM_EST', 'COMP_CODE', comp.COMP_CODE);
+      return est.WERKS;
+    }else if(refCode === 'COMP_CODE'){
+      est = this.findBy2('TM_EST', 'COMP_CODE', valueRefCode);
+      return est.WERKS
+    }else if(refCode === 'WERKS'){
+      est = this.findBy2('TM_EST', 'WERKS', valueRefCode);
+      return est.WERKS
+    }else if(refCode === 'WERKS_AFD_CODE'){
+      let afd = this.findBy2('TM_AFD', 'WERKS_AFD_CODE', valueRefCode);
+      est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
+      return est.WERKS
+    }
+  }
+
 };
 
 export default TaskServices;
