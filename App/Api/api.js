@@ -39,7 +39,7 @@ const create = () => {
 
     const postKriteria = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.post('/mobile-sync', body);
+        return api.post('/kriteria', body);
     }
 
     const postAfd = body => {
@@ -68,6 +68,11 @@ const create = () => {
     }
 
     const postContent = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
+    const postContentLabel = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.post('/mobile-sync', body);
     }
@@ -115,7 +120,7 @@ const create = () => {
 
     const getKriteria = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.get('/mobile-sync/hectare-statement/region')
+        return api.get('/kriteria')
     }
 
     const getAfd = () => {
@@ -148,6 +153,11 @@ const create = () => {
         return api.get('/content')
     }
 
+    const getContentLabel = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/content-label')
+    }
+
     return {
         api,
         login,
@@ -170,6 +180,7 @@ const create = () => {
         postEmployeeHris,
         postComp,
         postContent,
+        postContentLabel,
 
         //Get
         getBlock,
@@ -181,7 +192,8 @@ const create = () => {
         getPjs,
         getEmployeeHris,
         getComp,
-        getContent
+        getContent,
+        getContentLabel
 
     };
 };

@@ -315,7 +315,7 @@ class BuatInspeksiRedesign extends Component {
                                 )}
                             />
                         </View>
-                        {this.state.showBaris && 
+                        {/* {this.state.showBaris &&  */}
                         <View style={{ flex: 1, margin:10 }}>
                             <Text style={{ color: '#696969' }}>Baris</Text>
                             <TextInput
@@ -325,7 +325,7 @@ class BuatInspeksiRedesign extends Component {
                                 maxLength={3}
                                 value={this.state.baris}
                                 onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.setState({ baris: text }) }} />
-                        </View>}
+                        </View>
                     </Card>
                 </View>
 

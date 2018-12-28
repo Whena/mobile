@@ -26,7 +26,9 @@ let realmSchema = new Realm({
         ModelTables.TM_USER_AUTH,
         ModelTables.TM_LAND_USE,
         ModelTables.TM_COMP,
-        ModelTables.TM_CONTENT
+        ModelTables.TM_CONTENT,
+        ModelTables.TM_CONTENT_LABEL,
+        ModelTables.TM_KRITERIA
     ]
 });
 

@@ -264,14 +264,8 @@ const TM_KRITERIA = {
         VALUE: 'string',
         COLOR: 'string',
         GRADE: 'string',
-        BATAS_ATAS: 'string',
-        BATAS_BAWAH: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        DELETE_USER: 'string',
-        DELETE_TIME: 'string'
+        BATAS_ATAS: {type: 'int', default: 0},
+        BATAS_BAWAH: {type: 'int', default: 0}
     }
 }
 
@@ -367,6 +361,18 @@ const TM_COMP = {
     }
 }
 
+const TM_CONTENT_LABEL = {
+    name: 'TM_CONTENT_LABEL',
+    properties: {
+        CONTENT_LABEL_CODE: 'string',
+        CONTENT_CODE: 'string',
+        LABEL_NAME: 'string',
+        LABEL_ICON: 'string',
+        URUTAN_LABEL: 'string',
+        LABEL_SCORE: {type: 'int', default: 0}
+    }
+}
+
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -391,5 +397,6 @@ export default {
     TM_PJS,
     TM_LAND_USE,
     TM_COMP,
-    TM_CONTENT
+    TM_CONTENT,
+    TM_CONTENT_LABEL
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { Container, Content } from 'native-base'
 
+import * as Progress from 'react-native-progress';
 import ProgressCircle from 'react-native-progress-circle'
 import Colors from '../Constant/Colors';
 
@@ -14,6 +15,7 @@ import UserAuthAction from '../Redux/UserAuthRedux';
 import LandUseAction from '../Redux/LandUseRedux';
 import CompAction from '../Redux/CompRedux';
 import ContentAction from '../Redux/ContentRedux';
+import ContentLabelAction from '../Redux/ContentLabelRedux';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
@@ -45,7 +47,10 @@ class SyncScreen extends React.Component {
             progressValue: 0.00,
             tglMobileSync: "",
             tabelUpdate: '',
-            imei: ''
+            imei: '',
+
+            progress: 0,
+            indeterminate: false,
         }
     }
 
@@ -98,6 +103,8 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_BLOCK', item);
             })
         }
+
+        this.animate();
     }
 
     _crudTM_Est(data) {
@@ -144,6 +151,28 @@ class SyncScreen extends React.Component {
         }
     }
 
+    _crudTM_ContentLabel(data) {
+        console.log("Masuk Lokal DB Content Label");
+        console.log("Simpan Content Label : " + data.length);
+
+        if (data.length > 0) {
+            data.map(item => {
+                TaskServices.saveData('TM_CONTENT_LABEL', item);
+            })
+        }
+    }
+
+    _crudTM_Kriteria(data) {
+        console.log("Masuk Lokal DB Kriteria");
+        console.log("Simpan Kriteria : " + data.length);
+
+        if (data.length > 0) {
+            data.map(item => {
+                TaskServices.saveData('TM_KRITERIA', item);
+            })
+        }
+    }
+
     _get_IMEI_Number() {
         var IMEI_2 = IMEI.getImei();
         this.setState({ imei: IMEI_2 });
@@ -164,54 +193,88 @@ class SyncScreen extends React.Component {
         // });
 
         // GET DATA MASTER
-        this.props.regionRequest();
-        this.props.afdRequest();
+        // this.props.regionRequest();
+        // this.props.afdRequest();
         this.props.blockRequest();
-        this.props.estRequest();
-        this.props.landUseRequest();
-        this.props.compRequest();
-        this.props.contentRequest();
+        // this.props.estRequest();
+        // this.props.landUseRequest();
+        // this.props.compRequest();
+        // this.props.contentRequest();
+        // this.props.contentLabelRequest();
+
+        // this.props.kriteriaRequest();
+    }
+
+    animate() {
+        let progress = 0;
+        let countData = 200;
+        this.setState({ progress });
+        // setTimeout(() => {
+        // this.setState({ indeterminate: false });
+        // countData += progress;
+
+        progress = 100 / countData;
+        this.setState({ progress });
+        console.log("Progress : " + progress + "%")
+        // setInterval(() => {
+        //     countData += x;
+
+        //     currentProgress = 50 / countData * 100;
+
+        //     this.setState({ currentProgress });
+        //     console.log("Progress : " + currentProgress)
+        // }, 200);
     }
 
     componentWillReceiveProps(newProps) {
         // console.log("Masuk Sini");
         // console.log(JSON.stringify(newProps));
 
-        if (newProps.region.region != null) {
-            let dataJSON = newProps.region.region;
-            console.log(dataJSON)
-            this._crudTM_Region(dataJSON);
-        }
+        // if (newProps.region.region != null) {
+        //     let dataJSON = newProps.region.region;
+        //     console.log(dataJSON)
+        //     this._crudTM_Region(dataJSON);
+        // }
 
-        if (newProps.afd.afd != null) {
-            let dataJSON = newProps.afd.afd;
-            this._crudTM_Afd(dataJSON);
-        }
+        // if (newProps.afd.afd != null) {
+        //     let dataJSON = newProps.afd.afd;
+        //     this._crudTM_Afd(dataJSON);
+        // }
 
         if (newProps.block.block != null) {
             let dataJSON = newProps.block.block;
             this._crudTM_Block(dataJSON);
         }
 
-        if (newProps.est.est != null) {
-            let dataJSON = newProps.est.est;
-            this._crudTM_Est(dataJSON);
-        }
+        // if (newProps.est.est != null) {
+        //     let dataJSON = newProps.est.est;
+        //     this._crudTM_Est(dataJSON);
+        // }
 
-        if (newProps.landUse.landUse != null) {
-            let dataJSON = newProps.landUse.landUse;
-            this._crudTM_LandUse(dataJSON);
-        }
+        // if (newProps.landUse.landUse != null) {
+        //     let dataJSON = newProps.landUse.landUse;
+        //     this._crudTM_LandUse(dataJSON);
+        // }
 
-        if (newProps.comp.comp != null) {
-            let dataJSON = newProps.comp.comp;
-            this._crudTM_Comp(dataJSON);
-        }
+        // if (newProps.comp.comp != null) {
+        //     let dataJSON = newProps.comp.comp;
+        //     this._crudTM_Comp(dataJSON);
+        // }
 
-        if (newProps.content.content != null) {
-            let dataJSON = newProps.content.content;
-            this._crudTM_Content(dataJSON);
-        }
+        // if (newProps.content.content != null) {
+        //     let dataJSON = newProps.content.content;
+        //     this._crudTM_Content(dataJSON);
+        // }
+
+        // if (newProps.contentLabel.contentLabel != null) {
+        //     let dataJSON = newProps.contentLabel.contentLabel;
+        //     this._crudTM_ContentLabel(dataJSON);
+        // }
+
+        // if (newProps.kriteria.kriteria != null) {
+        //     let dataJSON = newProps.kriteria.kriteria;
+        //     this._crudTM_Kriteria(dataJSON);
+        // }
     }
 
     render() {
@@ -258,6 +321,15 @@ class SyncScreen extends React.Component {
                     </View>
 
                     <View style={{ flex: 1, marginTop: 48 }}>
+                        <Progress.Bar
+                            height={24}
+                            width={200}
+                            style={styles.progress}
+                            progress={this.state.progress}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 48 }}>
                         <TouchableOpacity style={styles.button} onPress={() => this._onSync()}>
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
@@ -276,7 +348,9 @@ const mapStateToProps = state => {
         est: state.est,
         landUse: state.landUse,
         comp: state.comp,
-        content: state.content
+        content: state.content,
+        contentLabel: state.contentLabel,
+        kriteria: state.kriteria
     };
 };
 
@@ -299,7 +373,9 @@ const mapDispatchToProps = dispatch => {
         compRequest: () => dispatch(CompAction.compRequest()),
         compPost: obj => dispatch(CompAction.compPost(obj)),
         contentRequest: () => dispatch(ContentAction.contentRequest()),
-        contentPost: obj => dispatch(ContentAction.contentPost(obj))
+        contentPost: obj => dispatch(ContentAction.contentPost(obj)),
+        contentLabelRequest: () => dispatch(ContentLabelAction.contentLabelRequest()),
+        contentLabelPost: obj => dispatch(ContentLabelAction.contentLabelPost(obj))
     };
 };
 

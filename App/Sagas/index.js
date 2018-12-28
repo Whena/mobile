@@ -19,6 +19,7 @@ import { UserAuthTypes } from '../Redux/UserAuthRedux';
 import { LandUseTypes } from '../Redux/LandUseRedux';
 import { CompTypes } from '../Redux/CompRedux';
 import { ContentTypes } from '../Redux/ContentRedux';
+import { ContentLabelTypes } from '../Redux/ContentLabelRedux';
 
 
 /* ------------- Sagas ------------- */
@@ -35,6 +36,7 @@ import { getUserAuth, postUserAuth } from './UserAuthSagas';
 import { getLandUse, postLandUse } from './LandUseSagas';
 import { getComp, postComp } from './CompSagas';
 import { getContent, postContent } from './ContentSagas';
+import { getContentLabel, postContentLabel } from './ContentLabelSagas';
 import TaskServices from '../Database/TaskServices'
 
 //Add by Aminju
@@ -77,6 +79,8 @@ export default function* root() {
 		takeLatest(CompTypes.COMP_POST, postComp, miApi),
 		takeLatest(ContentTypes.CONTENT_REQUEST, getContent, miApi),
 		takeLatest(ContentTypes.CONTENT_POST, postContent, miApi),
+		takeLatest(ContentLabelTypes.CONTENT_LABEL_REQUEST, getContentLabel, miApi),
+		takeLatest(ContentLabelTypes.CONTENT_LABEL_POST, postContentLabel, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

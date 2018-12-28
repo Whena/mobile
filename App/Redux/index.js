@@ -21,6 +21,7 @@ export const reducers = combineReducers({
 	landUse: require('./LandUseRedux').reducer,
 	comp: require('./CompRedux').reducer,
 	content: require('./ContentRedux').reducer,
+	contentLabel: require('./ContentLabelRedux').reducer,
 
 	network
 });

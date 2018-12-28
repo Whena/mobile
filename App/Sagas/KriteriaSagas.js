@@ -7,7 +7,7 @@ export function* getKriteria(api, action) {
 
     if (typeof atob !== 'undefined') {
         console.log(response);
-        console.log('^^^ GET ALL Kriteria ^^^');
+        console.log('^^^GET ALL KRITERIA^^^');
     }
     if (response.ok) {
         switch (response.data.status) {
@@ -15,8 +15,7 @@ export function* getKriteria(api, action) {
                 yield put(KriteriaActions.kriteriaFailure('Paramater Salah'));
                 break;
             case true:
-
-                console.log('^^^ SUCCESS Kriteria ^^^');
+                console.log('^^^SUCCESS KRITERIA^^^');
                 yield put(KriteriaActions.kriteriaSuccess(response.data.data));
                 break;
             default:
@@ -35,14 +34,14 @@ export function* postKriteria(api, action) {
 
     if (typeof atob !== 'undefined') {
         console.log(response);
-        console.log('^^^ POST Kriteria ^^^');
+        console.log('^^^ POST KRITERIA ^^^');
     }
 
     if (response.ok) {
         yield put(KriteriaActions.kriteriaSuccess({ payload: response.data, change: true }));
     } else {
         yield put(KriteriaActions.kriteriaFailure({
-            path: 'Complete Post Kriteria',
+            path: 'Complete Post Content Label',
             message: response.data.message ? response.data.message : '',
             response
         }));
