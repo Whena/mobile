@@ -3,7 +3,7 @@ import {View, StyleSheet} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Colors from '../../Constant/Colors'
 import TaskServices from '../../Database/TaskServices'
-
+import { NavigationActions, StackActions  } from 'react-navigation';
 import { connect } from 'react-redux';
 import InspeksiAction from '../../Redux/InspeksiRedux';
 import {getTodayDate} from '../../Lib/Utils';
@@ -69,8 +69,9 @@ class ListInspection extends Component {
   }
 
   actionButtonClick() {
-    this.props.navigation.navigate('FormInspection');
-    // this.loadData()
+    // this.props.navigation.navigate('FormInspection');
+    // this.loadData();
+    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'BuatInspeksi'}));
   }
 
   render() {

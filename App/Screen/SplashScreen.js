@@ -35,6 +35,7 @@ class SplashScreen extends Component {
     }
 
     async componentDidMount() {
+
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
             //buat folder internal      

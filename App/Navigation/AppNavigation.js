@@ -7,8 +7,19 @@ import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen';
 import Colors from '../Constant/Colors';
-import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspectionNavigator';
-import SelesaiInspeksi from '../Screen/Inspeksi/SelesaiInspeksi'
+import test from '../Screen/Inspeksi/test';
+// import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspectionNavigator';
+
+//inspeksi
+import DetailHistoryInspeksi from '../Screen/Inspeksi/HistoryInspeksiDetail';
+import BuatInspeksi from '../Screen/Inspeksi/BuatInspeksi';
+import TakeFotoBaris from '../Screen/Inspeksi/TakePhotoBaris';
+import KondisiBaris1 from '../Screen/Inspeksi/KondisiBaris1';
+import KondisiBaris2 from '../Screen/Inspeksi/KondisiBaris2';
+import TakeFotoSelfie from '../Screen/Inspeksi/TakePhotoSelfie';
+import KondisiBarisAkhir from '../Screen/Inspeksi/KondisiBarisAkhir';
+import SelesaiInspeksi from '../Screen/Inspeksi/SelesaiInspeksi';
+import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 
 const main = createStackNavigator({
     MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
@@ -33,13 +44,26 @@ const main = createStackNavigator({
     Sync: { screen: SyncScreen },
     Inbox: { screen: InboxScreen },
     DetailFinding: { screen: DetailFindingScreen },
-    FormInspection: {
-        screen: FormInspectionNavigator,
-        navigationOptions: {
-            header: null
-        },
-    }
-}, {
+    // FormInspection: {
+    //     screen: FormInspectionNavigator,
+    //     navigationOptions: {
+    //         header: null
+    //     },
+    // },
+
+    //inspeksi
+    BuatInspeksi : {screen: BuatInspeksi},
+    DetailHistoryInspeksi: { screen: DetailHistoryInspeksi },
+    TakeFotoBaris: {screen: TakeFotoBaris},
+    KondisiBaris1: {screen: KondisiBaris1},
+    KondisiBaris2: {screen: KondisiBaris2},
+    TakeFotoSelfie: {screen: TakeFotoSelfie},
+    KondisiBarisAkhir: {screen: KondisiBarisAkhir},
+    SelesaiInspeksi: {screen: SelesaiInspeksi},
+    DetailBaris: { screen: DetailBaris },
+    test: {screen:test}
+
+    }, {
         headerMode: 'screen',
         initialRouteName: 'SplashScreen',
         navigationOptions: {

@@ -14,16 +14,16 @@ import Taskservices from '../../Database/TaskServices'
 import R from 'ramda';
 import { NavigationActions, StackActions  } from 'react-navigation';
 
-class SelesaiInspeksi extends React.Component {
+class HistoryInspeksiDetail extends React.Component {
 
     constructor(props){
         super(props);
 
         let params = props.navigation.state.params;
-        let inspeksiHeader = R.clone(params.inspeksiHeader);
+        let data = R.clone(params.data);
 
         this.state = {
-            inspeksiHeader,
+            data,
             jmlBaris : '',
             nilaiPiringan: '',
             nilaiSarkul: '',
@@ -58,7 +58,7 @@ class SelesaiInspeksi extends React.Component {
     }
 
     loadData(){
-        let dataBaris = Taskservices.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE);
+        let dataBaris = Taskservices.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
         let barisPembagi = dataBaris.length;
         let str = '';
         let time = 0;
@@ -241,7 +241,7 @@ class SelesaiInspeksi extends React.Component {
     }
 
     getTotalComponentBy(compCode){
-        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]); 
+        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.data.BLOCK_INSPECTION_CODE]); 
         return data;
     }
 
@@ -315,7 +315,7 @@ class SelesaiInspeksi extends React.Component {
     renderBaris = (data, index) => {
         return (
             <TouchableOpacity 
-                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, blokInsCode: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE})}
+                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, blokInsCode: this.state.data.BLOCK_INSPECTION_CODE})}
                 key={index}>
                 <View style={styles.sectionRow}>
                     <Text style={styles.textLabel}>Baris Ke - {data}</Text>
@@ -326,12 +326,12 @@ class SelesaiInspeksi extends React.Component {
     }
 
 
-    selesai=()=>{
+    selesai(){
         const navigation = this.props.navigation;
         const resetAction = StackActions.reset({
             index: 0,            
 			actions: [NavigationActions.navigate({ 
-                routeName: 'MainMenu'
+                routeName: 'BuatInspeksi'
             })]
         });
         navigation.dispatch(resetAction);
@@ -357,7 +357,7 @@ class SelesaiInspeksi extends React.Component {
                             </View>
                             <View >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>2 km</Text>
-                                <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>{this.state.totalJarak} Jarak Inspeksi</Text>
+                                <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Total Jarak Inspeksi</Text>
                             </View>
                         </View>
                     </View>
@@ -420,7 +420,7 @@ class SelesaiInspeksi extends React.Component {
 
 }
 
-export default SelesaiInspeksi; 
+export default HistoryInspeksiDetail; 
 
 const styles = StyleSheet.create({
     container: {

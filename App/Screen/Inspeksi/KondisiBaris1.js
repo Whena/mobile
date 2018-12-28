@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Alert, Text, TextInput, ScrollView, Image } from 'react-native';
-// import {
-// 	Container,
-// 	Content,
-// 	Body,
-// 	Text,
-//     View
-// } from 'native-base';
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';

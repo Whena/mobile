@@ -92,17 +92,17 @@ class TakePhotoBaris extends Component {
       this.setState({ path: null, hasPhoto: false });
     }
 
-    if (this.state.from !== 'undefined') {
+    // if (this.state.from !== 'undefined') {
       this.props.navigation.goBack(null);
-    } else {
-      //harus ditambah pertanyaan sebelum back
-      const navigation = this.props.navigation;
-      const resetAction = StackActions.reset({
-        index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'InspectionNavigator' })]
-      });
-      navigation.dispatch(resetAction);
-    }
+    // } else {
+    //   //harus ditambah pertanyaan sebelum back
+    //   const navigation = this.props.navigation;
+    //   const resetAction = StackActions.reset({
+    //     index: 0,
+    //     actions: [NavigationActions.navigate({ routeName: 'InspectionNavigator' })]
+    //   });
+    //   navigation.dispatch(resetAction);
+    // }
 
     return true;
   }
@@ -111,13 +111,11 @@ class TakePhotoBaris extends Component {
     var UNIQ_CODE = getUUID();
     UNIQ_CODE = UNIQ_CODE.substring(0, UNIQ_CODE.indexOf('-'));
     var imgCode = 'P' + this.state.dataUsual.NIK + UNIQ_CODE;
-    console.log(imgCode)
 
     UNIQ_CODE = getUUID();
     UNIQ_CODE = UNIQ_CODE.substring(0, UNIQ_CODE.indexOf('-'));
     var trCode = 'I' + this.state.dataUsual.NIK + UNIQ_CODE;
     var imageName = imgCode + '.jpg';
-    console.log(trCode)
 
     var image = {
       IMAGE_CODE: imgCode,
@@ -185,15 +183,29 @@ class TakePhotoBaris extends Component {
     );
   }
 
+  // selesai=()=>{
+  //   const navigation = this.props.navigation;
+  //   const resetAction = StackActions.reset({
+  //       index: 0,            
+  //     actions: [NavigationActions.navigate({ 
+  //               routeName: 'MainMenu'
+  //           })]
+  //       });
+  //       navigation.dispatch(resetAction);
+  //   }
+
   insertDB() {
     RNFS.unlink(this.state.pathCache);
     this.props.navigation.navigate('KondisiBaris1',
-      { 
+    { 
         fotoBaris: this.state.dataModel, 
         inspeksiHeader: this.state.inspeksiHeader, 
         dataUsual: this.state.dataUsual, 
         statusBlok: this.state.statusBlok,
-        baris:this.state.baris, });
+        baris:this.state.baris, 
+    });
+
+    
   }
 
   renderImage() {

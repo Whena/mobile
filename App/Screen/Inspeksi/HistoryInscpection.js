@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import CardView from 'react-native-cardview';
+import {Card,CardItem} from 'native-base';
 import Colors from '../../Constant/Colors';
 import Taskservice from '../../Database/TaskServices'
 import { NavigationActions, StackActions  } from 'react-navigation';
@@ -29,15 +30,20 @@ export default class HistoryInspection extends Component {
   }
 
   renderList = (data, index) => {
+    const nav = this.props.navigation
     let status = '';
     if (data.STATUS_SYNC == 'N'){
       status = 'Belum Dikirim'
     }else{
       status = 'Sudah Terkirim'
     }
+
+    let color = this.getColor(data.INSPECTION_RESULT);
     
-    // let dataImage = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
-    let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/test.jpg`;
+    let dataImage = Taskservice.findBy2('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+    let imgName = dataImage.IMAGE_NAME
+
+    let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/${imgName}`;
     // console.log(path);
     // alert(path)
     // if(dataImage.length > 0){
@@ -48,12 +54,10 @@ export default class HistoryInspection extends Component {
         style={{ marginTop: 12 }} 
         onPress={()=> this.actionButtonClick(data)}
         key={index}>
-          <CardView cardElevation={5} cardMaxElevation={5} cornerRadius={5}>
+          <Card style={[styles.cardContainer]}>
             <View style={styles.sectionCardView}>
               <View style={{ flexDirection: 'row', height: 120 }} >
-                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: 'yellow' }} />
-                <Image style={{ alignItems: 'stretch', width: 120 }} source={{uri: path}}></Image>
-                {/* <Image style={{ alignItems: 'stretch', width: 120 }} source={require('../../Images/background.png')}></Image> */}
+                <Image style={{ alignItems: 'stretch', width: 100, borderRadius:10 }} source={{uri: path}}></Image>
               </View>
               <View style={styles.sectionDesc} >
                 <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{data.WERKS}</Text>
@@ -61,18 +65,33 @@ export default class HistoryInspection extends Component {
                 <Text style={{ fontSize: 12 }}>{data.INSPECTION_DATE}</Text>
                 <Text style={{ fontSize: 12, color: 'red' }}>{status}</Text>
               </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.textValue}>{data.INSPECTION_RESULT}</Text>
+              <View style={{flexDirection:'row', height:120}}>
+                <Text style={[styles.textValue,{marginTop: 40}]}>{data.INSPECTION_RESULT}</Text>
+                <View style={{ alignItems: 'stretch', width: 8, backgroundColor: color, borderRadius:10 }} />
               </View>
             </View>
-          </CardView>
+          </Card>
         </TouchableOpacity>
-    );
-    
+    );    
   }
 
-  actionButtonClick(data) {
-    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'FormHistoryInspection', params: { sport: 'x' }}))
+  getColor(param){
+    switch(param){
+      case 'A':
+        return Colors.brand;
+      case 'B':
+        return '#ff7b25';
+      case 'C':
+        return '#feb236';
+      case 'F':
+        return 'red';
+      default:
+        return '#C8C8C8';
+    }
+  }
+
+  actionButtonClick(data) {  
+    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'DetailHistoryInspeksi', params: { data: data }}));
   }
 
   render() {
@@ -114,5 +133,12 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     marginRight: 20
-  }
+  },
+  cardContainer: {
+    flex: 1,
+    padding:7,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fff'
+  },
 });

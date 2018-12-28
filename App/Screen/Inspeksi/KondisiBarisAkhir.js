@@ -103,8 +103,10 @@ class KondisiBarisAkhir extends Component{
 
     totalWaktu(){
         let now = new Date();
-        let start = new Date(this.state.inspeksiHeader.INSPECTION_DATE);
-        let time = getCalculateTime(now, start);
+        let startTime = this.state.inspeksiHeader.START_INSPECTION;
+        startTime = startTime.replace(' ', 'T');
+        startTime = new Date(startTime);
+        let time = getCalculateTime(startTime, now);
         return time;
     }
 
@@ -223,17 +225,17 @@ class KondisiBarisAkhir extends Component{
         var nilai = ((avg_piringan*bobotPiringan) + (avg_sarkul*bobotSarkul) + (avg_gwg*bobotGwg) + (avg_tph*bobotTph) + (avg_prun*bobotPrun)) / (bobotPiringan + bobotSarkul + bobotTph + bobotGwg + bobotPrun);
         var result =  this.getKonversiNilaiKeHuruf(nilai);
 
-        let param = [nilai.toString(), result, getTodayDate('YYYY-MM-DD  HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
+        let param = [nilai.toString(), result, getTodayDate('YYYY-MM-DD HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
         TaskService.updateInspectionHScore(this.state.inspeksiHeader.BLOCK_INSPECTION_CODE, param);
         
         // this.props.navigation.navigate('SelesaiInspeksi',{
-        //     fotoSelfie: this.state.fotoSelfie,
+        //     // fotoSelfie: this.state.fotoSelfie,
         //     inspeksiHeader: this.state.inspeksiHeader, 
-        //     fotoBaris: this.state.fotoBaris,
-        //     kondisiBaris1: this.state.kondisiBaris1, 
-        //     kondisiBaris2: this.state.kondisiBaris2, 
-        //     dataUsual: this.state.dataUsual,
-        //     statusBlok:this.state.statusBlok
+        //     // fotoBaris: this.state.fotoBaris,
+        //     // kondisiBaris1: this.state.kondisiBaris1, 
+        //     // kondisiBaris2: this.state.kondisiBaris2, 
+        //     // dataUsual: this.state.dataUsual,
+        //     // statusBlok:this.state.statusBlok
         // });
 
         const navigation = this.props.navigation;
@@ -295,7 +297,7 @@ class KondisiBarisAkhir extends Component{
     }
 
     saveData(){
-        var endInspeksi = this.state.switchLanjut ? '' : getTodayDate('YYYY-MM-DD  HH:mm:ss'); //getTodayDate('DD MMM YYYY HH:mm:ss');
+        var endInspeksi = this.state.switchLanjut ? '' : getTodayDate('YYYY-MM-DD HH:mm:ss'); //getTodayDate('DD MMM YYYY HH:mm:ss');
         var endLat = this.state.switchLanjut ? '' : this.state.latitude.toString();
         var endLon = this.state.switchLanjut ? '' : this.state.longitude.toString();
 
@@ -395,7 +397,7 @@ class KondisiBarisAkhir extends Component{
                 dataUsual : params, 
                 inspeksiHeader: inspeksiH, 
                 from: 'kondisiBaris', 
-                waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss'),
+                waktu: getTodayDate('YYYY-MM-DD HH:mm:ss'),
                 statusBlok:this.state.statusBlok,
                 baris: this.state.txtBaris
              } 

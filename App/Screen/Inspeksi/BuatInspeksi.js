@@ -45,6 +45,24 @@ const alcatraz = {
 
 class BuatInspeksiRedesign extends Component {
 
+    // static navigationOptions = {
+    //     headerStyle: {
+    //         backgroundColor: Colors.tintColor
+    //     },
+    //     title: 'Buat Inspeksi',
+    //     headerTintColor: '#fff',
+    //     headerTitleStyle: {
+    //         flex: 1,
+    //         fontSize: 18,
+    //         fontWeight: '400'
+    //     },
+    //     headerLeft: (
+    //         <TouchableOpacity onPress={() => navigation.goBack}>
+    //             <Icons style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={24} color={'white'} />
+    //         </TouchableOpacity>
+    //     )
+    // };
+
     static navigationOptions = {
         headerStyle: {
             backgroundColor: Colors.tintColor
@@ -52,22 +70,23 @@ class BuatInspeksiRedesign extends Component {
         title: 'Buat Inspeksi',
         headerTintColor: '#fff',
         headerTitleStyle: {
+            textAlign: "left",
             flex: 1,
             fontSize: 18,
-            fontWeight: '400'
+            fontWeight: '400',
+            marginHorizontal: 12
         },
-        headerLeft: (
-            <TouchableOpacity onPress={() => navigation.goBack}>
-                <Icons style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={24} color={'white'} />
-            </TouchableOpacity>
-        )
-    };
+        // headerRight: (
+        //     <TouchableOpacity onPress={() => params.inbox()}>
+        //       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
+        //         <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/loc.png')} />
+        //       </View>
+        //     </TouchableOpacity>
+        // )
+    };  
 
     constructor(props) {
-        // let params = props.navigation.state.params;
         super(props);
-
-        // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.state = {
             latitude: null,
             longitude: null,
@@ -80,42 +99,56 @@ class BuatInspeksiRedesign extends Component {
             inspectionCode: '',
             keyboardOpen: false,
             showConfirm: false,
-            fetchLocation: false
+            fetchLocation: false,
+            showBaris: true,
+            query: '',
+            person:[],
         };
     }
 
-    // componentWillMount () {
-    //     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    //     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
-    // }
-
-    // componentWillUnmount () {
-    //     this.keyboardDidShowListener.remove();
-    //     this.keyboardDidHideListener.remove();
-    // }
-
-    // _keyboardDidShow () {
-    //     this.setState({keyboardOpen:true});
-    // }
-
-    //   _keyboardDidHide () {
-    //     this.setState({keyboardOpen:false});
-    // }
+    findPerson(query){
+        if (query === '') {
+            return [];
+        }
+        const { person } = this.state;
+        console.log(person)
+        const regex = new RegExp(`${query.trim()}`, 'i');
+        console.log(regex)
+        return person.filter(person => person.nama.search(regex) >= 0);
+      }
 
     componentDidMount() {
-        this.getLocation()
-        // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        var dssa = {
+            nama: 'akbar',
+            alamat: 'tangerang'
+        }
+        this.state.person.push(dssa);
+        dssa = {
+            nama: 'ferdinand',
+            alamat: 'solo'
+        }
+        this.state.person.push(dssa);
+        dssa = {
+            nama: 'sabrina',
+            alamat: 'semarang'
+        }
+        this.state.person.push(dssa);
+        dssa = {
+            nama: 'test',
+            alamat: 'jakarta'
+        }
+        this.state.person.push(dssa);
+        this.getLocation();
     }
 
-    // componentWillUnmount(){
-    //     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
-    // }
-
-    // handleBackButtonClick() { 
-    //     this.setState({showConfirm:false})
-    //     this.props.navigation.goBack(null);  
-    //     return true;
-    // }
+    hideAndShowBaris(param){
+        console.log(param)
+        if(param.length > 0){
+            this.setState({showBaris: false});
+        }else{
+            this.setState({showBaris: true});
+        }
+    }
 
     getLocation() {
         navigator.geolocation.getCurrentPosition(
@@ -124,7 +157,7 @@ class BuatInspeksiRedesign extends Component {
                 var lon = parseFloat(position.coords.longitude);
                 // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
                 // console.log(timestamp);
-                console.log(lat + ' ' + lon);
+                // console.log(lat + ' ' + lon);
                 alert(lat + ' ' + lon);
                 this.setState({latitude:lat, longitude:lon, fetchLocation: false});
                 // alert(position.coords.latitude)
@@ -164,19 +197,18 @@ class BuatInspeksiRedesign extends Component {
         var UNIQ_CODE = getUUID();
         UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
         var blok_inspection_code_h = NIK+"-INS-"+DATE+'-'+BA+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
-        // var track_ins_code = NIK+"-"+DATE+'-'+BA+'-'+AFD+'-'+BLOK+'-T-'+ (parseInt(TaskService.getTotalData('TR_TRACK_INSPECTION'))+1);
 
         let modelInspeksiH = {
             BLOCK_INSPECTION_CODE: blok_inspection_code_h,
             WERKS: BA,
             AFD_CODE: AFD,
             BLOCK_CODE: BLOK,
-            INSPECTION_DATE: getTodayDate('YYYY-MM-DD  HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
+            INSPECTION_DATE: getTodayDate('YYYY-MM-DD HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
             INSPECTION_SCORE: 'string',
             INSPECTION_RESULT: 'string',
             STATUS_SYNC: 'N',
             SYNC_TIME: '',
-            START_INSPECTION: getTodayDate('YYYY-MM-DD  HH:mm:ss'),//getTodayDate('DD MMM YYYY HH:mm:ss'),
+            START_INSPECTION: getTodayDate('YYYY-MM-DD HH:mm:ss'),//getTodayDate('DD MMM YYYY HH:mm:ss'),
             END_INSPECTION: '',
             LAT_START_INSPECTION: this.state.latitude.toString(),
             LONG_START_INSPECTION: this.state.longitude.toString(),
@@ -205,10 +237,12 @@ class BuatInspeksiRedesign extends Component {
         });
     }
 
-    render() {
+    render() {        
+        const { query } = this.state;
+        const person = this.findPerson(query);
+        const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
         return (
             <View style={styles.mainContainer}>
-
                 <View>
                     <Dialog.Container visible={this.state.showConfirm}>
                         <Dialog.Title>Informasi</Dialog.Title>
@@ -263,45 +297,41 @@ class BuatInspeksiRedesign extends Component {
                 {/*INPUT*/}
                 <View style={{ height: 200, marginLeft: 20, marginRight: 20 }}>
                     <Card style={[styles.cardContainer]}>
-                        <CardItem>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#696969' }}>Blok</Text>
-                                {/* <Autocomplete
-                                    containerStyle={styles.autocompleteContainer}
-                                    autoCapitalize={'characters'}
-                                    underlineColorAndroid={'transparent'}
-                                    // style={styles.searchInput}
-                                    value={this.state.blok.toLocaleUpperCase()}
-                                    onChangeText={(text)=>{this.setState({blok:text})}}
-                                /> */}
-                                <TextInput
-                                    autoCapitalize={'characters'}
-                                    underlineColorAndroid={'transparent'}
-                                    style={[styles.searchInput]}
-                                    value={this.state.blok.toLocaleUpperCase()}
-                                    onChangeText={(text) => { this.setState({ blok: text }) }} />
-                            </View>
-                        </CardItem>
-                        <CardItem>
-                            <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#696969' }}>Baris</Text>
-                                <TextInput
-                                    underlineColorAndroid={'transparent'}
-                                    style={[styles.searchInput]}
-                                    keyboardType={'numeric'}
-                                    maxLength={3}
-                                    value={this.state.baris}
-                                    onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.setState({ baris: text }) }} />
-                            </View>
-                        </CardItem>
+                        <View style={{flex:1, margin:10}}>
+                            <Text style={{ color: '#696969' }}>Blok</Text>
+                            <Autocomplete
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                containerStyle={styles.autocompleteContainer}
+                                data={person.length === 1 && comp(query, person[0].nama) ? [] : person}
+                                defaultValue={query}
+                                onChangeText={text => {this.setState({ query: text }); this.hideAndShowBaris(text)}}
+                                renderItem={({ nama, alamat }) => (
+                                    <TouchableOpacity onPress={() => {this.setState({ query: nama, showBaris: true }); alert('sadjnsakdas')}}>
+                                        <View style={{padding:10}}>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{nama}. {alamat}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                        {this.state.showBaris && 
+                        <View style={{ flex: 1, margin:10 }}>
+                            <Text style={{ color: '#696969' }}>Baris</Text>
+                            <TextInput
+                                underlineColorAndroid={'transparent'}
+                                style={[styles.searchInput]}
+                                keyboardType={'numeric'}
+                                maxLength={3}
+                                value={this.state.baris}
+                                onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.setState({ baris: text }) }} />
+                        </View>}
                     </Card>
                 </View>
 
                 <Text style={styles.textLabel}>
                     Pastikan kamu telah berada dilokasi yang benar
                 </Text>
-
-
                 
                 <View style={styles.containerMap}>
                     {!!this.state.latitude && !!this.state.longitude &&
@@ -410,9 +440,7 @@ const styles = {
     stepperNext: { alignSelf: 'flex-end', paddingRight: 4 },
     cardContainer: {
         flex: 1,
-        marginTop: 10,
-        paddingTop: 10,
-        paddingBottom: 5,
+        padding:10,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#fff'
@@ -429,15 +457,11 @@ const styles = {
     },
     autocompleteContainer: {
         flex: 1,
-        left: 0,
-        position: 'absolute',
-        right: 0,
-        top: 20,
-        zIndex: 1
-        //     borderRadius: 4,
-        // borderColor: '#cccccc',
-        // borderWidth: 1,
-        // marginBottom: 18,
+        // left: 0,
+        // position: 'absolute',
+        // right: 0,
+        // top: 20,
+        // zIndex: 1
     },
     textLabel:
         [Fonts.style.caption, { color: Colors.brand, textAlign: 'center', fontSize: 16, marginTop: 10, marginRight: 20, marginLeft: 20 }]
@@ -478,6 +502,19 @@ const styles = {
         marginVertical: 20,
         backgroundColor: 'transparent',
     },
+    // titleText: {
+    //     fontSize: 18,
+    //     fontWeight: '500',
+    //     marginBottom: 10,
+    //     marginTop: 10,
+    //     textAlign: 'center'
+    //   },
+    //   directorText: {
+    //     color: 'grey',
+    //     fontSize: 12,
+    //     marginBottom: 10,
+    //     textAlign: 'center'
+    //   },
     // container: {
     //     position:'absolute',
     //     top:0,

@@ -34,6 +34,7 @@ export function getCalculateTime(date1, date2){
 	var diffDays = Math.floor(diffMs / 86400000); // days
 	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
 	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+	diffMins = Math.round(60-diffMins);
 
 	return diffMins
 }

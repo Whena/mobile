@@ -150,13 +150,15 @@ class AutocompleteExample extends Component {
             </Text>
           )} */}
 
-          {person.length > 0 ? (
+          {person.length > 0 && (AutocompleteExample.person(person[0]))}
+
+          {/* {person.length > 0 ? (
             AutocompleteExample.person(person[0])
           ) : (
             <Text style={styles.infoText}>
               Enter Title of a Star Wars movie
             </Text>
-          )}
+          )} */}
         </View>
       </View>
     );
@@ -171,11 +173,11 @@ const styles = StyleSheet.create({
   },
   autocompleteContainer: {
     flex: 1,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 1
+    // left: 0,
+    // position: 'absolute',
+    // right: 0,
+    // top: 0,
+    // zIndex: 1
   },
   itemText: {
     fontSize: 15,
