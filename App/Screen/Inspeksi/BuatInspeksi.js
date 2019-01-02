@@ -134,7 +134,8 @@ class BuatInspeksiRedesign extends Component {
                 blokName: data[i].BLOCK_NAME, 
                 werksAfdCode: data[i].WERKS_AFD_CODE, 
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
-                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE)
+                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
+                compCode: data[i].COMP_CODE
             });
         }
         this.getLocation();
@@ -253,6 +254,11 @@ class BuatInspeksiRedesign extends Component {
         });
     }
 
+    getEstateName(compCode){
+        let data = TaskService.findBy2('TM_EST', 'COMP_CODE', compCode);
+        return data.EST_NAME
+    }
+
     render() {        
         const { query } = this.state;
         const person = this.findPerson(query);
@@ -312,15 +318,17 @@ class BuatInspeksiRedesign extends Component {
                                     this.setState({ query: text }); 
                                     this.hideAndShowBaris(text)}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok}) => (
-                                    <TouchableOpacity onPress={() => {this.setState({ 
-                                        blok : blokCode, 
-                                        query: `${blokCode}/${blokName}/${statusBlok}`, 
-                                        werksAfdCode: werksAfdCode, 
-                                        werksAfdBlokCode:werksAfdBlokCode, 
-                                        showBaris: true })}}>
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, compCode}) => (
+                                    <TouchableOpacity onPress={() => {
+                                        this.setState({ 
+                                            blok : blokCode, 
+                                            query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
+                                            werksAfdCode: werksAfdCode, 
+                                            werksAfdBlokCode:werksAfdBlokCode, 
+                                            showBaris: true }
+                                        )}}>
                                         <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{blokCode}/{blokName}/{statusBlok}</Text>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(compCode)}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
