@@ -4,7 +4,8 @@ import {
     Text,
     View,
     TouchableOpacity,
-    ScrollView
+    ScrollView,
+    Image
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/AntDesign'
@@ -37,6 +38,8 @@ class HistoryInspeksiDetail extends React.Component {
             totalJarak: '',
             nilaiInspeksi: '',
             nilaiScore: '',
+            blockCode: '',
+            blockName: '',
             estateName: Taskservices.getEstateName()
         };
     }
@@ -84,9 +87,23 @@ class HistoryInspeksiDetail extends React.Component {
             str = `${str})`;
         }
         let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
+        // console.log(dataHeader.BLOCK_CODE)
+        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataHeader.BLOCK_CODE);
+        // console.log(JSON.stringify(dataBlock))
         // let dataEst = Taskservices.getEstateName()
 
-        this.setState({jmlBaris: str, totalWaktu: time.toString(), totalJarak: distance.toString(), nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, nilaiScore: dataHeader[0].INSPECTION_SCORE});
+        let score = dataHeader[0].INSPECTION_SCORE;
+        score = score.includes('.') ? score.substring(0, score.indexOf('.')+2) : score
+        this.setState({
+            jmlBaris: str, 
+            totalWaktu: time.toString(), 
+            totalJarak: distance.toString(), 
+            nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
+            nilaiScore: score,
+            distance: distance
+            // blockCode: dataBlock.BLOCK_CODE,
+            // blockName: dataBlock.BLOCK_NAME
+        });
 
         var piringan = this.getTotalComponentBy('CC0007');        
         var sarkul = this.getTotalComponentBy('CC0008');
@@ -148,11 +165,13 @@ class HistoryInspeksiDetail extends React.Component {
         var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
         var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
 
-        var avg_pokokPanen = jmlNilaiPokokPanen/this.state.barisPembagi;
-        var avg_buahTinggal = jmlNilaiBuahTgl/this.state.barisPembagi;
-        var avg_brondolPiring = jmlNilaiBrondolPiring/this.state.barisPembagi;
-        var avg_brondolTph = jmlNilaiBrondolTph/this.state.barisPembagi;
-        var avg_pokokTdkPupuk = jmlNilaiTdkPupuk/this.state.barisPembagi;
+        console.log(jmlNilaiTipa)
+
+        // var avg_pokokPanen = jmlNilaiPokokPanen/this.state.barisPembagi;
+        // var avg_buahTinggal = jmlNilaiBuahTgl/this.state.barisPembagi;
+        // var avg_brondolPiring = jmlNilaiBrondolPiring/this.state.barisPembagi;
+        // var avg_brondolTph = jmlNilaiBrondolTph/this.state.barisPembagi;
+        // var avg_pokokTdkPupuk = jmlNilaiTdkPupuk/this.state.barisPembagi;
 
         var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
         var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
@@ -160,11 +179,11 @@ class HistoryInspeksiDetail extends React.Component {
         var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
         var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
 
-        var nilaiPokokPanen =  this.getKonversiNilaiKeHuruf(avg_pokokPanen);
-        var nilaiBuahTinggal =  this.getKonversiNilaiKeHuruf(avg_buahTinggal);
-        var nilaiBrondolPiring =  this.getKonversiNilaiKeHuruf(avg_brondolPiring);
-        var nilaiBrondolTph =  this.getKonversiNilaiKeHuruf(avg_brondolTph);
-        var nilaiPokokTdkPupuk =  this.getKonversiNilaiKeHuruf(avg_pokokTdkPupuk);
+        // var nilaiPokokPanen =  this.getKonversiNilaiKeHuruf(avg_pokokPanen);
+        // var nilaiBuahTinggal =  this.getKonversiNilaiKeHuruf(avg_buahTinggal);
+        // var nilaiBrondolPiring =  this.getKonversiNilaiKeHuruf(avg_brondolPiring);
+        // var nilaiBrondolTph =  this.getKonversiNilaiKeHuruf(avg_brondolTph);
+        // var nilaiPokokTdkPupuk =  this.getKonversiNilaiKeHuruf(avg_pokokTdkPupuk);
 
         var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
         var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
@@ -176,35 +195,35 @@ class HistoryInspeksiDetail extends React.Component {
         var data = {
             idx: 0,
             name : 'Pokok Panen',
-            value: nilaiPokokPanen
+            value: jmlNilaiPokokPanen
         }
         listData.push(this.renderComponent(data));
 
         data = {
             idx: 1,
             name : 'Buah Tinggal',
-            value: nilaiBuahTinggal
+            value: jmlNilaiBuahTgl
         }
         listData.push(this.renderComponent(data));
 
         data = {
             idx: 2,
             name : 'Brondol Piringan',
-            value: nilaiBrondolPiring
+            value: jmlNilaiBrondolPiring
         }
         listData.push(this.renderComponent(data));
 
         data = {
             idx: 3,
             name : 'Brondol TPH',
-            value: nilaiBrondolTph
+            value: jmlNilaiBrondolTph
         }
         listData.push(this.renderComponent(data));
 
         data = {
             idx: 4,
             name : 'Pokok Tidak dipupuk',
-            value: nilaiPokokTdkPupuk
+            value: jmlNilaiTdkPupuk
         }
         listData.push(this.renderComponent(data));
 
@@ -311,10 +330,14 @@ class HistoryInspeksiDetail extends React.Component {
 
     renderComponent(data){
         return (
-            <View style={styles.sectionRow}>
-                <Text style={styles.textLabel}>{data.name}</Text>
-                <Text style={styles.textContent}>{data.value}</Text>
-            </View>
+            <TouchableOpacity 
+             key={data.idx} >
+                <View style={styles.sectionRow}>
+                    <Text style={styles.textLabel}>{data.name}</Text>
+                    <Text style={styles.textContent}>{data.value}</Text>
+                </View>
+            </TouchableOpacity>
+            
         )
     }
 
@@ -331,6 +354,30 @@ class HistoryInspeksiDetail extends React.Component {
         )
     }
 
+    renderSticker(param){
+        let img = '';
+        console.log(param)
+        switch(param){
+            case 'A':
+                return(
+                    <Image style={{width: 120, height: 120 }} source={require('../../Images/A.png')} />
+                )
+            case 'B':
+                return(
+                    <Image style={{width: 120, height: 120 }} source={require('../../Images/B.png')} />
+                )
+            case 'C':
+                return(
+                    <Image style={{width: 120, height: 120 }} source={require('../../Images/C.png')} />
+                )
+            case 'F':
+                return(
+                    <Image style={{width: 120, height: 120 }} source={require('../../Images/F.png')} />
+                )
+            default:
+                break;
+        }
+    }
 
     selesai(){
         const navigation = this.props.navigation;
@@ -349,12 +396,17 @@ class HistoryInspeksiDetail extends React.Component {
         return (
             <ScrollView>
                 < View style={styles.container} >
-                    <View style={styles.section}>
+                    {/* <View style={[styles.section,{alignItems:'center'}]}>
 
+                        <Image style={{width: 120, height: 120 }} source={require('../../Images/A.png')} />
+                        
+                    </View> */}
+                    <View style={styles.section}>
+                        {this.renderSticker(this.state.nilaiInspeksi)}
                         <Text style={styles.textNilai}>{this.state.nilaiInspeksi}</Text> 
                         <Text style={styles.textScore}>{this.state.nilaiScore}</Text>
 
-                        <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.data.AFD} - A01/001</Text>
+                        <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.data.AFD_CODE} - {this.state.blockName}/{this.state.blockCode}</Text>
                         <View style={styles.lineDivider} />
                         <View style={styles.sectionRow}>
                             <View >
@@ -366,7 +418,7 @@ class HistoryInspeksiDetail extends React.Component {
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Lama Inspeksi</Text>
                             </View>
                             <View >
-                                <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>2 km</Text>
+                                <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.distance} m</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Total Jarak Inspeksi</Text>
                             </View>
                         </View>

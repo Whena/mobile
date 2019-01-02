@@ -146,7 +146,7 @@ class KondisiBaris2 extends Component {
 		const data = this.state.kondisiBaris1;
         let indexPkkTdkPupuk = R.findIndex(R.propEq('CONTENT_INSPECTION_CODE','CC0006'))(data);
         let mdl = data[indexPkkTdkPupuk];
-        if(mdl.VALUE == ''){
+        if(mdl.VALUE == '0'){
             return false;
         }else{
             return true;

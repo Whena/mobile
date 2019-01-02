@@ -162,18 +162,21 @@ class BuatInspeksiRedesign extends Component {
     }
 
     validation() {
+        let statusBlok = this.getStatusBlok(this.state.werksAfdBlokCode);
         if (this.state.blok === '') {
             Alert.alert('Blok Belum diisi !');
         } else if (this.state.baris === '') {
             Alert.alert('Baris Belum diisi !');
+        } else if(statusBlok === ''){
+            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site')
         } else {
-            this.insertDB();
+            this.insertDB(statusBlok);
         }    
     }
 
     getAfdeling(werk_afd_code){
         let data = TaskService.findBy2('TM_AFD', 'WERKS_AFD_CODE', werk_afd_code);
-        return data.AFD_NAME.substring(data.AFD_NAME.indexOf(' '));
+        return data.AFD_NAME.substring(data.AFD_NAME.indexOf(' ')+1);
     }
 
     getStatusBlok(werk_afd_blok_code){
@@ -181,7 +184,7 @@ class BuatInspeksiRedesign extends Component {
         return data.MATURITY_STATUS;
     }
 
-    insertDB() {
+    insertDB(param) {
         // alert(this.getStatusBlok(this.state.werksAfdBlokCode));
         let dataLogin = TaskService.getAllData('TR_LOGIN');
         var NIK = dataLogin[0].NIK;
@@ -226,7 +229,7 @@ class BuatInspeksiRedesign extends Component {
         this.props.navigation.navigate('TakeFotoBaris', {
             inspeksiHeader: modelInspeksiH,
             dataUsual: params,
-            statusBlok: this.getStatusBlok(this.state.werksAfdBlokCode),
+            statusBlok: param,//this.getStatusBlok(this.state.werksAfdBlokCode),
             baris:this.state.baris,
             waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss')
         });
@@ -301,11 +304,11 @@ class BuatInspeksiRedesign extends Component {
                                 data={person.length === 1 && comp(query, person[0].blokCode) ? [] : person}
                                 defaultValue={query}
                                 onChangeText={text => {
-                                    this.setState({ query: text, blok: text }); 
+                                    this.setState({ query: text }); 
                                     this.hideAndShowBaris(text)}
                                 }
                                 renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, }) => (
-                                    <TouchableOpacity onPress={() => {this.setState({ query: blokCode, werksAfdCode: werksAfdCode, werksAfdBlokCode:werksAfdBlokCode, showBaris: true })}}>
+                                    <TouchableOpacity onPress={() => {this.setState({ blok : blokCode, query: blokCode, werksAfdCode: werksAfdCode, werksAfdBlokCode:werksAfdBlokCode, showBaris: true })}}>
                                         <View style={{padding:10}}>
                                             <Text style = {{fontSize: 15,margin: 2}}>{blokCode}/{blokName}</Text>
                                         </View>

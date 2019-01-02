@@ -62,17 +62,17 @@ class SyncScreen extends React.Component {
 
     _crudTM_Region(data) {
 
-        console.log("Masuk Lokal DB REGION");
-        console.log("Simpan REGION: " + data.simpan.length);
-        console.log("Ubah REGION: " + data.hapus.length);
-        console.log("Delete REGION: " + data.hapus.length);
+        // console.log("Masuk Lokal DB REGION");
+        // console.log("Simpan REGION: " + data.simpan.length);
+        // console.log("Ubah REGION: " + data.hapus.length);
+        // console.log("Delete REGION: " + data.hapus.length);
 
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
             })
 
-            console.log("All Data :" + TaskServices.getAllData('TM_REGION'));
+            console.log("All Data :" + JSON.stringify(TaskServices.getAllData('TM_REGION')));
         }
 
         if (data.ubah.length > 0) {
@@ -109,16 +109,15 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_BLOCK', item);
             })
         }
-
         this.animate();
     }
 
     _crudTM_Est(data) {
         console.log("Masuk Lokal DB Est");
-        console.log("Simpan Est : " + data.insert.length);
+        console.log("Simpan Est : " + data.simpan.length);
 
-        if (data.insert.length > 0) {
-            data.insert.map(item => {
+        if (data.simpan.length > 0) {
+            data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
             })
         }
@@ -209,16 +208,15 @@ class SyncScreen extends React.Component {
 
         });
         // GET DATA MASTER
-        // this.props.regionRequest();
-        // this.props.afdRequest();
+        this.props.regionRequest();
+        this.props.afdRequest();
         this.props.blockRequest();
-        // this.props.estRequest();
-        // this.props.landUseRequest();
-        // this.props.compRequest();
-        // this.props.contentRequest();
-        // this.props.contentLabelRequest();
-
-        // this.props.kriteriaRequest();
+        this.props.estRequest();
+        this.props.landUseRequest();
+        this.props.compRequest();
+        this.props.contentRequest();
+        this.props.contentLabelRequest();
+        this.props.kriteriaRequest();
     }
 
     animate() {
@@ -244,41 +242,55 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
-        if (!newProps.region.fetching && !this.state.downloadRegion) {
+        if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
             this.setState({downloadRegion:true})
-            this._crudTM_Region(dataJSON);
+            if(dataJSON !== null){
+                this._crudTM_Region(dataJSON);
+            }
+            
         }
-        if (!newProps.afd.fetchingAfd && !this.state.downloadAfd) {
+        if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
             let dataJSON = newProps.afd.afd;            
-            this.setState({downloadAfd:true})
-            this._crudTM_Afd(dataJSON);
+            this.setState({downloadAfd:true});
+            if(dataJSON !== null){
+                this._crudTM_Afd(dataJSON);
+            }            
         }
-        if (!newProps.block.fetchingBlock && !this.state.downloadBlok) {
+        if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
-            this.setState({downloadBlok:true})
-            this._crudTM_Block(dataJSON);
+            this.setState({downloadBlok:true});
+            if(dataJSON !== null){
+                this._crudTM_Block(dataJSON);
+            }            
         }
-        if (!newProps.est.fetchingEst && !this.state.downloadEst) {
+        if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
             let dataJSON = newProps.est.est;
-            this.setState({downloadEst:true})
-            this._crudTM_Est(dataJSON);
+            this.setState({downloadEst:true});
+            if(dataJSON !== null){
+                this._crudTM_Est(dataJSON);
+            }            
         }
-        if (!newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
             let dataJSON = newProps.landUse.landUse;
-            this.setState({downloadLandUse:true})
-            this._crudTM_LandUse(dataJSON);
+            this.setState({downloadLandUse:true});
+            if(dataJSON !== null){
+                this._crudTM_LandUse(dataJSON);
+            }            
         }
-        if (!newProps.comp.fetchingComp && !this.state.downloadComp) {
+        if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
             let dataJSON = newProps.comp.comp;
-            this.setState({downloadComp:true})
-            this._crudTM_Comp(dataJSON);
+            this.setState({downloadComp:true});
+            if(dataJSON !== null){
+                this._crudTM_Comp(dataJSON);
+            }            
         }
-
-        if (!newProps.content.fetchingContent && !this.state.downloadContent) {
+        if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
             let dataJSON = newProps.content.content;
-            this.setState({downloadContent:true})
-            this._crudTM_Content(dataJSON);
+            this.setState({downloadContent:true});
+            if(dataJSON !== null){
+                this._crudTM_Content(dataJSON);
+            }            
         }
     }
 

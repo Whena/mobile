@@ -66,7 +66,7 @@ export default class HistoryInspection extends Component {
                 <Text style={{ fontSize: 12, color: 'red' }}>{status}</Text>
               </View>
               <View style={{flexDirection:'row', height:120}}>
-                <Text style={[styles.textValue,{marginTop: 40}]}>{data.INSPECTION_RESULT}</Text>
+                <Text style={[styles.textValue,{marginTop: 40}]}>{data.INSPECTION_RESULT == 'string' ? '': data.INSPECTION_RESULT}</Text>
                 <View style={{ alignItems: 'stretch', width: 8, backgroundColor: color, borderRadius:10 }} />
               </View>
             </View>
@@ -85,6 +85,8 @@ export default class HistoryInspection extends Component {
         return '#feb236';
       case 'F':
         return 'red';
+      case 'string':
+        return '#C8C8C8'
       default:
         return '#C8C8C8';
     }
