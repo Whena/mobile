@@ -55,7 +55,7 @@ class HistoryInspeksiDetail extends React.Component {
             fontWeight: '400',
             marginHorizontal: 12
         },
-        title: 'Detail Inspeksi',
+        title: `Detail Inspeksi`,
         headerTintColor: '#fff',
     };   
 
@@ -87,23 +87,22 @@ class HistoryInspeksiDetail extends React.Component {
             str = `${str})`;
         }
         let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
-        // console.log(dataHeader.BLOCK_CODE)
-        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataHeader.BLOCK_CODE);
-        // console.log(JSON.stringify(dataBlock))
+        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataHeader[0].BLOCK_CODE);
         // let dataEst = Taskservices.getEstateName()
 
         let score = dataHeader[0].INSPECTION_SCORE;
         score = score.includes('.') ? score.substring(0, score.indexOf('.')+2) : score
-        this.setState({
-            jmlBaris: str, 
-            totalWaktu: time.toString(), 
-            totalJarak: distance.toString(), 
-            nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
-            nilaiScore: score,
-            distance: distance
-            // blockCode: dataBlock.BLOCK_CODE,
-            // blockName: dataBlock.BLOCK_NAME
-        });
+        // this.setState({
+        //     jmlBaris: str, 
+        //     totalWaktu: time.toString(), 
+        //     totalJarak: distance.toString(), 
+        //     nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
+        //     nilaiScore: score,
+        //     distance: distance,
+        //     blockCode: dataBlock.BLOCK_CODE,
+        //     blockName: dataBlock.BLOCK_NAME,
+        //     barisPembagi: dataBaris.length
+        // });
 
         var piringan = this.getTotalComponentBy('CC0007');        
         var sarkul = this.getTotalComponentBy('CC0008');
@@ -135,62 +134,40 @@ class HistoryInspeksiDetail extends React.Component {
             nilaiTph: nilaiTph,
             nilaiGwg: nilaiGwg,
             nilaiPrun: nilaiPrun,
-            barisPembagi:barisPembagi
+            jmlBaris: str, 
+            totalWaktu: time.toString(), 
+            totalJarak: distance.toString(), 
+            nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
+            nilaiScore: score,
+            distance: distance,
+            blockCode: dataBlock.BLOCK_CODE,
+            blockName: dataBlock.BLOCK_NAME,
+            barisPembagi: dataBaris.length
         })
     }
 
     loadKriteriaLain(){
 
-        var pokokPanen = this.getTotalComponentBy('CC0001');        
-        var buahTinggal = this.getTotalComponentBy('CC0002');
-        var brondolPiring = this.getTotalComponentBy('CC0003');
-        var brondolTph = this.getTotalComponentBy('CC0004');
-        var pokokTdkPupuk = this.getTotalComponentBy('CC0005'); 
+        var pokokPanen = this.getTotalComponentBy('CC0002');        
+        var buahTinggal = this.getTotalComponentBy('CC0003');
+        var brondolPiring = this.getTotalComponentBy('CC0004');
+        var brondolTph = this.getTotalComponentBy('CC0005');
+        var pokokTdkPupuk = this.getTotalComponentBy('CC0006'); 
 
         var tipa = this.getTotalComponentBy('CC0012');        
         var penabur = this.getTotalComponentBy('CC0013');
         var pupuk = this.getTotalComponentBy('CC0014');
         var kastrasi = this.getTotalComponentBy('CC0015');
-        var sanitasi = this.getTotalComponentBy('CC0016');         
+        var sanitasi = this.getTotalComponentBy('CC0016'); 
+        
 
-        var jmlNilaiPokokPanen = this.getTotalNilaiComponent(pokokPanen);
-        var jmlNilaiBuahTgl = this.getTotalNilaiComponent(buahTinggal);
-        var jmlNilaiBrondolPiring = this.getTotalNilaiComponent(brondolPiring);
-        var jmlNilaiBrondolTph = this.getTotalNilaiComponent(brondolTph);
-        var jmlNilaiTdkPupuk = this.getTotalNilaiComponent(pokokTdkPupuk);
-
-        var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
-        var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
-        var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
-        var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
-        var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
-
-        console.log(jmlNilaiTipa)
-
-        // var avg_pokokPanen = jmlNilaiPokokPanen/this.state.barisPembagi;
-        // var avg_buahTinggal = jmlNilaiBuahTgl/this.state.barisPembagi;
-        // var avg_brondolPiring = jmlNilaiBrondolPiring/this.state.barisPembagi;
-        // var avg_brondolTph = jmlNilaiBrondolTph/this.state.barisPembagi;
-        // var avg_pokokTdkPupuk = jmlNilaiTdkPupuk/this.state.barisPembagi;
-
-        var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
-        var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
-        var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
-        var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
-        var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
-
-        // var nilaiPokokPanen =  this.getKonversiNilaiKeHuruf(avg_pokokPanen);
-        // var nilaiBuahTinggal =  this.getKonversiNilaiKeHuruf(avg_buahTinggal);
-        // var nilaiBrondolPiring =  this.getKonversiNilaiKeHuruf(avg_brondolPiring);
-        // var nilaiBrondolTph =  this.getKonversiNilaiKeHuruf(avg_brondolTph);
-        // var nilaiPokokTdkPupuk =  this.getKonversiNilaiKeHuruf(avg_pokokTdkPupuk);
-
-        var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
-        var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
-        var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
-        var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
-        var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
-
+        var jmlNilaiPokokPanen = this.getTotalNilai(pokokPanen);
+        var jmlNilaiBuahTgl = this.getTotalNilai(buahTinggal);
+        var jmlNilaiBrondolPiring = this.getTotalNilai(brondolPiring);
+        var jmlNilaiBrondolTph = this.getTotalNilai(brondolTph);
+        var jmlNilaiTdkPupuk = this.getTotalNilai(pokokTdkPupuk);
+         
+        
         var listData = [];
         var data = {
             idx: 0,
@@ -227,40 +204,61 @@ class HistoryInspeksiDetail extends React.Component {
         }
         listData.push(this.renderComponent(data));
 
-        data = {
-            idx: 5,
-            name : 'Titi Panen',
-            value: nilaiTipa
+        if(tipa.length > 0)  {
+            var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
+            var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
+            var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
+            data = {
+                idx: 5,
+                name : 'Titi Panen',
+                value: nilaiTipa
+            }
+            listData.push(this.renderComponent(data));
         }
-        listData.push(this.renderComponent(data));
-
-        data = {
-            idx: 6,
-            name : 'Sistem Penaburan',
-            value: nilaiPenabur
+        if(penabur.length> 0)  {
+            var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
+            var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
+            var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
+            data = {
+                idx: 6,
+                name : 'Sistem Penaburan',
+                value: nilaiPenabur
+            }
+            listData.push(this.renderComponent(data));
         }
-        listData.push(this.renderComponent(data));
-
-        data = {
-            idx: 7,
-            name : 'Kastrasi',
-            value: nilaiKastrasi
+        if(pupuk.length > 0)  {
+            var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
+            var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
+            var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
+            data = {
+                idx: 9,
+                name : 'Kondisi Pemupukan',
+                value: nilaiPupuk
+            }
+            listData.push(this.renderComponent(data));
         }
-        listData.push(this.renderComponent(data));
-
-        data = {
-            idx: 8,
-            name : 'Sanitasi',
-            value: nilaiSanitasi
+        if(kastrasi.length > 0)  {
+            var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
+            var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
+            var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
+            data = {
+                idx: 7,
+                name : 'Kastrasi',
+                value: nilaiKastrasi
+            }
+            listData.push(this.renderComponent(data));
         }
-        listData.push(this.renderComponent(data));
-
-        data = {
-            idx: 9,
-            name : 'Kondisi Pemupukan',
-            value: nilaiPupuk
+        if(sanitasi.length > 0)  {
+            var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
+            var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
+            var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
+            data = {
+                idx: 8,
+                name : 'Sanitasi',
+                value: nilaiSanitasi
+            }
+            listData.push(this.renderComponent(data));
         }
-        listData.push(this.renderComponent(data));
 
         return <View>{listData}</View>;
     }
@@ -268,6 +266,18 @@ class HistoryInspeksiDetail extends React.Component {
     getTotalComponentBy(compCode){
         var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.data.BLOCK_INSPECTION_CODE]); 
         return data;
+    }
+
+    getTotalNilai(allComponent){
+        var val = 0;
+        for(var i=0; i < allComponent.length; i++){
+            if(i==0){
+                val = parseInt(allComponent[i].VALUE);
+            }else{
+                val = val + parseInt(allComponent[i].VALUE);
+            }
+        }
+        return val;
     }
 
     getTotalNilaiComponent(allComponent){
@@ -355,8 +365,6 @@ class HistoryInspeksiDetail extends React.Component {
     }
 
     renderSticker(param){
-        let img = '';
-        console.log(param)
         switch(param){
             case 'A':
                 return(
@@ -390,24 +398,31 @@ class HistoryInspeksiDetail extends React.Component {
         navigation.dispatch(resetAction);
     }
 
-
+    colorTextScore(param){
+        switch(param){
+            case 'A':
+                return Colors.brand;
+            case 'B':
+                return '#feb236';
+            case 'C':
+                return '#ff7b25';
+            case 'F':
+                return 'red';
+            default:
+                break;
+        }
+    }
     
     render() {
         return (
             <ScrollView>
                 < View style={styles.container} >
-                    {/* <View style={[styles.section,{alignItems:'center'}]}>
-
-                        <Image style={{width: 120, height: 120 }} source={require('../../Images/A.png')} />
-                        
-                    </View> */}
-                    <View style={styles.section}>
+                    <View style={[styles.section,{alignItems:'center'}]}>
                         {this.renderSticker(this.state.nilaiInspeksi)}
-                        <Text style={styles.textNilai}>{this.state.nilaiInspeksi}</Text> 
-                        <Text style={styles.textScore}>{this.state.nilaiScore}</Text>
+                        <Text style={[styles.textNilai,{color: this.colorTextScore(this.state.nilaiInspeksi)}]}>{this.state.nilaiInspeksi}/{this.state.nilaiScore}</Text> 
 
                         <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.data.AFD_CODE} - {this.state.blockName}/{this.state.blockCode}</Text>
-                        <View style={styles.lineDivider} />
+                        {/* <View style={styles.lineDivider} /> */}
                         <View style={styles.sectionRow}>
                             <View >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.jmlBaris}</Text>
@@ -551,8 +566,8 @@ const styles = StyleSheet.create({
         justifyContent:'center'
     },
     textNilai: {
-        fontSize: 50,
-        fontWeight: '500',
+        fontSize: 25,
+        fontWeight: '300',
         alignContent: 'center',
         textAlign: 'center',
     },

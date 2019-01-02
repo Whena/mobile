@@ -330,80 +330,95 @@ class KondisiBaris2 extends Component {
         }
     }
 
-    insertDB() {
-        var blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 7;
+    insertDB() { 
+
 
         var listBaris2 = [];
-        var data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0007',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.piringan,
-            STATUS_SYNC: 'N'
+        if(this.state.showPiringan){
+            var blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 7;
+            var data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0007',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.piringan,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
-
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        
+        if(this.state.showSarkul){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 8;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0008',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.sarKul,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0008',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.sarKul,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data)
         }
-        listBaris2.push(data)
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        if(this.state.showTph && this.state.switchTPH){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 9;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0009',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.TPH,
-            STATUS_SYNC: 'N'
-        }
-        listBaris2.push(data)
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0009',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.TPH,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data)
+        }        
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        if(this.state.showGwg){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 10;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0010',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.GWG,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0010',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.GWG,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        if(this.state.showPrun){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 11;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0011',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.PRUN,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0011',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.PRUN,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        if(this.state.showTipa && this.state.switchTIPA){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 12;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0012',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.TIPA,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0012',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.TIPA,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
+
+        
 
         blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 13;
@@ -429,37 +444,37 @@ class KondisiBaris2 extends Component {
         }
         listBaris2.push(data);
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        if(this.state.showKastrasi){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 15;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0015',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.KASTRASI,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0015',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.KASTRASI,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
-
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        
+        if(this.state.showSanitasi){
+            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 16;
-        data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0016',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.SANITASI,
-            STATUS_SYNC: 'N'
+            data = {
+                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                CONTENT_INSPECTION_CODE: 'CC0016',
+                AREAL: this.state.dataUsual.BARIS,
+                VALUE: this.state.SANITASI,
+                STATUS_SYNC: 'N'
+            }
+            listBaris2.push(data);
         }
-        listBaris2.push(data);
-
-        // blokInspectionCodeD = this.state.dataUsual.NIK+'-'+getTodayDate('YYYYMMDD')+'-'+this.state.dataUsual.BA+
-        // '-'+this.state.dataUsual.AFD+'-D-'+TaskServices.getTotalData('TR_BLOCK_INSPECTION_D')+115; 
 
         this.props.navigation.navigate('TakeFotoSelfie', {
             fotoBaris: this.state.fotoBaris,
             inspeksiHeader: this.state.inspeksiHeader,
-            // trackInspeksi: this.state.trackInspeksi,
             kondisiBaris1: this.state.kondisiBaris1,
             kondisiBaris2: listBaris2,
             dataUsual: this.state.dataUsual,

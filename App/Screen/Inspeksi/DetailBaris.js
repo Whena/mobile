@@ -54,7 +54,7 @@ class DetailBaris extends React.Component {
             fontWeight: '400',
             marginHorizontal: 12
         },
-        title: 'Detail Inspeksi GAWI INTI - 1',
+        title: 'Detail Baris Inspeksi',
         headerTintColor: '#fff',
     };   
 
@@ -62,10 +62,8 @@ class DetailBaris extends React.Component {
         this.loadData()
     }
 
-    loadData(){
-        
+    loadData(){        
         var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['BLOCK_INSPECTION_CODE', 'AREAL'], [this.state.blokInsCode, this.state.baris]); 
-
         for(var i=0; i < data.length; i++){
             this.getValuComponent({compCode: data[i].CONTENT_INSPECTION_CODE, value: data[i].VALUE})
         }
@@ -77,7 +75,7 @@ class DetailBaris extends React.Component {
             case 'CC0001':       
                 this.setState({nilaiJmlPokok: data.value})         
                 break;
-            case 'CC0002':
+            case 'CC0002':            
                 this.setState({nilaiPokokPanen: data.value})
                 break;
             case 'CC0003':
@@ -107,10 +105,10 @@ class DetailBaris extends React.Component {
             case 'CC0011':
                 this.setState({nilaiPrun: data.value})
                 break;
-            case 'CC0012':            
+            case 'CC0012':    
                 this.setState({nilaiTipa: data.value})
                 break;
-            case 'CC0013':                
+            case 'CC0013':              
                 this.setState({nilaiPenabur: data.value})
                 break;
             case 'CC0014':
@@ -138,76 +136,81 @@ class DetailBaris extends React.Component {
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Perawatan</Text>
                         <View style={styles.lineDivider} />
+                        {this.state.nilaiPiringan !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Piringan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPiringan}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiSarkul !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pasar Pikul</Text>
                             <Text style={styles.textContent}>{this.state.nilaiSarkul}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiTph !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>TPH</Text>
                             <Text style={styles.textContent}>{this.state.nilaiTph}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiGwg !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Gawangan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiGwg}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiPrun !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Prunning</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPrun}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiTipa !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Titi Panen</Text>
                             <Text style={styles.textContent}>{this.state.nilaiTipa}</Text>
-                        </View>
-                        {/* <View style={styles.sectionRow}>
-                            <Text style={styles.textLabel}>Kastrasi</Text>
-                            <Text style={styles.textContent}>{this.state.nilaiKastrasi}</Text>
-                        </View>
-                        <View style={styles.sectionRow}>
-                            <Text style={styles.textLabel}>Sanitasi</Text>
-                            <Text style={styles.textContent}>{this.state.nilaiSanitasi}</Text>
-                        </View> */}
+                        </View>}
                     </View>
 
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Panen</Text>
                         <View style={styles.lineDivider} />
+                        {this.state.nilaiPokokPanen !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pokok Panen</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPokokPanen}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiBuahTinggal !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Buah Tinggal</Text>
                             <Text style={styles.textContent}>{this.state.nilaiBuahTinggal}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiBrondolPiring !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Brondolan di Piringan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiBrondolPiring}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiBrondolTph !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Brondolan di TPH</Text>
                             <Text style={styles.textContent}>{this.state.nilaiBrondolTph}</Text>
-                        </View>                        
+                        </View> }                       
                     </View>
 
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Pemupukan</Text>
                         <View style={styles.lineDivider} />
+                        {this.state.nilaiPokokTdkPupuk !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pokok Tidak diPupuk</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPokokTdkPupuk}</Text>
-                        </View>
+                        </View>}
+                        {this.state.nilaiPenabur !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Sistem Penaburan</Text>
-                            <Text style={styles.textContent}>{this.state.nilaiSarkul}</Text>
-                        </View>
+                            <Text style={styles.textContent}>{this.state.nilaiPenabur}</Text>
+                        </View>}
+                        {this.state.nilaiPupuk !== '' &&
                         <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Kondisi Pupuk</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPupuk}</Text>
-                        </View>                    
+                        </View>}                 
                     </View>
 
                 </View >

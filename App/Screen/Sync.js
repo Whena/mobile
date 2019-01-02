@@ -62,11 +62,6 @@ class SyncScreen extends React.Component {
 
     _crudTM_Region(data) {
 
-        // console.log("Masuk Lokal DB REGION");
-        // console.log("Simpan REGION: " + data.simpan.length);
-        // console.log("Ubah REGION: " + data.hapus.length);
-        // console.log("Delete REGION: " + data.hapus.length);
-
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
@@ -215,8 +210,8 @@ class SyncScreen extends React.Component {
         this.props.landUseRequest();
         this.props.compRequest();
         this.props.contentRequest();
-        this.props.contentLabelRequest();
-        this.props.kriteriaRequest();
+        // this.props.contentLabelRequest();
+        // this.props.kriteriaRequest();
     }
 
     animate() {

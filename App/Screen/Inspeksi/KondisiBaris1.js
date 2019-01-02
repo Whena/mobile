@@ -65,19 +65,19 @@ class KondisiBaris1 extends Component {
 
         var kondisiBaris1 = []
 
-        var data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: 'CC0001',
-            AREAL: this.state.dataUsual.BARIS,
-            VALUE: this.state.jumlahPokok,
-            STATUS_SYNC: 'N'
-        }
-        kondisiBaris1.push(data);
+        // var data = {
+        //     BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+        //     BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+        //     CONTENT_INSPECTION_CODE: 'CC0001',
+        //     AREAL: this.state.dataUsual.BARIS,
+        //     VALUE: this.state.jumlahPokok,
+        //     STATUS_SYNC: 'N'
+        // }
+        // kondisiBaris1.push(data);
 
         blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 2;
-        data = {
+        var data = {
             BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
             CONTENT_INSPECTION_CODE: 'CC0002',

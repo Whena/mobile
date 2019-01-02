@@ -114,14 +114,28 @@ class BuatInspeksiRedesign extends Component {
         }
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
-        // return person.filter(person => person.blokCode.search(regex) >= 0);
         return person.filter(person => person.blokCode.search(regex) >= 0);
+        // var letters = /^[A-Za-z]+$/;
+        // if(query.match(letters)){
+        //     console.log('osan');
+            // return person.filter(person => person.blokName.search(regex) >= 0);
+        // }else{
+        //     console.log('asdasdd');
+            // return person.filter(person => person.blokCode.search(regex) >= 0);
+        // }
+        
       }
 
     componentDidMount() {
         let data = TaskService.getAllData('TM_BLOCK');
         for(var i=0; i<data.length; i++){
-            this.state.person.push({blokCode: data[i].BLOCK_CODE, blokName: data[i].BLOCK_NAME, werksAfdCode: data[i].WERKS_AFD_CODE, werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE});
+            this.state.person.push({
+                blokCode: data[i].BLOCK_CODE, 
+                blokName: data[i].BLOCK_NAME, 
+                werksAfdCode: data[i].WERKS_AFD_CODE, 
+                werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
+                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE)
+            });
         }
         this.getLocation();
     }
@@ -132,6 +146,10 @@ class BuatInspeksiRedesign extends Component {
         }else{
             this.setState({showBaris: true});
         }
+        if(param.length > 2){
+            this.setState({blok: param, showBaris: true});
+        }
+        
     }
 
     getLocation() {
@@ -241,19 +259,6 @@ class BuatInspeksiRedesign extends Component {
         const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
         return (
             <View style={styles.mainContainer}>
-                {/* <View>
-                    <Dialog.Container visible={this.state.showConfirm}>
-                        <Dialog.Title>Informasi</Dialog.Title>
-                        <Dialog.Description>
-                            Apa status blok yang kamu inspeksi ?
-                    </Dialog.Description>
-                        <Dialog.Button label="Cancel" onPress={() => { this.setState({ showConfirm: false }) }} />
-                        <Dialog.Button label="TM" onPress={() => { this.validation('TM') }} />
-                        <Dialog.Button label="TBM1" onPress={() => { this.validation('TBM1') }} />
-                        <Dialog.Button label="TBM2" onPress={() => { this.validation('TBM2') }} />
-                        <Dialog.Button label="TBM3" onPress={() => { this.validation('TBM3') }} />
-                    </Dialog.Container>
-                </View> */}
 
                 <View style={{ flexDirection: 'row', marginLeft: 20, marginRight: 20, marginTop: 10 }}>
                     <View style={styles.containerStepper}>
@@ -307,10 +312,15 @@ class BuatInspeksiRedesign extends Component {
                                     this.setState({ query: text }); 
                                     this.hideAndShowBaris(text)}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, }) => (
-                                    <TouchableOpacity onPress={() => {this.setState({ blok : blokCode, query: blokCode, werksAfdCode: werksAfdCode, werksAfdBlokCode:werksAfdBlokCode, showBaris: true })}}>
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok}) => (
+                                    <TouchableOpacity onPress={() => {this.setState({ 
+                                        blok : blokCode, 
+                                        query: `${blokCode}/${blokName}/${statusBlok}`, 
+                                        werksAfdCode: werksAfdCode, 
+                                        werksAfdBlokCode:werksAfdBlokCode, 
+                                        showBaris: true })}}>
                                         <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{blokCode}/{blokName}</Text>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokCode}/{blokName}/{statusBlok}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
