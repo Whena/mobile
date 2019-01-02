@@ -88,8 +88,8 @@ class BuatInspeksiRedesign extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            latitude: null,
-            longitude: null,
+            latitude: 0.0,
+            longitude: 0.0,
             error: null,
             modelInspeksiH: null,
             modelTrack: null,
@@ -181,7 +181,7 @@ class BuatInspeksiRedesign extends Component {
     }
 
     validation() {
-        let statusBlok = this.getStatusBlok(this.state.werksAfdBlokCode);
+        let statusBlok = 'TM'//this.getStatusBlok(this.state.werksAfdBlokCode);
         if (this.state.blok === '') {
             Alert.alert('Blok Belum diisi !');
         } else if (this.state.baris === '') {
@@ -194,13 +194,22 @@ class BuatInspeksiRedesign extends Component {
     }
 
     getAfdeling(werk_afd_code){
-        let data = TaskService.findBy2('TM_AFD', 'WERKS_AFD_CODE', werk_afd_code);
-        return data.AFD_NAME.substring(data.AFD_NAME.indexOf(' ')+1);
+        try {
+            let data = TaskService.findBy2('TM_AFD', 'WERKS_AFD_CODE', werk_afd_code);
+            return data.AFD_NAME.substring(data.AFD_NAME.indexOf(' ')+1);
+        } catch (error) {
+            return '';
+        }
+        
     }
 
     getStatusBlok(werk_afd_blok_code){
-        let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
-        return data.MATURITY_STATUS;
+        try {
+            let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+            return data.MATURITY_STATUS;
+        } catch (error) {
+            return '';        
+        }
     }
 
     insertDB(param) {
@@ -425,11 +434,11 @@ class BuatInspeksiRedesign extends Component {
                     </View>
                 }*/}
 
-                {/* <ProgressDialog
+                {<ProgressDialog
                         visible={this.state.fetchLocation}
                         activityIndicatorSize="large"
                         message="Mencari Lokasi..."
-                    />  */}
+                />}
             </View>
         )
     }

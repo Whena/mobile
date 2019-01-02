@@ -177,7 +177,7 @@ class TakePhotoSelfie extends Component{
             this.camera = cam;
           }}
           style={styles.preview}
-          flashMode={Camera.Constants.FlashMode.off}
+          flashMode={Camera.Constants.FlashMode.auto}
           type={'front'}
           mirrorImage={true}
           permissionDialogTitle={'Permission to use camera'}

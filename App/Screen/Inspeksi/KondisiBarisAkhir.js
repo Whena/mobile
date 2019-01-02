@@ -18,6 +18,8 @@ import { NavigationActions, StackActions  } from 'react-navigation';
 import R from 'ramda';
 import geolib from 'geolib';
 import Geojson from 'react-native-geojson';
+import { ProgressDialog } from 'react-native-simple-dialogs';
+import IconLoc from 'react-native-vector-icons/FontAwesome5';
 
 
 const alcatraz = {
@@ -66,8 +68,8 @@ class KondisiBarisAkhir extends Component{
         let barisBlok = R.clone(params.baris);
 
         this.state = {
-            latitude:null,
-            longitude:null,
+            latitude:0.0,
+            longitude:0.0,
             error:null,
             switchLanjut: true,
             fulFillMandatory: false,
@@ -91,7 +93,8 @@ class KondisiBarisAkhir extends Component{
             menit:'',
             jarak: '',
             statusBlok,
-            barisBlok
+            barisBlok,
+            fetchLocation: false,
         };
     }
 
@@ -118,7 +121,7 @@ class KondisiBarisAkhir extends Component{
         return distance;
     }
 
-    getLocation(){
+    getLocation = () =>{
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
                 var lat = parseFloat(position.coords.latitude);
@@ -132,7 +135,8 @@ class KondisiBarisAkhir extends Component{
                 // this.setState({initialPosition:initialRegion});
                 // this.setState({initialMarker:initialRegion});
                 let totalJarak = this.totalJarak({latitude:lat, longitude:lon});
-                this.setState({latitude:lat, longitude:lon, jarak: totalJarak.toString()});
+                alert(lat + ' ' + lon);
+                this.setState({latitude:lat, longitude:lon, jarak: totalJarak.toString(), fetchLocation: false});
 
 			},
 			(error) => {
@@ -141,8 +145,10 @@ class KondisiBarisAkhir extends Component{
 				if (error && error.message == "No location provider available.") {
 					message = "Mohon nyalakan GPS anda terlebih dahulu.";
 				}
-				// Alert.alert('Informasi', message);
-				console.log(message);
+                // Alert.alert('Informasi', message);
+                alert(message)
+                this.setState({fetchLocation:false})
+				// console.log(message);
 			}, // go here if error while fetch location
             { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, 
             //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position 
@@ -358,7 +364,6 @@ class KondisiBarisAkhir extends Component{
             }
         }
 
-        // let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
         var baris = {
             ID: getUUID(),
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -366,8 +371,6 @@ class KondisiBarisAkhir extends Component{
             TIME: this.state.menit,
             DISTANCE: this.state.jarak
         }
-        // console.log(this.state.barisBlok)
-        // console.log(JSON.stringify(baris))
         TaskService.saveData('TR_BARIS_INSPECTION', baris)
 
         var params = {
@@ -382,7 +385,6 @@ class KondisiBarisAkhir extends Component{
         if(this.state.fulFillMandatory){
             this.calculate();
         }else{            
-            console.log('masuk')
             this.navigateScreen('TakeFotoBaris', params, modelInspeksiH);
         }
         
@@ -484,6 +486,12 @@ class KondisiBarisAkhir extends Component{
                         // </MapView>
                         }
 
+                        <IconLoc
+                            onPress={()=>{this.getLocation()}}
+                            name="location-arrow"
+                            size={24}
+                            style={{ alignSelf: 'flex-end', marginBottom:210, marginRight: 10}}/>  
+
                         <View style={{height:250, marginLeft:20, marginRight:20}}>
                             <Card style={[styles.cardContainer]}>
                                 <CardItem>
@@ -531,6 +539,12 @@ class KondisiBarisAkhir extends Component{
                         </View>
                     
                     </View>
+
+                {/* {<ProgressDialog
+                        visible={this.state.fetchLocation}
+                        activityIndicatorSize="large"
+                        message="Mencari Lokasi..."
+                />} */}
                 
             </View>
         )
