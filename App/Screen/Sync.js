@@ -16,6 +16,7 @@ import LandUseAction from '../Redux/LandUseRedux';
 import CompAction from '../Redux/CompRedux';
 import ContentAction from '../Redux/ContentRedux';
 import ContentLabelAction from '../Redux/ContentLabelRedux';
+import { ProgressDialog } from 'react-native-simple-dialogs';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
@@ -57,6 +58,8 @@ class SyncScreen extends React.Component {
             downloadLandUse: false,
             downloadComp: false,
             downloadContent: false,
+            fetchLocation: false,
+            downloadApa: ''
         }
     }
 
@@ -65,6 +68,7 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
+                this.setState({downloadApa: `TM_REGION ${item.REGION_CODE}`})
             })
 
             console.log("All Data :" + JSON.stringify(TaskServices.getAllData('TM_REGION')));
@@ -91,6 +95,7 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_AFD', item);
+                this.setState({downloadApa: `TM_AFD ${item.AFD_CODE}`});
             })
         }
     }
@@ -102,9 +107,10 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
+                this.setState({downloadApa: `TM_BLOCK ${item.BLOCK_CODE}`});
             })
         }
-        this.animate();
+        // this.animate();
     }
 
     _crudTM_Est(data) {
@@ -114,6 +120,7 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
+                this.setState({downloadApa: `TM_EST ${item.EST_CODE}`});
             })
         }
     }
@@ -125,8 +132,11 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_LAND_USE', item);
+                this.setState({downloadApa: `TM_LAND_USE ${item.WERKS_AFD_BLOCK_CODE}`});
             })
         }
+
+        this.setState({fetchLocation: false})
     }
 
     _crudTM_Comp(data) {
@@ -136,6 +146,7 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_COMP', item);
+                this.setState({downloadApa: `TM_COMP ${item.COMP_CODE}`});
             })
         }
     }
@@ -147,8 +158,11 @@ class SyncScreen extends React.Component {
         if (data.length > 0) {
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT', item);
+                this.setState({downloadApa: `TM_CONTENT ${item.CONTENT_CODE}`});
             })
         }
+        // this.setState({fetchLocation: false})
+        // alert('selesai')
     }
 
     _crudTM_ContentLabel(data) {
@@ -199,17 +213,19 @@ class SyncScreen extends React.Component {
             downloadEst: false,
             downloadLandUse: false,
             downloadComp: false,
-            downloadContent: false
+            downloadContent: false,
+            fetchLocation: true
 
         });
+
         // GET DATA MASTER
         this.props.regionRequest();
         this.props.afdRequest();
-        this.props.blockRequest();
         this.props.estRequest();
-        this.props.landUseRequest();
         this.props.compRequest();
         this.props.contentRequest();
+        this.props.blockRequest();
+        this.props.landUseRequest();
         // this.props.contentLabelRequest();
         // this.props.kriteriaRequest();
     }
@@ -252,25 +268,11 @@ class SyncScreen extends React.Component {
                 this._crudTM_Afd(dataJSON);
             }            
         }
-        if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
-            let dataJSON = newProps.block.block;
-            this.setState({downloadBlok:true});
-            if(dataJSON !== null){
-                this._crudTM_Block(dataJSON);
-            }            
-        }
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
             let dataJSON = newProps.est.est;
             this.setState({downloadEst:true});
             if(dataJSON !== null){
                 this._crudTM_Est(dataJSON);
-            }            
-        }
-        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
-            let dataJSON = newProps.landUse.landUse;
-            this.setState({downloadLandUse:true});
-            if(dataJSON !== null){
-                this._crudTM_LandUse(dataJSON);
             }            
         }
         if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
@@ -285,6 +287,21 @@ class SyncScreen extends React.Component {
             this.setState({downloadContent:true});
             if(dataJSON !== null){
                 this._crudTM_Content(dataJSON);
+            }            
+        }
+        
+        if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
+            let dataJSON = newProps.block.block;
+            this.setState({downloadBlok:true});
+            if(dataJSON !== null){
+                this._crudTM_Block(dataJSON);
+            }            
+        }
+        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+            let dataJSON = newProps.landUse.landUse;
+            this.setState({downloadLandUse:true});
+            if(dataJSON !== null){
+                this._crudTM_LandUse(dataJSON);
             }            
         }
     }
@@ -346,6 +363,11 @@ class SyncScreen extends React.Component {
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
                     </View>
+                    {<ProgressDialog
+                        visible={this.state.fetchLocation}
+                        activityIndicatorSize="large"
+                        message={this.state.downloadApa}
+                    />}
                 </Content>
             </Container>
         );
