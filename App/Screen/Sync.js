@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import { Container, Content } from 'native-base'
+import { Container, Content, Row } from 'native-base'
 
 import * as Progress from 'react-native-progress';
 import ProgressCircle from 'react-native-progress-circle'
@@ -50,8 +50,10 @@ class SyncScreen extends React.Component {
             tabelUpdate: '',
             imei: '',
             progress: 0,
+            progressAfd: 0,
+            progressRegion: 0,
             indeterminate: false,
-            downloadRegion : false,
+            downloadRegion: false,
             downloadAfd: false,
             downloadBlok: false,
             downloadEst: false,
@@ -59,19 +61,88 @@ class SyncScreen extends React.Component {
             downloadComp: false,
             downloadContent: false,
             fetchLocation: false,
-            downloadApa: ''
+            downloadApa: '',
+            valueDownload: '0',
+            totalDownload: '0',
+            valueAfdDownload: '0',
+            totalAfdDownload: '0',
+            valueRegionDownload: '0',
+            totalRegionDownload: '0',
+            valueEstDownload: '0',
+            totalEstDownload: '0',
+            valueLandUseDownload: '0',
+            totalLandUseDownload: '0',
+            valueCompDownload: '0',
+            totalCompDownload: '0'
+
+        }
+    }
+
+    // componentDidMount() {
+    //     this.state.downloadApa
+    // }
+
+
+    _crudTM_Block(data) {
+        console.log("Masuk Lokal DB Block");
+        console.log("Simpan Block : " + data.simpan.length);
+
+        this.setState({ downloadApa: "Sedang Download TM Block" });
+        if (data.simpan.length > 0) {
+
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progress: i / data.simpan.length })
+                this.setState({ valueDownload: i })
+                console.log(i)
+                this.setState({ totalDownload: data.simpan.length })
+            }
+
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_BLOCK', item);
+            })
+
+            this.setState({ fetchLocation: false });
+        }
+        // this.animate();
+
+    }
+
+    _crudTM_Afd(data) {
+        console.log("Masuk Lokal DB AFD");
+        console.log("Simpan AFD : " + data.simpan.length);
+
+        this.setState({ downloadApa: "Sedang Download TM Afdeling" });
+
+        var i = 1;
+        if (data.simpan.length > 0) {
+
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressAfd: i / data.simpan.length })
+                this.setState({ valueAfdDownload: i })
+                console.log(i)
+                this.setState({ totalAfdDownload: data.simpan.length })
+            }
+
+            data.simpan.map(item => {
+                TaskServices.saveData('TM_AFD', item);
+            })
         }
     }
 
     _crudTM_Region(data) {
-
+        var i = 1;
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
-                this.setState({downloadApa: `TM_REGION ${item.REGION_CODE}`})
+                // this.setState({ downloadApa: `TM_REGION ${item.REGION_CODE}` })
+                this.setState({ downloadApa: "Sedang Download TM Region" });
+                this.setState({ valueRegionDownload: i });
+                this.setState({ progressAfd: i / data.simpan.length })
+                i++;
+                this.setState({ totalRegionDownload: data.simpan.length });
             })
 
-            console.log("All Data :" + JSON.stringify(TaskServices.getAllData('TM_REGION')));
+            // console.log("All Data :" + JSON.stringify(TaskServices.getAllData('TM_REGION')));
         }
 
         if (data.ubah.length > 0) {
@@ -88,39 +159,20 @@ class SyncScreen extends React.Component {
         // }
     }
 
-    _crudTM_Afd(data) {
-        console.log("Masuk Lokal DB AFD");
-        console.log("Simpan AFD : " + data.simpan.length);
-
-        if (data.simpan.length > 0) {
-            data.simpan.map(item => {
-                TaskServices.saveData('TM_AFD', item);
-                this.setState({downloadApa: `TM_AFD ${item.AFD_CODE}`});
-            })
-        }
-    }
-
-    _crudTM_Block(data) {
-        console.log("Masuk Lokal DB Block");
-        console.log("Simpan Block : " + data.simpan.length);
-
-        if (data.simpan.length > 0) {
-            data.simpan.map(item => {
-                TaskServices.saveData('TM_BLOCK', item);
-                this.setState({downloadApa: `TM_BLOCK ${item.BLOCK_CODE}`});
-            })
-        }
-        // this.animate();
-    }
-
     _crudTM_Est(data) {
         console.log("Masuk Lokal DB Est");
         console.log("Simpan Est : " + data.simpan.length);
 
+        var i = 1;
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
-                this.setState({downloadApa: `TM_EST ${item.EST_CODE}`});
+                // this.setState({ downloadApa: `TM_EST ${item.EST_CODE}` });
+                this.setState({ downloadApa: "Sedang Download TM Estate" });
+                this.setState({ valueEstDownload: i });
+                this.setState({ progress: i / data.simpan.length })
+                i++;
+                this.setState({ totalEstDownload: data.simpan.length });
             })
         }
     }
@@ -129,24 +181,36 @@ class SyncScreen extends React.Component {
         console.log("Masuk Lokal DB Land Use");
         console.log("Simpan Land Use : " + data.simpan.length);
 
+        var i = 0;
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_LAND_USE', item);
-                this.setState({downloadApa: `TM_LAND_USE ${item.WERKS_AFD_BLOCK_CODE}`});
+                // this.setState({ downloadApa: `TM_LAND_USE ${item.WERKS_AFD_BLOCK_CODE}` });
+                this.setState({ downloadApa: "Sedang Download TM LandUse" });
+                this.setState({ valueLandUseDownload: i });
+                this.setState({ progress: i / data.simpan.length })
+                i++;
+                this.setState({ totalLandUseDownload: data.simpan.length });
             })
         }
 
-        this.setState({fetchLocation: false})
+        this.setState({ fetchLocation: false })
     }
 
     _crudTM_Comp(data) {
         console.log("Masuk Lokal DB Comp");
         console.log("Simpan Comp : " + data.simpan.length);
 
+        var i = 0;
         if (data.simpan.length > 0) {
             data.simpan.map(item => {
                 TaskServices.saveData('TM_COMP', item);
-                this.setState({downloadApa: `TM_COMP ${item.COMP_CODE}`});
+                // this.setState({ downloadApa: `TM_COMP ${item.COMP_CODE}` });
+                this.setState({ downloadApa: "Sedang Download TM LandUse" });
+                this.setState({ valueCompDownload: i });
+                this.setState({ progress: i / data.simpan.length })
+                i++;
+                this.setState({ totalCompDownload: data.simpan.length });
             })
         }
     }
@@ -158,7 +222,7 @@ class SyncScreen extends React.Component {
         if (data.length > 0) {
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT', item);
-                this.setState({downloadApa: `TM_CONTENT ${item.CONTENT_CODE}`});
+                // this.setState({ downloadApa: `TM_CONTENT ${item.CONTENT_CODE}` });
             })
         }
         // this.setState({fetchLocation: false})
@@ -207,9 +271,9 @@ class SyncScreen extends React.Component {
         // });
 
         this.setState({
-            downloadRegion: false, 
-            downloadAfd: false,
             downloadBlok: false,
+            downloadAfd: false,
+            downloadRegion: false,
             downloadEst: false,
             downloadLandUse: false,
             downloadComp: false,
@@ -219,13 +283,13 @@ class SyncScreen extends React.Component {
         });
 
         // GET DATA MASTER
-        this.props.regionRequest();
-        this.props.afdRequest();
-        this.props.estRequest();
-        this.props.compRequest();
-        this.props.contentRequest();
+        // this.props.contentRequest();
         this.props.blockRequest();
-        this.props.landUseRequest();
+        this.props.afdRequest();
+        // this.props.regionRequest();
+        // this.props.estRequest();
+        // this.props.landUseRequest();
+        // this.props.compRequest();
         // this.props.contentLabelRequest();
         // this.props.kriteriaRequest();
     }
@@ -253,64 +317,70 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
-        if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
-            let dataJSON = newProps.region.region;
-            this.setState({downloadRegion:true})
-            if(dataJSON !== null){
-                this._crudTM_Region(dataJSON);
-            }
-            
-        }
-        if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
-            let dataJSON = newProps.afd.afd;            
-            this.setState({downloadAfd:true});
-            if(dataJSON !== null){
-                this._crudTM_Afd(dataJSON);
-            }            
-        }
-        if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
-            let dataJSON = newProps.est.est;
-            this.setState({downloadEst:true});
-            if(dataJSON !== null){
-                this._crudTM_Est(dataJSON);
-            }            
-        }
-        if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
-            let dataJSON = newProps.comp.comp;
-            this.setState({downloadComp:true});
-            if(dataJSON !== null){
-                this._crudTM_Comp(dataJSON);
-            }            
-        }
-        if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
-            let dataJSON = newProps.content.content;
-            this.setState({downloadContent:true});
-            if(dataJSON !== null){
-                this._crudTM_Content(dataJSON);
-            }            
-        }
-        
+
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
-            this.setState({downloadBlok:true});
-            if(dataJSON !== null){
+            this.setState({ downloadBlok: true });
+            if (dataJSON !== null) {
                 this._crudTM_Block(dataJSON);
-            }            
+            }
         }
-        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
-            let dataJSON = newProps.landUse.landUse;
-            this.setState({downloadLandUse:true});
-            if(dataJSON !== null){
-                this._crudTM_LandUse(dataJSON);
-            }            
+
+        if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
+            let dataJSON = newProps.afd.afd;
+            this.setState({ downloadAfd: true });
+            if (dataJSON !== null) {
+                this._crudTM_Afd(dataJSON);
+            }
         }
+
+        // if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
+        //     let dataJSON = newProps.region.region;
+        //     this.setState({ downloadRegion: true })
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Region(dataJSON);
+        //     }
+
+        // }
+
+        // if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
+        //     let dataJSON = newProps.est.est;
+        //     this.setState({ downloadEst: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Est(dataJSON);
+        //     }
+        // }
+
+        // if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+        //     let dataJSON = newProps.landUse.landUse;
+        //     this.setState({ downloadLandUse: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_LandUse(dataJSON);
+        //     }
+        // }
+
+        // if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
+        //     let dataJSON = newProps.comp.comp;
+        //     this.setState({ downloadComp: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Comp(dataJSON);
+        //     }
+        // }
+
+        // if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
+        //     let dataJSON = newProps.content.content;
+        //     this.setState({ downloadContent: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Content(dataJSON);
+        //     }
+        // }
     }
 
     render() {
         return (
             <Container style={{ flex: 1, padding: 16 }}>
                 <Content>
-                    <View style={styles.section}>
+                    {/* <View style={styles.section}>
                         <View style={{ marginRight: 10 }}>
                             <ProgressCircle
                                 percent={50}
@@ -347,15 +417,96 @@ class SyncScreen extends React.Component {
                             <Text style={{ fontSize: 16, color: Colors.tintColor, textAlign: 'center' }}>150 Data Masuk</Text>
                             <Text style={{ fontSize: 12, color: 'grey', marginTop: 5, textAlign: 'center' }}>Klik sync untuk sinkronisasi data</Text>
                         </View>
-                    </View>
+                    </View> */}
 
-                    <View style={{ flex: 1, marginTop: 48 }}>
+                    <View style={{ flex: 1, marginTop: 0 }}>
+                        <Text>TM BLOCK</Text>
                         <Progress.Bar
-                            height={24}
-                            width={200}
-                            style={styles.progress}
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
                             progress={this.state.progress}
                             indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalDownload}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <Text>TM AFD</Text>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressAfd}
+                            indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueAfdDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalAfdDownload}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <Text>TM REGION</Text>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressRegion}
+                            indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueRegionDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalRegionDownload}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <Text>TM ESTATE</Text>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progress}
+                            indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueEstDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalEstDownload}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <Text>TM LAND USE</Text>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progress}
+                            indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueLandUseDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalLandUseDownload}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <Text>TM COMP</Text>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progress}
+                            indeterminate={this.state.indeterminate} />
+                        <View style={{ flexDirection: 'row', marginTop: 2 }}>
+                            <Text>{this.state.valueCompDownload}</Text>
+                            <Text>/</Text>
+                            <Text>{this.state.totalCompDownload}</Text>
+                        </View>
                     </View>
 
                     <View style={{ flex: 1, marginTop: 48 }}>
@@ -363,11 +514,11 @@ class SyncScreen extends React.Component {
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
                     </View>
-                    {<ProgressDialog
+
+                    <ProgressDialog
                         visible={this.state.fetchLocation}
-                        activityIndicatorSize="large"
-                        message={this.state.downloadApa}
-                    />}
+                        activityIndicatorSize="small"
+                        message={this.state.downloadApa} />
                 </Content>
             </Container>
         );
