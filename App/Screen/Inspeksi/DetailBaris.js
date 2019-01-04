@@ -131,7 +131,7 @@ class DetailBaris extends React.Component {
                 < View style={styles.container} >
                     <View style={styles.section}>
                         <Text style={styles.textLokasi}>Data Penilaian</Text>
-                        <Text style={[styles.textLokasi,{marginTop:5}]}>Baris Ke 1</Text>
+                        <Text style={[styles.textLokasi,{marginTop:5}]}>Baris Ke {this.state.baris}</Text>
                     </View>
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Perawatan</Text>

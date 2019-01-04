@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavigationActions, StackActions } from 'react-navigation';
 import {
-    BackHandler, Text, FlatList, ScrollView, TouchableOpacity, View, Image, Alert
+    BackHandler, Text, FlatList, ScrollView, TouchableOpacity, View, Image, Alert, Platform
 } from 'react-native';
 import {
     Container,
@@ -17,7 +17,8 @@ import { dirPicutures } from '../../Lib/dirStorage'
 import ImagePickerCrop from 'react-native-image-crop-picker'
 import random from 'random-string'
 import TaskServices from '../../Database/TaskServices'
-import RNFS from 'react-native-fs'
+import RNFS from 'react-native-fs';
+const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
     constructor(props) {
@@ -99,18 +100,29 @@ class FormStep1 extends Component {
         }
     }
 
-    takePicture() {
-        ImagePickerCrop.openCamera({
-            width: 640,
-            height: 480,
-            cropping: true,
-        }).then(image => {
-            const photos = R.clone(this.state.photos)
-            photos.push({ uri: image.path })
-            this.setState({
-                photos,
-            })
+    onRefresh = image =>{
+        const photos = R.clone(this.state.photos)
+        photos.push({ uri: FILE_PREFIX+image, index: photos.length })
+        this.setState({
+            photos,
         });
+    }
+
+    takePicture() {
+        this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh})
+
+        // ImagePickerCrop.openCamera({
+        //     width: 640,
+        //     height: 480,
+        //     cropping: true,
+        // }).then(image => {
+        //     console.log(image.path)
+        //     const photos = R.clone(this.state.photos)
+        //     photos.push({ uri: image.path })
+        //     this.setState({
+        //         photos,
+        //     })
+        // });
     }
 
     _onSelectedPhoto = foto => {
@@ -131,7 +143,7 @@ class FormStep1 extends Component {
         });
     }
 
-    _renderFoto = foto => {
+    _renderFoto = (foto) => {
         let border = { borderWidth: 0 }
         {
             if (this.state.selectedPhotos.includes(foto.uri)) {
@@ -142,7 +154,8 @@ class FormStep1 extends Component {
         return (
             <TouchableOpacity
                 onPress={() => { this._onSelectedPhoto(foto.uri) }}
-                style={{ height: 100, width: 100, marginLeft: 10 }}>
+                style={{ height: 100, width: 100, marginLeft: 10 }}
+                key={foto.index}>
                 <Image style={[{
                     alignItems: 'stretch', width: 100, height: 100,
                     borderRadius: 10

@@ -11,6 +11,7 @@ let realmSchema = new Realm({
         ModelTables.TR_BLOCK_INSPECTION_D,
         ModelTables.TR_LOGIN,
         ModelTables.TR_IMAGE,
+        ModelTables.TR_IMAGE_SELFIE,
         ModelTables.TR_TRACK_INSPECTION,
         ModelTables.TR_BARIS_INSPECTION,
         ModelTables.TM_AFD,

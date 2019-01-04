@@ -6,11 +6,11 @@ const TaskServices = {
     return RealmSchemas.path;
   },
 
-  saveData: function (table, obj) {
+  saveData: async function (table, obj) {
     var saved = null;
     console.log('Save Data : ' + table + ' ' + JSON.stringify(obj));
 
-    RealmSchemas.write(() => {
+    await RealmSchemas.write(() => {
       saved = RealmSchemas.create(table, obj, true);
     })
     return saved;
@@ -232,7 +232,7 @@ const TaskServices = {
   getEstateName: function(){
     let auth = this.getAllData('TR_LOGIN')[0];
     let refCode = auth.REFFERENCE_ROLE;
-    let valueRefCode = auth.LOCATION_CODE
+    let valueRefCode = auth.LOCATION_CODE;
     let est;
     if(refCode === 'REGION_CODE'){      
       let reg = this.findBy2('TM_REGION', 'REGION_CODE', valueRefCode);
@@ -242,13 +242,13 @@ const TaskServices = {
     }else if(refCode === 'COMP_CODE'){
       est = this.findBy2('TM_EST', 'COMP_CODE', valueRefCode);
       return est.EST_NAME
-    }else if(refCode === 'WERKS'){
+    }else if(refCode === 'BA_CODE'){
       est = this.findBy2('TM_EST', 'WERKS', valueRefCode);
       return est.EST_NAME
-    }else if(refCode === 'WERKS_AFD_CODE'){
+    }else if(refCode === 'AFD_CODE'){
       let afd = this.findBy2('TM_AFD', 'WERKS_AFD_CODE', valueRefCode);
-      est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
-      return est.EST_NAME
+      // est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
+      return afd.EST_NAME
     }
   },
 
@@ -265,13 +265,13 @@ const TaskServices = {
     }else if(refCode === 'COMP_CODE'){
       est = this.findBy2('TM_EST', 'COMP_CODE', valueRefCode);
       return est.WERKS
-    }else if(refCode === 'WERKS'){
+    }else if(refCode === 'BA_CODE'){
       est = this.findBy2('TM_EST', 'WERKS', valueRefCode);
       return est.WERKS
-    }else if(refCode === 'WERKS_AFD_CODE'){
+    }else if(refCode === 'AFD_CODE'){
       let afd = this.findBy2('TM_AFD', 'WERKS_AFD_CODE', valueRefCode);
-      est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
-      return est.WERKS
+      // est = this.findBy2('TM_EST', 'WERKS', afd.WERKS);
+      return afd.WERKS
     }
   }
 

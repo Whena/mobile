@@ -37,7 +37,6 @@ import { getLandUse, postLandUse } from './LandUseSagas';
 import { getComp, postComp } from './CompSagas';
 import { getContent, postContent } from './ContentSagas';
 import { getContentLabel, postContentLabel } from './ContentLabelSagas';
-import TaskServices from '../Database/TaskServices'
 
 //Add by Aminju
 import { getBlock, postBlock } from './BlockSagas'

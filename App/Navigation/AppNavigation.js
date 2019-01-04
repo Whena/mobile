@@ -2,12 +2,14 @@ import { createStackNavigator } from 'react-navigation';
 import SplashScreen from '../Screen/SplashScreen';
 import Login from '../Screen/LoginScreen';
 import MainMenu from '../Screen/Home/MainTabNavigator';
+
+//finding
 import FindingFormNavigator from '../Screen/Finding/FindingFormNavigator';
-import SyncScreen from '../Screen/Sync';
-import InboxScreen from '../Screen/Inbox';
+
+import FormStep1 from '../Screen/Finding/FormStep1';
+import FormStep2 from '../Screen/Finding/FormStep2';
 import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen';
-import Colors from '../Constant/Colors';
-import test from '../Screen/Inspeksi/test';
+import TakeFoto from '../Screen/Finding/TakeFoto'
 // import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspectionNavigator';
 
 //inspeksi
@@ -21,11 +23,18 @@ import KondisiBarisAkhir from '../Screen/Inspeksi/KondisiBarisAkhir';
 import SelesaiInspeksi from '../Screen/Inspeksi/SelesaiInspeksi';
 import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 
+
+import SyncScreen from '../Screen/Sync';
+import InboxScreen from '../Screen/Inbox';
+import Colors from '../Constant/Colors';
+import test from '../Screen/Inspeksi/test';
+
+
 const main = createStackNavigator({
     MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
     SplashScreen: { screen: SplashScreen },
     Login: { screen: Login },
-    SelesaiInspeksi: { screen: SelesaiInspeksi },
+
     FindingFormNavigator: {
         screen: FindingFormNavigator,
         navigationOptions: {
@@ -41,15 +50,21 @@ const main = createStackNavigator({
             },
         }
     },
-    Sync: { screen: SyncScreen },
-    Inbox: { screen: InboxScreen },
+
+    //finding
+    // FormStep1: {screen: FormStep1},
+    // FormStep2: {screen: FormStep2},
     DetailFinding: { screen: DetailFindingScreen },
+    TakeFoto : {screen: TakeFoto},
     // FormInspection: {
     //     screen: FormInspectionNavigator,
     //     navigationOptions: {
     //         header: null
     //     },
     // },
+    
+    Sync: { screen: SyncScreen },
+    Inbox: { screen: InboxScreen },
 
     //inspeksi
     BuatInspeksi : {screen: BuatInspeksi},

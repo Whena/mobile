@@ -104,7 +104,8 @@ class BuatInspeksiRedesign extends Component {
             query: '',
             person:[],
             werksAfdCode: '',
-            werksAfdBlokCode: ''
+            werksAfdBlokCode: '',
+            clickLOV: false
         };
     }
 
@@ -114,7 +115,7 @@ class BuatInspeksiRedesign extends Component {
         }
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
-        return person.filter(person => person.blokCode.search(regex) >= 0);
+        return person.filter(person => person.blokName.search(regex) >= 0);
         // var letters = /^[A-Za-z]+$/;
         // if(query.match(letters)){
         //     console.log('osan');
@@ -143,12 +144,12 @@ class BuatInspeksiRedesign extends Component {
 
     hideAndShowBaris(param){
         if(param.length > 0){
-            this.setState({showBaris: false});
+            this.setState({showBaris: false, clickLOV: false});
         }else{
-            this.setState({showBaris: true});
+            this.setState({showBaris: true, clickLOV: false});
         }
         if(param.length > 2){
-            this.setState({blok: param, showBaris: true});
+            this.setState({blok: param, showBaris: true, clickLOV: false});
         }
         
     }
@@ -161,7 +162,7 @@ class BuatInspeksiRedesign extends Component {
                 // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
                 // console.log(timestamp);
                 // console.log(lat + ' ' + lon);
-                alert(lat + ' ' + lon);
+                // alert(lat + ' ' + lon);
                 this.setState({latitude:lat, longitude:lon, fetchLocation: false});
                 // alert(position.coords.latitude)
 
@@ -181,14 +182,16 @@ class BuatInspeksiRedesign extends Component {
     }
 
     validation() {
-        let statusBlok = 'TM'//this.getStatusBlok(this.state.werksAfdBlokCode);
+        let statusBlok = this.getStatusBlok(this.state.werksAfdBlokCode);
         if (this.state.blok === '') {
-            Alert.alert('Blok Belum diisi !');
+            alert('Blok Belum diisi !');
         } else if (this.state.baris === '') {
-            Alert.alert('Baris Belum diisi !');
+            alert('Baris Belum diisi !');
         } else if(statusBlok === ''){
-            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site')
-        } else {
+            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site');
+        } else if(!this.state.clickLOV){
+            alert('Blok harus dipilih dari LOV');
+        }else {
             this.insertDB(statusBlok);
         }    
     }
@@ -206,14 +209,13 @@ class BuatInspeksiRedesign extends Component {
     getStatusBlok(werk_afd_blok_code){
         try {
             let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
-            return data.MATURITY_STATUS;
+            return data.MATURITY_STATUS;            
         } catch (error) {
-            return '';        
+            return ''
         }
     }
 
     insertDB(param) {
-        // alert(this.getStatusBlok(this.state.werksAfdBlokCode));
         let dataLogin = TaskService.getAllData('TR_LOGIN');
         var NIK = dataLogin[0].NIK;
         var DATE = getTodayDate('YYYYMMDD');
@@ -229,6 +231,7 @@ class BuatInspeksiRedesign extends Component {
             WERKS: WERKS,
             AFD_CODE: AFD,
             BLOCK_CODE: BLOK,
+            STATUS_BLOCK: param,
             INSPECTION_DATE: getTodayDate('YYYY-MM-DD HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
             INSPECTION_SCORE: 'string',
             INSPECTION_RESULT: 'string',
@@ -321,7 +324,7 @@ class BuatInspeksiRedesign extends Component {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 containerStyle={styles.autocompleteContainer}
-                                data={person.length === 1 && comp(query, person[0].blokCode) ? [] : person}
+                                data={person.length === 1 && comp(query, person[0].blokName) ? [] : person}
                                 defaultValue={query}
                                 onChangeText={text => {
                                     this.setState({ query: text }); 
@@ -334,6 +337,7 @@ class BuatInspeksiRedesign extends Component {
                                             query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
                                             werksAfdCode: werksAfdCode, 
                                             werksAfdBlokCode:werksAfdBlokCode, 
+                                            clickLOV: true,
                                             showBaris: true }
                                         )}}>
                                         <View style={{padding:10}}>

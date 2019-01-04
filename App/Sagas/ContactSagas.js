@@ -4,18 +4,18 @@ import TaskServices from '../Database/TaskServices'
 
 export function* getContact(api, action) {
     const { data } = action;
-    const response = yield call(api.getContact, data);
+    const response = yield call(api.getContact, data);    
 
     if (typeof atob !== 'undefined') {
         console.log(response);
-        console.log('^^^ GET ALL CATEGORY ^^^');
+        console.log('^^^ GET ALL CONTACT ^^^');
     }
     if (response.data.status && response.data.data.length > 0) {
         yield put(ContactActions.contactSuccess(response.data));
 
-        response.data.data.map(item => {
-            TaskServices.saveData('TR_CONTACT', item);
-        })
+        // response.data.data.map(item => {
+        //     TaskServices.saveData('TR_CONTACT', item);
+        // })
 
     } else {
         yield put(ContactActions.contactFailure(response.problem));

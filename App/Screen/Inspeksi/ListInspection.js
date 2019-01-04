@@ -7,6 +7,7 @@ import { NavigationActions, StackActions  } from 'react-navigation';
 import { connect } from 'react-redux';
 import InspeksiAction from '../../Redux/InspeksiRedux';
 import {getTodayDate} from '../../Lib/Utils';
+import Icon2 from 'react-native-vector-icons/MaterialIcons'
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
 
@@ -77,7 +78,12 @@ class ListInspection extends Component {
   render() {
     return (
       // <View>
-        <ActionButton buttonColor={Colors.tintColor} onPress={() => this.actionButtonClick()}></ActionButton>
+        // <ActionButton buttonColor={Colors.tintColor} onPress={() => this.actionButtonClick()}></ActionButton>
+        <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
+          buttonColor={Colors.tintColor}
+          onPress={() => { this.actionButtonClick() }}
+          icon={<Icon2 color = 'white' name='edit' size={25} />}>
+        </ActionButton>
       //   <ProgressDialog
       //       visible={this.state.fetching}
       //       activityIndicatorSize="large"

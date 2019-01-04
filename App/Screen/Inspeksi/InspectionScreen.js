@@ -38,7 +38,8 @@ class InspectionScreen extends Component {
 
       headerLeft: (
         <TouchableOpacity onPress={()=>{
-          params.loadData()
+          // params.loadData()
+          navigation.navigate('Sync')
         }}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 12 }}>
             <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_sync.png')} />
@@ -47,7 +48,7 @@ class InspectionScreen extends Component {
       ),
 
       headerRight: (
-        <TouchableOpacity onPress={() => params.inbox()}>
+        <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
             <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_inbox.png')} />
           </View>

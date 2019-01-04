@@ -20,6 +20,26 @@ var uuid = require('react-native-uuid');
 // 	);
 // }
 
+export function getSticker(score){
+	var arrA = [require('../Images/stiker-A-1.png'), require('../Images/stiker-A-2.png'), require('../Images/stiker-A-3.png')];
+	var arrB = [require('../Images/stiker-B-1.png'), require('../Images/stiker-B-2.png'), require('../Images/stiker-B-3.png')];
+	var arrC = [require('../Images/stiker-C-1.png'), require('../Images/stiker-C-2.png'), require('../Images/stiker-C-3.png')];
+	var arrF = [require('../Images/stiker-F-1.png'), require('../Images/stiker-F-2.png'), require('../Images/stiker-F-3.png')];
+	var randomItem;
+	switch(score){
+		case 'A':
+			return randomItem = arrA[Math.floor(Math.random()*arrA.length)];
+		case 'B':
+			return randomItem = arrB[Math.floor(Math.random()*arrB.length)];
+		case 'C':
+			return randomItem = arrC[Math.floor(Math.random()*arrC.length)];
+		case 'F':
+			return randomItem = arrF[Math.floor(Math.random()*arrF.length)];
+		default:
+			break;
+	}
+}
+
 export function getCalculateTime(date1, date2){
 	//date1 is today
 	// var today = new Date();

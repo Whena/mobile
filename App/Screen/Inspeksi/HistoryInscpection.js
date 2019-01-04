@@ -5,6 +5,7 @@ import {Card,CardItem} from 'native-base';
 import Colors from '../../Constant/Colors';
 import Taskservice from '../../Database/TaskServices'
 import { NavigationActions, StackActions  } from 'react-navigation';
+import {getTodayDate} from '../../Lib/Utils'
 var RNFS = require('react-native-fs');
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
@@ -30,25 +31,22 @@ export default class HistoryInspection extends Component {
   }
 
   renderList = (data, index) => {
-    const nav = this.props.navigation
-    let status = '';
+    let status = '', colorStatus = '';
     if (data.STATUS_SYNC == 'N'){
       status = 'Belum Dikirim'
+      colorStatus = 'red';
     }else{
       status = 'Sudah Terkirim'
+      colorStatus = Colors.brand
     }
+    let color = this.getColor(data.INSPECTION_RESULT);    
+    let imgBaris = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+    let imgName = imgBaris[0].IMAGE_NAME
+    let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/${imgName}`;   
 
-    let color = this.getColor(data.INSPECTION_RESULT);
     
-    let dataImage = Taskservice.findBy2('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
-    let imgName = dataImage.IMAGE_NAME
+    let dataBlock = Taskservice.findBy2('TM_BLOCK', 'BLOCK_CODE', data.BLOCK_CODE);
 
-    let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/${imgName}`;
-    // console.log(path);
-    // alert(path)
-    // if(dataImage.length > 0){
-    //   path = `${FILE_PREFIX}${dataImage.IMAGE_PATH}/${dataImage.IMAGE_NAME}`
-    // }
     return(
       <TouchableOpacity 
         style={{ marginTop: 12 }} 
@@ -60,10 +58,10 @@ export default class HistoryInspection extends Component {
                 <Image style={{ alignItems: 'stretch', width: 100, borderRadius:10 }} source={{uri: path}}></Image>
               </View>
               <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{data.WERKS}</Text>
-                <Text style={{ fontSize: 12 }}>{data.BLOCK_CODE.toLocaleUpperCase()}</Text>
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{Taskservice.getEstateName()}</Text>
+                <Text style={{ fontSize: 12 }}>{dataBlock.BLOCK_NAME}/{data.BLOCK_CODE.toLocaleUpperCase()}</Text>
                 <Text style={{ fontSize: 12 }}>{data.INSPECTION_DATE}</Text>
-                <Text style={{ fontSize: 12, color: 'red' }}>{status}</Text>
+                <Text style={{ fontSize: 12, color: colorStatus }}>{status}</Text>
               </View>
               <View style={{flexDirection:'row', height:120}}>
                 <Text style={[styles.textValue,{marginTop: 40}]}>{data.INSPECTION_RESULT == 'string' ? '': data.INSPECTION_RESULT}</Text>
@@ -73,6 +71,34 @@ export default class HistoryInspection extends Component {
           </Card>
         </TouchableOpacity>
     );    
+  }  
+
+  getBaris1(blockInsCode){
+    let arrCompBaris1 = ['CC0002', 'CC0003', 'CC0004', 'CC0005', 'CC0006'];
+    let arrKondisiBaris1 = [];
+    arrCompBaris1.map(item =>{
+      var data = Taskservice.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [item, blockInsCode]);
+      if(data.length > 0){
+        let dataAkhir = data[data.length-1]
+        arrKondisiBaris1.push(dataAkhir);
+      }
+    });
+    return arrKondisiBaris1; 
+    
+  }
+
+  getBaris2(blockInsCode){
+    let arrCompBaris2 = ['CC0007', 'CC0008', 'CC0009', 'CC0010', 'CC0011', 'CC0012', 'CC0013', 'CC0014', 'CC0015', 'CC0016'];
+    let arrKondisiBaris2 = [];
+    arrCompBaris2.map(item =>{
+      var data = Taskservice.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [item, blockInsCode]);
+      if(data.length > 0){
+        let dataAkhir = data[data.length-1]
+        arrKondisiBaris2.push(dataAkhir);
+      }
+    });
+    return arrKondisiBaris2; 
+    
   }
 
   getColor(param){
@@ -93,7 +119,69 @@ export default class HistoryInspection extends Component {
   }
 
   actionButtonClick(data) {  
-    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'DetailHistoryInspeksi', params: { data: data }}));
+    if(data.INSPECTION_RESULT === 'string'){
+      let imgBaris = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+      let imgSelfie = Taskservice.findBy('TR_IMAGE_SELFIE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+      let arrBaris = Taskservice.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+
+      let strInspecCode = data.BLOCK_INSPECTION_CODE;
+      let arrCode = strInspecCode.split('-');
+
+      let fotoBaris = imgBaris[imgBaris.length-1];
+      let fotoSelfie = imgSelfie[imgSelfie.length-1];
+      let dataBaris = arrBaris[arrBaris.length-1];
+
+      let kondisiBaris1 = this.getBaris1(data.BLOCK_INSPECTION_CODE);
+      let kondisiBaris2 = this.getBaris2(data.BLOCK_INSPECTION_CODE);
+      let statusBlok = data.STATUS_BLOCK;
+      let barisBlok = dataBaris.VALUE;
+
+      let dataUsual = {
+        NIK: arrCode[0],
+        BA: arrCode[3],
+        AFD: arrCode[4],
+        BLOK: arrCode[5], 
+        BARIS: barisBlok,
+        BLOCK_INSPECTION_CODE: strInspecCode
+      }
+
+      var modelInspeksiH = {
+        BLOCK_INSPECTION_CODE: data.BLOCK_INSPECTION_CODE,
+        WERKS: data.WERKS,
+        AFD_CODE: data.AFD_CODE,
+        BLOCK_CODE: data.BLOCK_CODE,
+        STATUS_BLOCK: data.STATUS_BLOCK,
+        INSPECTION_DATE: data.INSPECTION_DATE, //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
+        INSPECTION_SCORE:'string',
+        INSPECTION_RESULT:'string',
+        STATUS_SYNC:'N',
+        SYNC_TIME:'',
+        START_INSPECTION: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+        END_INSPECTION: data.END_INSPECTION,
+        LAT_START_INSPECTION: data.LAT_START_INSPECTION, //this.state.latitude.toString(),
+        LONG_START_INSPECTION: data.LONG_START_INSPECTION,//this.state.longitude.toString(),
+        LAT_END_INSPECTION: data.LAT_END_INSPECTION,
+        LONG_END_INSPECTION: data.LONG_END_INSPECTION,
+        ASSIGN_TO:''
+    }
+
+    // alert(JSON.stringify(modelInspeksiH))
+
+    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'KondisiBarisAkhir', params: { 
+        fotoSelfie: fotoSelfie,
+        inspeksiHeader: modelInspeksiH, 
+        fotoBaris: fotoBaris,
+        kondisiBaris1: kondisiBaris1, 
+        kondisiBaris2: kondisiBaris2, 
+        dataUsual: dataUsual,
+        statusBlok:statusBlok,
+        baris:barisBlok,
+        from: 'history' }}));
+
+    }else{
+      this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'DetailHistoryInspeksi', params: { data: data }}));
+    }
+    
   }
 
   render() {

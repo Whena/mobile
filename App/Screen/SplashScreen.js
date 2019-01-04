@@ -41,6 +41,7 @@ class SplashScreen extends Component {
             //buat folder internal      
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
             RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
+            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Temuan');
 
             RNFS.mkdir(dirPicutures);
 
@@ -54,6 +55,7 @@ class SplashScreen extends Component {
                     // this.props.contactRequest();
                     // this.props.regionRequest();
 
+                    // this.navigateScreen('TakeFoto');
                     this.navigateScreen('MainMenu');
 
                 } else {

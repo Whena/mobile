@@ -11,6 +11,8 @@ import Colors from '../../Constant/Colors'
 import Dash from 'react-native-dash'
 import TaskServices from '../../Database/TaskServices'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon2 from 'react-native-vector-icons/MaterialIcons'
+import { NavigationActions, StackActions  } from 'react-navigation';
 // import layer from '../../Data/skm.json'
 
 
@@ -110,6 +112,7 @@ export default class ListFinding extends Component {
 
   actionButtonClick() {
     this.props.navigation.navigate('FindingFormNavigator')
+    // this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'BuatInspeksi'}));
   }
 
   _renderItem = item => {
@@ -238,7 +241,8 @@ export default class ListFinding extends Component {
 
         <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
           buttonColor={Colors.tintColor}
-          onPress={() => { this.actionButtonClick() }}>
+          onPress={() => { this.actionButtonClick() }}
+          icon={<Icon2 color = 'white' name='edit' size={25} />}>
         </ActionButton>
       </Container >
 

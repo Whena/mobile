@@ -16,6 +16,8 @@ import LandUseAction from '../Redux/LandUseRedux';
 import CompAction from '../Redux/CompRedux';
 import ContentAction from '../Redux/ContentRedux';
 import ContentLabelAction from '../Redux/ContentLabelRedux';
+import ContactAction from '../Redux/ContactRedux';
+import CategoryAction from '../Redux/CategoryRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
 
 import { connect } from 'react-redux';
@@ -60,6 +62,7 @@ class SyncScreen extends React.Component {
             downloadLandUse: false,
             downloadComp: false,
             downloadContent: false,
+            downloadContact: false,
             fetchLocation: false,
             downloadApa: '',
             valueDownload: '0',
@@ -251,6 +254,20 @@ class SyncScreen extends React.Component {
         }
     }
 
+    _crudTM_Contact(data) {        
+        console.log("Simpan Contact : " + data.data.length);
+        var dataContact = data.data;
+        console.log(JSON.stringify(dataContact))
+        if (dataContact.length > 0) {
+            data.data.map(item => {
+                TaskServices.saveData('TR_CONTACT', item);
+                this.setState({downloadApa: `TR_CONTACT ${item.USER_AUTH_CODE}`});
+            });
+        }
+        
+        this.setState({fetchLocation: false})
+    }
+
     _get_IMEI_Number() {
         var IMEI_2 = IMEI.getImei();
         this.setState({ imei: IMEI_2 });
@@ -271,13 +288,14 @@ class SyncScreen extends React.Component {
         // });
 
         this.setState({
-            downloadBlok: false,
+            downloadRegion: false, 
             downloadAfd: false,
-            downloadRegion: false,
+            downloadBlok: false,
             downloadEst: false,
             downloadLandUse: false,
             downloadComp: false,
             downloadContent: false,
+            downloadContact: false,
             fetchLocation: true
 
         });
@@ -535,7 +553,8 @@ const mapStateToProps = state => {
         comp: state.comp,
         content: state.content,
         contentLabel: state.contentLabel,
-        kriteria: state.kriteria
+        kriteria: state.kriteria,
+        contact: state.contact
     };
 };
 
@@ -560,7 +579,9 @@ const mapDispatchToProps = dispatch => {
         contentRequest: () => dispatch(ContentAction.contentRequest()),
         contentPost: obj => dispatch(ContentAction.contentPost(obj)),
         contentLabelRequest: () => dispatch(ContentLabelAction.contentLabelRequest()),
-        contentLabelPost: obj => dispatch(ContentLabelAction.contentLabelPost(obj))
+        contentLabelPost: obj => dispatch(ContentLabelAction.contentLabelPost(obj)),
+        contactRequest: () => dispatch(ContactAction.contactRequest()),
+        categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
     };
 };
 

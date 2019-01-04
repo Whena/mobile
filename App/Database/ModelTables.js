@@ -21,6 +21,7 @@ const TR_BLOCK_INSPECTION_H = {
         WERKS: 'string',
         AFD_CODE: 'string',
         BLOCK_CODE: 'string',
+        STATUS_BLOCK: 'string',
         INSPECTION_DATE: 'string',
         INSPECTION_SCORE: 'string',
         INSPECTION_RESULT: 'string',
@@ -51,6 +52,20 @@ const TR_BLOCK_INSPECTION_D = {
 
 const TR_IMAGE = {
     name: 'TR_IMAGE',
+    primaryKey: 'IMAGE_CODE',
+    properties: {
+        IMAGE_CODE: 'string',
+        TR_CODE: 'string',
+        BLOCK_INSPECTION_CODE: 'string',
+        IMAGE_NAME: 'string',
+        IMAGE_PATH: 'string',
+        STATUS_IMAGE: 'string',
+        STATUS_SYNC: 'string'
+    }
+}
+
+const TR_IMAGE_SELFIE = {
+    name: 'TR_IMAGE_SELFIE',
     primaryKey: 'IMAGE_CODE',
     properties: {
         IMAGE_CODE: 'string',
@@ -166,14 +181,15 @@ const TR_CATEGORY = {
 
 const TR_CONTACT = {
     name: 'TR_CONTACT',
-    primaryKey: '_id',
+    primaryKey: 'EMPLOYEE_NIK',
     properties: {
-        _id: 'string',
         USER_AUTH_CODE: 'string',
         EMPLOYEE_NIK: 'string',
         USER_ROLE: 'string',
         LOCATION_CODE: 'string',
         REF_ROLE: 'string',
+        HRIS_JOB: 'string',
+        HRIS_FULLNAME: 'string'
     }
 }
 
@@ -372,6 +388,7 @@ export default {
     TR_BLOCK_INSPECTION_H,
     TR_BLOCK_INSPECTION_D,
     TR_IMAGE,
+    TR_IMAGE_SELFIE,
     TR_TRACK_INSPECTION,
     TR_BARIS_INSPECTION,
     TM_AFD,

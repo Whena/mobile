@@ -14,6 +14,7 @@ import Colors from '../../Constant/Colors'
 import Taskservices from '../../Database/TaskServices'
 import R from 'ramda';
 import { NavigationActions, StackActions  } from 'react-navigation';
+import {getSticker} from '../../Lib/Utils'
 
 class SelesaiInspeksi extends React.Component {
 
@@ -130,14 +131,20 @@ class SelesaiInspeksi extends React.Component {
         var nilaiTph =  this.getKonversiNilaiKeHuruf(avg_tph);
         var nilaiGwg =  this.getKonversiNilaiKeHuruf(avg_gwg);
         var nilaiPrun =  this.getKonversiNilaiKeHuruf(avg_prun);
+        
+        avg_piringan = avg_piringan.includes('.') ? avg_piringan.toFixed(2) : avg_piringan;
+        avg_sarkul = avg_sarkul.includes('.') ? avg_sarkul.toFixed(2) : avg_sarkul;
+        avg_tph = avg_tph.includes('.') ? avg_tph.toFixed(2) : avg_tph;
+        avg_gwg = avg_gwg.includes('.') ? avg_gwg.toFixed(2) : avg_gwg;
+        avg_prun = avg_prun.includes('.') ? avg_prun.toFixed(2) : avg_prun;
 
         this.setState({
-            nilaiPiringan: nilaiPiringan,
-            nilaiSarkul: nilaiSarkul,
-            nilaiTph: nilaiTph,
-            nilaiGwg: nilaiGwg,
-            nilaiPrun: nilaiPrun,            
-            barisPembagi: dataBaris.length
+            nilaiPiringan: `${nilaiPiringan}/${avg_piringan}`,
+            nilaiSarkul: `${nilaiSarkul}/${avg_sarkul}`,
+            nilaiTph: `${nilaiTph}/${avg_tph}`,
+            nilaiGwg: `${nilaiGwg}/${avg_gwg}`,
+            nilaiPrun: `${nilaiPrun}/${avg_prun}`,            
+            barisPembagi: dataBaris.length,
         })
     }
 
@@ -153,8 +160,7 @@ class SelesaiInspeksi extends React.Component {
         var penabur = this.getTotalComponentBy('CC0013');
         var pupuk = this.getTotalComponentBy('CC0014');
         var kastrasi = this.getTotalComponentBy('CC0015');
-        var sanitasi = this.getTotalComponentBy('CC0016'); 
-        
+        var sanitasi = this.getTotalComponentBy('CC0016');         
 
         var jmlNilaiPokokPanen = this.getTotalNilai(pokokPanen);
         var jmlNilaiBuahTgl = this.getTotalNilai(buahTinggal);
@@ -203,10 +209,11 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
             var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
             var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
+            avg_tipa = avg_tipa.includes('.') ? avg_tipa.toFixed(2) : avg_tipa;
             data = {
                 idx: 5,
                 name : 'Titi Panen',
-                value: nilaiTipa
+                value: `${nilaiTipa}/${avg_tipa}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -214,10 +221,11 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
             var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
             var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
+            avg_penabur = avg_penabur.includes('.') ? avg_penabur.toFixed(2) : avg_penabur;
             data = {
                 idx: 6,
                 name : 'Sistem Penaburan',
-                value: nilaiPenabur
+                value: `${nilaiPenabur}/${avg_penabur}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -225,10 +233,11 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
             var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
             var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
+            avg_pupuk = avg_pupuk.includes('.') ? avg_pupuk.toFixed(2) : avg_pupuk;
             data = {
                 idx: 9,
                 name : 'Kondisi Pemupukan',
-                value: nilaiPupuk
+                value: `${nilaiPupuk}/${avg_pupuk}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -236,10 +245,11 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
             var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
             var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
+            avg_kastrasi = avg_kastrasi.includes('.') ? avg_kastrasi.toFixed(2) : avg_kastrasi;
             data = {
                 idx: 7,
                 name : 'Kastrasi',
-                value: nilaiKastrasi
+                value: `${nilaiKastrasi}/${avg_kastrasi}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -247,10 +257,11 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
             var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
             var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
+            avg_sanitasi = avg_sanitasi.includes('.') ? avg_sanitasi.toFixed(2) : avg_sanitasi;
             data = {
                 idx: 8,
                 name : 'Sanitasi',
-                value: nilaiSanitasi
+                value: `${nilaiSanitasi}/${avg_sanitasi}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -356,27 +367,11 @@ class SelesaiInspeksi extends React.Component {
     }
 
     renderSticker(param){
-        switch(param){
-            case 'A':
-                return(
-                    <Image style={{width: 120, height: 120 }} source={require('../../Images/A.png')} />
-                )
-            case 'B':
-                return(
-                    <Image style={{width: 120, height: 120 }} source={require('../../Images/B.png')} />
-                )
-            case 'C':
-                return(
-                    <Image style={{width: 120, height: 120 }} source={require('../../Images/C.png')} />
-                )
-            case 'F':
-                return(
-                    <Image style={{width: 120, height: 120 }} source={require('../../Images/F.png')} />
-                )
-            default:
-                break;
-        }
+        return(
+            <Image style={{width: 120, height: 120 }} source={getSticker(param)} />
+        )
     }
+
 
 
     selesai=()=>{
