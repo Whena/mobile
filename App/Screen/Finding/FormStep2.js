@@ -267,7 +267,6 @@ class FormStep2 extends Component {
     }
 
     changeColorPriority(priority){
-        alert(priority)
         switch(priority){
             case 'HIGH':
                 this.setState({colorPriority: 'red', priority: priority});
@@ -501,7 +500,7 @@ class FormStep2 extends Component {
                                 renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, compCode}) => (
                                     <TouchableOpacity onPress={() => {
                                         this.setState({ 
-                                            blok : blokCode, 
+                                            blok : query,//blokCode, 
                                             query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
                                             // werksAfdCode: werksAfdCode, 
                                             // werksAfdBlokCode:werksAfdBlokCode, 

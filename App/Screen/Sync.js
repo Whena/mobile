@@ -397,16 +397,16 @@ class SyncScreen extends React.Component {
         });
 
         // GET DATA MASTER
-        // this.props.contentRequest();
-        // this.props.blockRequest();
-        // this.props.afdRequest();
-        // this.props.regionRequest();
-        // this.props.estRequest();
-        // this.props.landUseRequest();
-        // this.props.compRequest();
-        // this.props.contentLabelRequest();
-        // this.props.kriteriaRequest();
-        this.props.findingRequest();
+        this.props.contentRequest();
+        this.props.blockRequest();
+        this.props.afdRequest();
+        this.props.regionRequest();
+        this.props.estRequest();
+        this.props.landUseRequest();
+        this.props.compRequest();
+        this.props.contentLabelRequest();
+        this.props.kriteriaRequest();
+        // this.props.findingRequest();
     }
 
     animate() {
@@ -433,88 +433,88 @@ class SyncScreen extends React.Component {
     componentWillReceiveProps(newProps) {
 
 
-        // if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
-        //     let dataJSON = newProps.block.block;
-        //     this.setState({ downloadBlok: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Block(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
-        //     let dataJSON = newProps.afd.afd;
-        //     this.setState({ downloadAfd: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Afd(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
-        //     let dataJSON = newProps.region.region;
-        //     this.setState({ downloadRegion: true })
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Region(dataJSON);
-        //     }
-
-        // }
-
-        // if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
-        //     let dataJSON = newProps.est.est;
-        //     this.setState({ downloadEst: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Est(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
-        //     let dataJSON = newProps.landUse.landUse;
-        //     this.setState({ downloadLandUse: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_LandUse(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
-        //     let dataJSON = newProps.comp.comp;
-        //     this.setState({ downloadComp: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Comp(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
-        //     let dataJSON = newProps.content.content;
-        //     this.setState({ downloadContent: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Content(dataJSON);
-        //     }
-        // }
-
-        // // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
-
-        // if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
-        //     let dataJSON = newProps.contentLabel.contentLabel;
-        //     this.setState({ downloadContentLabel: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_ContentLabel(dataJSON);
-        //     }
-        // }
-
-        // if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
-        //     let dataJSON = newProps.kriteria.kriteria;
-        //     this.setState({ downloadKriteria: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Kriteria(dataJSON);
-        //     }
-        // }
-
-        if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
-            let dataJSON = newProps.finding.finding;
-            this.setState({ downloadFinding: true });
+        if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
+            let dataJSON = newProps.block.block;
+            this.setState({ downloadBlok: true });
             if (dataJSON !== null) {
-                this._crudTM_Finding(dataJSON);
+                this._crudTM_Block(dataJSON);
             }
         }
+
+        if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
+            let dataJSON = newProps.afd.afd;
+            this.setState({ downloadAfd: true });
+            if (dataJSON !== null) {
+                this._crudTM_Afd(dataJSON);
+            }
+        }
+
+        if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
+            let dataJSON = newProps.region.region;
+            this.setState({ downloadRegion: true })
+            if (dataJSON !== null) {
+                this._crudTM_Region(dataJSON);
+            }
+
+        }
+
+        if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
+            let dataJSON = newProps.est.est;
+            this.setState({ downloadEst: true });
+            if (dataJSON !== null) {
+                this._crudTM_Est(dataJSON);
+            }
+        }
+
+        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+            let dataJSON = newProps.landUse.landUse;
+            this.setState({ downloadLandUse: true });
+            if (dataJSON !== null) {
+                this._crudTM_LandUse(dataJSON);
+            }
+        }
+
+        if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
+            let dataJSON = newProps.comp.comp;
+            this.setState({ downloadComp: true });
+            if (dataJSON !== null) {
+                this._crudTM_Comp(dataJSON);
+            }
+        }
+
+        if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
+            let dataJSON = newProps.content.content;
+            this.setState({ downloadContent: true });
+            if (dataJSON !== null) {
+                this._crudTM_Content(dataJSON);
+            }
+        }
+
+        // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
+
+        if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
+            let dataJSON = newProps.contentLabel.contentLabel;
+            this.setState({ downloadContentLabel: true });
+            if (dataJSON !== null) {
+                this._crudTM_ContentLabel(dataJSON);
+            }
+        }
+
+        if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
+            let dataJSON = newProps.kriteria.kriteria;
+            this.setState({ downloadKriteria: true });
+            if (dataJSON !== null) {
+                this._crudTM_Kriteria(dataJSON);
+            }
+        }
+
+        // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
+        //     let dataJSON = newProps.finding.finding;
+        //     this.setState({ downloadFinding: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Finding(dataJSON);
+        //     }
+        // }
     }
 
     render() {
@@ -712,29 +712,6 @@ class SyncScreen extends React.Component {
                             width={null}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressKriteria}
-                            indeterminate={this.state.indeterminate} />
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 48 }}>
-                        <TouchableOpacity style={styles.button} onPress={() => this._onSync()}>
-                            <Text style={styles.buttonText}>Sync</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>TM KRITERIA</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueFindingDownload}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalFindingDownload}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressFinding}
                             indeterminate={this.state.indeterminate} />
                     </View>
 

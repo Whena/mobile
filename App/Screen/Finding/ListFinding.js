@@ -50,7 +50,7 @@ export default class ListFinding extends Component {
   willFocus = this.props.navigation.addListener(
     'willFocus',
     () => {
-      this._initData()
+      // this._initData()
     }
   )
 

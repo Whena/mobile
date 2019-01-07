@@ -23,6 +23,7 @@ class SelesaiInspeksi extends React.Component {
 
         let params = props.navigation.state.params;
         let inspeksiHeader = R.clone(params.inspeksiHeader);
+        let statusBlok = R.clone(params.statusBlok);
 
         this.state = {
             inspeksiHeader,
@@ -32,11 +33,6 @@ class SelesaiInspeksi extends React.Component {
             nilaiTph: '',
             nilaiGwg: '',
             nilaiPrun: '',
-            intPiringan: 0,
-            intSarkul: 0,
-            intTph: 0,
-            intGwg: 0,
-            intPrun: 0,
             hideKriteria: false,
             barisPembagi:0,
             arrBaris: [],
@@ -46,7 +42,13 @@ class SelesaiInspeksi extends React.Component {
             nilaiScore: '',
             blockCode: '',
             blockName: '',
-            estateName: Taskservices.getEstateName()
+            estateName: Taskservices.getEstateName(),
+            statusBlok,
+            showPiringan: false,
+            showSarkul: false,
+            showTph: false,
+            showGwg: false,
+            showPrun: false
         };
     }
 
@@ -135,26 +137,37 @@ class SelesaiInspeksi extends React.Component {
         var nilaiSarkul =  this.getKonversiNilaiKeHuruf(avg_sarkul);
         var nilaiTph =  this.getKonversiNilaiKeHuruf(avg_tph);
         var nilaiGwg =  this.getKonversiNilaiKeHuruf(avg_gwg);
-        var nilaiPrun =  this.getKonversiNilaiKeHuruf(avg_prun);
-        
-        avg_piringan = avg_piringan.includes('.') ? avg_piringan.toFixed(2) : avg_piringan;
-        avg_sarkul = avg_sarkul.includes('.') ? avg_sarkul.toFixed(2) : avg_sarkul;
-        avg_tph = avg_tph.includes('.') ? avg_tph.toFixed(2) : avg_tph;
-        avg_gwg = avg_gwg.includes('.') ? avg_gwg.toFixed(2) : avg_gwg;
-        avg_prun = avg_prun.includes('.') ? avg_prun.toFixed(2) : avg_prun;
+        var nilaiPrun =  this.getKonversiNilaiKeHuruf(avg_prun);       
 
-        this.setState({
-            nilaiPiringan: `${nilaiPiringan}/${avg_piringan}`,
-            nilaiSarkul: `${nilaiSarkul}/${avg_sarkul}`,
-            nilaiTph: `${nilaiTph}/${avg_tph}`,
-            nilaiGwg: `${nilaiGwg}/${avg_gwg}`,
-            nilaiPrun: `${nilaiPrun}/${avg_prun}`,            
-            barisPembagi: dataBaris.length,
-            intPiringan: nilaiPiringan,
-            intSarkul: nilaiSarkul,
-            intTph: nilaiTph,
-            intGwg: nilaiGwg,
-        })
+        
+        if(this.state.statusBlok === 'TM'){
+            this.setState({
+                nilaiPiringan: `${nilaiPiringan}/${avg_piringan.toFixed(2)}`,
+                nilaiSarkul: `${nilaiSarkul}/${avg_sarkul.toFixed(2)}`,
+                nilaiTph: `${nilaiTph}/${avg_tph.toFixed(2)}`,
+                nilaiGwg: `${nilaiGwg}/${avg_gwg.toFixed(2)}`,
+                nilaiPrun: `${nilaiPrun}/${avg_prun.toFixed(2)}`,            
+                barisPembagi: dataBaris.length,
+            });
+        }else if(this.state.statusBlok === 'TBM 3'){
+            this.setState({
+                nilaiPiringan: `${nilaiPiringan}/${avg_piringan.toFixed(2)}`,
+                nilaiSarkul: `${nilaiSarkul}/${avg_sarkul.toFixed(2)}`,
+                nilaiTph: `${nilaiTph}/${avg_tph.toFixed(2)}`,
+                nilaiGwg: `${nilaiGwg}/${avg_gwg.toFixed(2)}`,
+                nilaiPrun: `-`,            
+                barisPembagi: dataBaris.length,
+            });
+        }else{
+            this.setState({
+                nilaiPiringan: `${nilaiPiringan}/${avg_piringan.toFixed(2)}`,
+                nilaiSarkul: `${nilaiSarkul}/${avg_sarkul.toFixed(2)}`,
+                nilaiTph: `-`,
+                nilaiGwg: `${nilaiGwg}/${avg_gwg.toFixed(2)}`,
+                nilaiPrun: `-`,            
+                barisPembagi: dataBaris.length,
+            });
+        }
     }
 
     loadKriteriaLain(){
@@ -218,11 +231,10 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
             var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
             var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
-            avg_tipa = avg_tipa.includes('.') ? avg_tipa.toFixed(2) : avg_tipa;
             data = {
                 idx: 5,
                 name : 'Titi Panen',
-                value: `${nilaiTipa}/${avg_tipa}`
+                value: `${nilaiTipa}/${avg_tipa.toFixed(2)}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -230,7 +242,6 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
             var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
             var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
-            avg_penabur = avg_penabur.includes('.') ? avg_penabur.toFixed(2) : avg_penabur;
             data = {
                 idx: 6,
                 name : 'Sistem Penaburan',
@@ -242,11 +253,10 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
             var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
             var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
-            avg_pupuk = avg_pupuk.includes('.') ? avg_pupuk.toFixed(2) : avg_pupuk;
             data = {
                 idx: 9,
                 name : 'Kondisi Pemupukan',
-                value: `${nilaiPupuk}/${avg_pupuk}`
+                value: `${nilaiPupuk}/${avg_pupuk.toFixed(2)}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -254,11 +264,10 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
             var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
             var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
-            avg_kastrasi = avg_kastrasi.includes('.') ? avg_kastrasi.toFixed(2) : avg_kastrasi;
             data = {
                 idx: 7,
                 name : 'Kastrasi',
-                value: `${nilaiKastrasi}/${avg_kastrasi}`
+                value: `${nilaiKastrasi}/${avg_kastrasi.toFixed(2)}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -266,11 +275,10 @@ class SelesaiInspeksi extends React.Component {
             var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
             var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
             var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
-            avg_sanitasi = avg_sanitasi.includes('.') ? avg_sanitasi.toFixed(2) : avg_sanitasi;
             data = {
                 idx: 8,
                 name : 'Sanitasi',
-                value: `${nilaiSanitasi}/${avg_sanitasi}`
+                value: `${nilaiSanitasi}/${avg_sanitasi.toFixed(2)}`
             }
             listData.push(this.renderComponent(data));
         }
@@ -410,6 +418,7 @@ class SelesaiInspeksi extends React.Component {
     }
     
     render() {
+
         return (
             <ScrollView>
                 < View style={styles.container} >
@@ -437,30 +446,30 @@ class SelesaiInspeksi extends React.Component {
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Kriteria Penilaian</Text>
                         <View style={styles.lineDivider} />
-                        {this.state.intPiringan > 0 && <View style={styles.sectionRow}>
+                        <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Piringan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPiringan}</Text>
-                        </View>}
+                        </View>
                         
-                        {this.state.intSarkul > 0 && <View style={styles.sectionRow}>
+                        <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pasar Pikul</Text>
                             <Text style={styles.textContent}>{this.state.nilaiSarkul}</Text>
-                        </View>}
+                        </View>
                         
-                        {this.state.intTph > 0 && <View style={styles.sectionRow}>
+                        <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>TPH</Text>
                             <Text style={styles.textContent}>{this.state.nilaiTph}</Text>
-                        </View>}
+                        </View>
                         
-                        {this.state.intGwg > 0 && <View style={styles.sectionRow}>
+                        <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Gawangan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiGwg}</Text>
-                        </View>}
+                        </View>
                         
-                        {this.state.intPrun > 0 && <View style={styles.sectionRow}>
+                        <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Prunning</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPrun}</Text>
-                        </View>}
+                        </View>
                     </View>
 
                     <View style={[styles.section]}>

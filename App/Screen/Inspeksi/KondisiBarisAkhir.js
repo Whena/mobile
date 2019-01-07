@@ -260,6 +260,7 @@ class KondisiBarisAkhir extends Component{
                 routeName: 'SelesaiInspeksi', 
                 params : { 
                     inspeksiHeader: this.state.inspeksiHeader, 
+                    statusBlok: this.state.statusBlok
                 } 
             })]
         });
