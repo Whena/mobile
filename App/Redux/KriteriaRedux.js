@@ -30,17 +30,17 @@ export const KriteriaSelectors = {
 /* ------------- Reducers ------------- */
 
 // request the data from an api
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, kriteria: null });
-export const postKriteria = (state, { data }) => state.merge({ fetching: true, data, kriteria: null });
+export const request = (state, { data }) => state.merge({ fetchingKriteria: true, error: null, kriteria: null });
+export const postKriteria = (state, { data }) => state.merge({ fetchingKriteria: true, data, kriteria: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, kriteria: payload });
+	return state.merge({ fetchingKriteria: false, error: null, kriteria: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetching: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingKriteria: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 

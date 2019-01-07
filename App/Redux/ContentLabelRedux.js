@@ -31,17 +31,17 @@ export const ContentSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, contentLabel: null });
-export const postContentLabel = (state, { data }) => state.merge({ fetching: true, data, contentLabel: null });
+export const request = (state, { data }) => state.merge({ fetchingContentLabel: true, error: null, contentLabel: null });
+export const postContentLabel = (state, { data }) => state.merge({ fetchingContentLabel: true, data, contentLabel: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, contentLabel: payload });
+	return state.merge({ fetchingContentLabel: false, error: null, contentLabel: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetching: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingContentLabel: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 

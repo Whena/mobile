@@ -77,6 +77,11 @@ const create = () => {
         return api.post('/mobile-sync', body);
     }
 
+    const postFinding = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.post('/mobile-sync', body);
+    }
+
     //insepksi
     const postInspeksiHeader = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
@@ -158,6 +163,11 @@ const create = () => {
         return api.get('/content-label')
     }
 
+    const getFinding = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/finding')
+    }
+
     return {
         api,
         login,
@@ -181,6 +191,7 @@ const create = () => {
         postComp,
         postContent,
         postContentLabel,
+        postFinding,
 
         //Get
         getBlock,
@@ -193,7 +204,8 @@ const create = () => {
         getEmployeeHris,
         getComp,
         getContent,
-        getContentLabel
+        getContentLabel,
+        getFinding
 
     };
 };

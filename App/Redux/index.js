@@ -22,6 +22,7 @@ export const reducers = combineReducers({
 	comp: require('./CompRedux').reducer,
 	content: require('./ContentRedux').reducer,
 	contentLabel: require('./ContentLabelRedux').reducer,
+	finding: require('./FindingRedux').reducer,
 
 	network
 });

@@ -20,6 +20,7 @@ import { LandUseTypes } from '../Redux/LandUseRedux';
 import { CompTypes } from '../Redux/CompRedux';
 import { ContentTypes } from '../Redux/ContentRedux';
 import { ContentLabelTypes } from '../Redux/ContentLabelRedux';
+import { FindingTypes } from '../Redux/FindingRedux';
 
 
 /* ------------- Sagas ------------- */
@@ -37,6 +38,8 @@ import { getLandUse, postLandUse } from './LandUseSagas';
 import { getComp, postComp } from './CompSagas';
 import { getContent, postContent } from './ContentSagas';
 import { getContentLabel, postContentLabel } from './ContentLabelSagas';
+import { getFinding, postFinding } from './FindingSagas';
+import TaskServices from '../Database/TaskServices'
 
 //Add by Aminju
 import { getBlock, postBlock } from './BlockSagas'
@@ -80,6 +83,8 @@ export default function* root() {
 		takeLatest(ContentTypes.CONTENT_POST, postContent, miApi),
 		takeLatest(ContentLabelTypes.CONTENT_LABEL_REQUEST, getContentLabel, miApi),
 		takeLatest(ContentLabelTypes.CONTENT_LABEL_POST, postContentLabel, miApi),
+		takeLatest(FindingTypes.FINDING_REQUEST, getFinding, miApi),
+		takeLatest(FindingTypes.FINDING_POST, postFinding, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

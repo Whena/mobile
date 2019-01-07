@@ -206,16 +206,10 @@ const TR_FINDING = {
         FINDING_PRIORITY: 'string',
         DUE_DATE: 'string',
         ASSIGN_TO: 'string',
-        PROGRESS: 'int',
-        LAT_FINDING: 'double',
-        LONG_FINDING: 'double',
-        REFFERENCE_INS_CODE: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        DELETE_USER: 'string',
-        DELETE_TIME: 'string'
+        PROGRESS: 'string',
+        LAT_FINDING: 'string',
+        LONG_FINDING: 'string',
+        REFFERENCE_INS_CODE: 'string'
     }
 }
 
