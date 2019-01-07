@@ -13,7 +13,7 @@ import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import R from 'ramda'
-import { dirPicutures } from '../../Lib/dirStorage'
+import { dirPhotoTemuan } from '../../Lib/dirStorage'
 import ImagePickerCrop from 'react-native-image-crop-picker'
 import random from 'random-string'
 import TaskServices from '../../Database/TaskServices'
@@ -21,6 +21,20 @@ import RNFS from 'react-native-fs';
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
+
+    static navigationOptions = {
+        headerStyle: {
+            backgroundColor: Colors.tintColor
+        },
+        title: 'Buat Laporan Temuan',
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            flex: 1,
+            fontSize: 18,
+            fontWeight: '400'
+        },
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -31,11 +45,38 @@ class FormStep1 extends Component {
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
+            latitude: 0.0,
+            longitude: 0.0,
+            fetchLocation: false
         }
     }
 
     componentDidMount() {
-       
+       this.getLocation();
+    }
+
+    getLocation() {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var lat = parseFloat(position.coords.latitude);
+                var lon = parseFloat(position.coords.longitude);
+                // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
+                // console.log(timestamp);
+                this.setState({latitude:lat, longitude:lon, fetchLocation: false});
+
+            },
+            (error) => {
+                // this.setState({ error: error.message, fetchingLocation: false })
+                let message = error && error.message ? error.message : 'Terjadi kesalahan ketika mencari lokasi anda !';
+                if (error && error.message == "No location provider available.") {
+                    message = "Mohon nyalakan GPS anda terlebih dahulu.";
+                }
+                this.setState({fetchLocation:false})
+                alert('Informasi', message);
+                // console.log(message);
+            }, // go here if error while fetch location
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
+        );
     }
     
     exitAlert = () => {
@@ -66,38 +107,48 @@ class FormStep1 extends Component {
     }
 
     onBtnClick() {
-        if (this.state.photos.length == 0) {
-            Alert.alert(
-                'Peringatan',
-                'Anda belum mengambil foto'
-            );
-        } else if (this.state.selectedPhotos.length == 0) {
-            Alert.alert(
-                'Peringatan',
-                "Minimal harus ada 1 Foto dipilih"
-            );
-        } else {
-            let params = [];
+        // if (this.state.photos.length == 0) {
+        //     Alert.alert(
+        //         'Peringatan',
+        //         'Anda belum mengambil foto'
+        //     );
+        // } else if (this.state.selectedPhotos.length == 0) {
+        //     Alert.alert(
+        //         'Peringatan',
+        //         "Minimal harus ada 1 Foto dipilih"
+        //     );
+        // } else {
+            let images = [];
             this.state.selectedPhotos.map((item) => {
-                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
-                var path = dirPicutures + '/' + pname;
+                // var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
+                // var path = dirPhotoTemuan + '/' + pname;
 
-                RNFS.copyFile(item, path).then((success) => {
-                    params.push(pname)
+                // RNFS.copyFile(item, path).then((success) => {
+                //     params.push(pname)
 
-                    const navigation = this.props.navigation;
-                    const resetAction = StackActions.reset({
-                        index: 0,
-                        actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
-                    });
-                    navigation.dispatch(resetAction);
-                }).catch((err) => {
-                    console.tron.log("Error moveFile: " + err.message)
-                    alert("Terjadi kesalahan, silahkan coba lagi")
+                //     const navigation = this.props.navigation;
+                //     const resetAction = StackActions.reset({
+                //         index: 0,
+                //         actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
+                //     });
+                //     navigation.dispatch(resetAction);
+                // }).catch((err) => {
+                //     console.tron.log("Error moveFile: " + err.message)
+                //     alert("Terjadi kesalahan, silahkan coba lagi" + err.message)
+                // });
+
+                let da = item.split('/')
+                let imgName = da[da.length-1];
+                images.push(imgName);
+                const navigation = this.props.navigation;
+                const resetAction = StackActions.reset({
+                    index: 0,
+                    actions: [NavigationActions.navigate({ routeName: 'Step2', params:{image: images, lat: this.state.latitude, lon:this.state.longitude} })],
                 });
+                navigation.dispatch(resetAction);
 
             })
-        }
+        // }
     }
 
     onRefresh = image =>{
@@ -109,7 +160,7 @@ class FormStep1 extends Component {
     }
 
     takePicture() {
-        this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh})
+        this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh, authCode: this.state.user.USER_AUTH_CODE})
 
         // ImagePickerCrop.openCamera({
         //     width: 640,

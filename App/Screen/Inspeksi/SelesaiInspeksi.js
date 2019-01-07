@@ -32,6 +32,11 @@ class SelesaiInspeksi extends React.Component {
             nilaiTph: '',
             nilaiGwg: '',
             nilaiPrun: '',
+            intPiringan: 0,
+            intSarkul: 0,
+            intTph: 0,
+            intGwg: 0,
+            intPrun: 0,
             hideKriteria: false,
             barisPembagi:0,
             arrBaris: [],
@@ -145,6 +150,10 @@ class SelesaiInspeksi extends React.Component {
             nilaiGwg: `${nilaiGwg}/${avg_gwg}`,
             nilaiPrun: `${nilaiPrun}/${avg_prun}`,            
             barisPembagi: dataBaris.length,
+            intPiringan: nilaiPiringan,
+            intSarkul: nilaiSarkul,
+            intTph: nilaiTph,
+            intGwg: nilaiGwg,
         })
     }
 
@@ -428,26 +437,30 @@ class SelesaiInspeksi extends React.Component {
                     <View style={styles.section}>
                         <Text style={styles.textTitle}>Kriteria Penilaian</Text>
                         <View style={styles.lineDivider} />
-                        <View style={styles.sectionRow}>
+                        {this.state.intPiringan > 0 && <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Piringan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPiringan}</Text>
-                        </View>
-                        <View style={styles.sectionRow}>
+                        </View>}
+                        
+                        {this.state.intSarkul > 0 && <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Pasar Pikul</Text>
                             <Text style={styles.textContent}>{this.state.nilaiSarkul}</Text>
-                        </View>
-                        <View style={styles.sectionRow}>
+                        </View>}
+                        
+                        {this.state.intTph > 0 && <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>TPH</Text>
                             <Text style={styles.textContent}>{this.state.nilaiTph}</Text>
-                        </View>
-                        <View style={styles.sectionRow}>
+                        </View>}
+                        
+                        {this.state.intGwg > 0 && <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Gawangan</Text>
                             <Text style={styles.textContent}>{this.state.nilaiGwg}</Text>
-                        </View>
-                        <View style={styles.sectionRow}>
+                        </View>}
+                        
+                        {this.state.intPrun > 0 && <View style={styles.sectionRow}>
                             <Text style={styles.textLabel}>Prunning</Text>
                             <Text style={styles.textContent}>{this.state.nilaiPrun}</Text>
-                        </View>
+                        </View>}
                     </View>
 
                     <View style={[styles.section]}>

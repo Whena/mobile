@@ -14,7 +14,7 @@ export default createStackNavigator({
   },
   TakeFoto: {screen: TakeFoto}
 }, {
-    headerMode: 'none',
+    headerMode: 'screen',
     initialRouteName: 'Step1',
     transitionConfig: () => ({ screenInterpolator: () => null }),
   }

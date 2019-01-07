@@ -38,16 +38,17 @@ const main = createStackNavigator({
     FindingFormNavigator: {
         screen: FindingFormNavigator,
         navigationOptions: {
-            headerStyle: {
-                backgroundColor: Colors.tintColor
-            },
-            title: 'Buat Laporan Penemuan',
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                flex: 1,
-                fontSize: 18,
-                fontWeight: '400'
-            },
+            header: null
+            // headerStyle: {
+            //     backgroundColor: Colors.tintColor
+            // },
+            // title: 'Buat Laporan Penemuan',
+            // headerTintColor: '#fff',
+            // headerTitleStyle: {
+            //     flex: 1,
+            //     fontSize: 18,
+            //     fontWeight: '400'
+            // },
         }
     },
 

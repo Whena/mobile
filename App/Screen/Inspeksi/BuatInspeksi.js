@@ -125,7 +125,7 @@ class BuatInspeksiRedesign extends Component {
             // return person.filter(person => person.blokCode.search(regex) >= 0);
         // }
         
-      }
+    }
 
     componentDidMount() {
         let data = TaskService.getAllData('TM_BLOCK');
@@ -267,8 +267,13 @@ class BuatInspeksiRedesign extends Component {
     }
 
     getEstateName(compCode){
-        let data = TaskService.findBy2('TM_EST', 'COMP_CODE', compCode);
-        return data.EST_NAME
+        try {
+            let data = TaskService.findBy2('TM_EST', 'COMP_CODE', compCode);
+            return data.EST_NAME;
+        } catch (error) {
+            return '';
+        }
+        
     }
 
     render() {        

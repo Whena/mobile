@@ -10,7 +10,7 @@ import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 import RegionAction from '../Redux/RegionRedux'
 var RNFS = require('react-native-fs');
-import { dirPicutures } from '../Lib/dirStorage'
+import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie } from '../Lib/dirStorage'
 
 class SplashScreen extends Component {
 
@@ -39,25 +39,22 @@ class SplashScreen extends Component {
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
             //buat folder internal      
-            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
-            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
-            RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Temuan');
+            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
+            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
+            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Temuan');
 
-            RNFS.mkdir(dirPicutures);
-
+            
             //buat Folder DiExtrnal
             RNFS.mkdir('file:///storage/emulated/0/MobileInspection');
 
+            RNFS.mkdir(dirPhotoInspeksiBaris);
+            RNFS.mkdir(dirPhotoInspeksiSelfie);
+            RNFS.mkdir(dirPhotoTemuan);
+
+
             setTimeout(() => {
                 if (TaskServices.getTotalData('TR_LOGIN') > 0) {
-
-                    // this.props.categoryRequest();
-                    // this.props.contactRequest();
-                    // this.props.regionRequest();
-
-                    // this.navigateScreen('TakeFoto');
                     this.navigateScreen('MainMenu');
-
                 } else {
                     this.navigateScreen('Login');
                 }

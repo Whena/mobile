@@ -25,7 +25,8 @@ import { getUUID } from '../../Lib/Utils'
 import random from 'random-string'
 import IIcon from 'react-native-vector-icons/Ionicons'
 import Carousel from 'react-native-looped-carousel'
-import { dirPicutures } from '../../Lib/dirStorage'
+import { dirPhotoTemuan } from '../../Lib/dirStorage'
+import Autocomplete from 'react-native-autocomplete-input';
 import layer from '../../Data/kalimantantimur.json'
 
 
@@ -43,6 +44,12 @@ const radioGroupList = [{
 class FormStep2 extends Component {
     constructor(props) {
         super(props);
+        
+        let params = props.navigation.state.params;
+        let foto = R.clone(params.image);
+        let latitude = R.clone(params.lat);
+        let longitude = R.clone(params.lon);
+
         var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
             user,
@@ -62,22 +69,71 @@ class FormStep2 extends Component {
             isCategoryVisible: false,
             isMapsVisible: false,
             allowDragging: true,
-            latitude: 0,
-            longitude: 0,
+            latitude,
+            longitude,
             regionLat: -2.20773509068532,
             regionLon: 105.382972196639997,
             error: null,
-            foto: props.navigation.state.params,
+            foto,
             stepper: [
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
-            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase()
+            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
+            colorPriority: '#ddd',
+            query: '',
+            person:[],
         }
     }
 
+    static navigationOptions = {
+        headerStyle: {
+            backgroundColor: Colors.tintColor
+        },
+        title: 'Buat Laporan Temuan',
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            flex: 1,
+            fontSize: 18,
+            fontWeight: '400'
+        },
+    };
+
     componentDidMount() {
-        //alert(JSON.stringify(this.state.categories))
+        let data = TaskServices.getAllData('TM_BLOCK');
+        for(var i=0; i<data.length; i++){
+            this.state.person.push({
+                blokCode: data[i].BLOCK_CODE, 
+                blokName: data[i].BLOCK_NAME, 
+                werksAfdCode: data[i].WERKS_AFD_CODE, 
+                werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
+                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
+                compCode: data[i].COMP_CODE
+            });
+        }        
+        this.getLocation();
+        this.handleAndroidBackButton(this.exitAlert);
+    }
+
+    getStatusBlok(werk_afd_blok_code){
+        try {
+            let data = TaskServices.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+            return data.MATURITY_STATUS;            
+        } catch (error) {
+            return ''
+        }
+    }
+
+    getEstateName(compCode){
+        try {            
+            let data = TaskServices.findBy2('TM_EST', 'COMP_CODE', compCode);
+            return data.EST_NAME;
+        } catch (error) {
+            return '';
+        }
+    }
+
+    getLocation(){
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -89,8 +145,6 @@ class FormStep2 extends Component {
             (error) => this.setState({ error: error.message }),
             { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
         );
-
-        this.handleAndroidBackButton(this.exitAlert);
     }
 
     navigateScreen(screenName) {
@@ -166,7 +220,7 @@ class FormStep2 extends Component {
                     IMAGE_CODE: image.replace(".jpg", ""),
                     TR_CODE: this.state.TRANS_CODE,
                     IMAGE_NAME: image,
-                    IMAGE_PATH: dirPicutures + "/" + image,
+                    IMAGE_PATH: dirPhotoTemuan + "/" + image,
                     STATUS_IMAGE: 'SEBELUM',
                     STATUS_SYNG: '',
                     SYNG_TIME: '',
@@ -212,7 +266,37 @@ class FormStep2 extends Component {
         })
     }
 
+    changeColorPriority(priority){
+        alert(priority)
+        switch(priority){
+            case 'HIGH':
+                this.setState({colorPriority: 'red', priority: priority});
+                break;
+            case 'MED':
+                this.setState({colorPriority: '#feb236', priority: priority});
+                break;
+            case 'LOW':
+                this.setState({colorPriority: 'blue', priority: priority});
+                break;
+            default:
+                break;
+        }
+    }
+
+    findPerson(query){
+        if (query === '') {
+            return [];
+        }
+        const { person } = this.state;
+        const regex = new RegExp(`${query.trim()}`, 'i');
+        return person.filter(person => person.blokName.search(regex) >= 0);        
+    }
+
     render() {
+        const { query } = this.state;
+        const person = this.findPerson(query);
+        const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1, paddingHorizontal: 16, }}>
@@ -281,7 +365,7 @@ class FormStep2 extends Component {
                             <TouchableOpacity onPress={() => { this.setState({ isImageFullVisible: true }) }}>
                                 <Image resizeMode={'cover'}
                                     style={{ height: 80, width: 80, borderRadius: 5 }}
-                                    source={{ uri: "file://" + dirPicutures + "/" + this.state.foto[0] }}
+                                    source={{ uri: "file://" + dirPhotoTemuan + "/" + this.state.foto[0] }}
                                 />
                             </TouchableOpacity>
 
@@ -313,12 +397,12 @@ class FormStep2 extends Component {
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={[style.label, { marginTop: 3 }]}>Priority <Text style={style.mandatory}>*</Text></Text>
                         <RadioGroup
-                            onChange={(priority) => this.setState({ priority })}
+                            onChange={(priority) => { this.changeColorPriority(priority)}}
                             style={style.item}
                             containerStyle={{}}
                             buttonContainerStyle={{ borderRadius: 10, padding: 5, marginRight: 3, width: 55 }}
                             buttonTextStyle={{ fontSize: 12 }}
-                            buttonContainerActiveStyle={{ backgroundColor: Colors.brand, borderColor: Colors.brandSecondary, borderWidth: 0.5, }}
+                            buttonContainerActiveStyle={{ backgroundColor: this.state.colorPriority, borderColor: Colors.brandSecondary, borderWidth: 0.5, }}
                             buttonContainerInactiveStyle={{ backgroundColor: "#ddd", borderColor: "#CCC", borderWidth: 0.5, }}
                             radioGroupList={radioGroupList} />
                     </View>
@@ -376,7 +460,7 @@ class FormStep2 extends Component {
                             {this.state.foto.map((image, i) => (
                                 <View style={{ flex: 1, backgroundColor: 'black' }}>
                                     <Image resizeMode={"contain"} style={{ flex: 1 }}
-                                        source={{ uri: "file://" + dirPicutures + "/" + image }} />
+                                        source={{ uri: "file://" + dirPhotoTemuan + "/" + image }} />
                                 </View>
                             ))}
                         </Carousel>
@@ -389,8 +473,6 @@ class FormStep2 extends Component {
                 </Modal>
 
                 <SlidingUpPanel
-                    // height={340}
-                    // draggableRange={{ top: 420, bottom: 0 }}
                     visible={this.state.isMapsVisible}
                     onRequestClose={() => this.setState({ isMapsVisible: false })}>
                     <View style={[style.containerSlidingUpPanel]}>
@@ -407,9 +489,35 @@ class FormStep2 extends Component {
 
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={[style.label, { height: 35, textAlignVertical: 'center' }]}> Blok </Text>
-                            <TextInput style={style.inputloc}
+                            <Autocomplete
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                containerStyle={{width: '60%'}}
+                                data={person.length === 1 && comp(query, person[0].blokName) ? [] : person}
+                                defaultValue={query}
+                                onChangeText={text => {
+                                    this.setState({ query: text })}
+                                }
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, compCode}) => (
+                                    <TouchableOpacity onPress={() => {
+                                        this.setState({ 
+                                            blok : blokCode, 
+                                            query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
+                                            // werksAfdCode: werksAfdCode, 
+                                            // werksAfdBlokCode:werksAfdBlokCode, 
+                                            // clickLOV: true,
+                                            // showBaris: true 
+                                        }
+                                        )}}>
+                                        <View style={{padding:10}}>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(compCode)}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                            {/* <TextInput style={style.inputloc}
                                 onChangeText={(blok) => this.setState({ blok })}
-                                value={this.state.blok} />
+                                value={this.state.blok} /> */}
                         </View>
 
                         <View style={{ marginTop: 10, width: '100%' }}>

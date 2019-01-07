@@ -240,7 +240,14 @@ class KondisiBarisAkhir extends Component{
         let bobotGwg = 3;
         let bobotPrun = 2;
 
-        var nilai = ((avg_piringan*bobotPiringan) + (avg_sarkul*bobotSarkul) + (avg_gwg*bobotGwg) + (avg_tph*bobotTph) + (avg_prun*bobotPrun)) / (bobotPiringan + bobotSarkul + bobotTph + bobotGwg + bobotPrun);
+        let nilai = 0;
+        if(this.state.statusBlok === 'TM'){
+            nilai = ((avg_piringan*bobotPiringan) + (avg_sarkul*bobotSarkul) + (avg_gwg*bobotGwg) + (avg_tph*bobotTph) + (avg_prun*bobotPrun)) / (bobotPiringan + bobotSarkul + bobotTph + bobotGwg + bobotPrun);
+        }else if(this.state.statusBlok === 'TBM 3'){
+            nilai = ((avg_piringan*bobotPiringan) + (avg_sarkul*bobotSarkul) + (avg_gwg*bobotGwg) + (avg_tph*bobotTph)) / (bobotPiringan + bobotSarkul + bobotTph + bobotGwg);
+        }else{
+            nilai = ((avg_piringan*bobotPiringan) + (avg_sarkul*bobotSarkul) + (avg_gwg*bobotGwg)) / (bobotPiringan + bobotSarkul + bobotGwg);
+        }
         var result =  this.getKonversiNilaiKeHuruf(nilai);
 
         let param = [nilai.toString(), result, getTodayDate('YYYY-MM-DD HH:mm:ss'), this.state.latitude.toString(), this.state.longitude.toString()]
