@@ -26,6 +26,7 @@ import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 
 const IMEI = require('react-native-imei');
+var RNFS = require('react-native-fs');
 
 import TaskServices from '../Database/TaskServices'
 // import { stat } from 'fs';
@@ -447,6 +448,8 @@ class SyncScreen extends React.Component {
         this.props.categoryRequest();
         this.props.contactRequest();
         // this.props.findingRequest();
+
+        RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
     }
 
     animate() {

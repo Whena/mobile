@@ -100,7 +100,7 @@ class SelesaiInspeksi extends React.Component {
         // let dataEst = Taskservices.getEstateName()
 
         let score = dataHeader[0].INSPECTION_SCORE;
-        score = score.includes('.') ? score.substring(0, score.indexOf('.')+2) : score
+        score = score.includes('.') ? parseFloat(score).toFixed(1).toString() : score;
 
         this.setState({
             jmlBaris: str, 
