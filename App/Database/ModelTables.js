@@ -272,7 +272,7 @@ const T_LOG_IMAGE = {
 }
 
 const TM_KRITERIA = {
-    name: 'TM_KRITERIA',
+    name: 'KRITERIA_CODE',
     properties: {
         KRITERIA_CODE: 'string',
         CONTENT_LABEL_CODE: 'string',
@@ -354,7 +354,7 @@ const TM_LAND_USE = {
 }
 
 const TM_CONTENT = {
-    name: 'TM_CONTENT',
+    name: 'CONTENT_CODE',
     properties: {
         CONTENT_CODE: 'string',
         GROUP_CATEGORY: 'string',
@@ -367,7 +367,7 @@ const TM_CONTENT = {
 }
 
 const TM_CONTENT_LABEL = {
-    name: 'TM_CONTENT_LABEL',
+    name: 'CONTENT_LABEL_CODE',
     properties: {
         CONTENT_LABEL_CODE: 'string',
         CONTENT_CODE: 'string',
