@@ -449,7 +449,6 @@ class SyncScreen extends React.Component {
         this.props.contactRequest();
         // this.props.findingRequest();
 
-        RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
     }
 
     animate() {
@@ -465,94 +464,99 @@ class SyncScreen extends React.Component {
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
-            this.setState({ downloadBlok: true });
             if (dataJSON !== null) {
                 this._crudTM_Block(dataJSON);
             }
+            this.setState({ downloadBlok: true });
         }
 
         if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
             let dataJSON = newProps.afd.afd;
-            this.setState({ downloadAfd: true });
             if (dataJSON !== null) {
                 this._crudTM_Afd(dataJSON);
             }
+            this.setState({ downloadAfd: true });
         }
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
-            this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
-
+            this.setState({ downloadRegion: true })
         }
 
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
             let dataJSON = newProps.est.est;
-            this.setState({ downloadEst: true });
             if (dataJSON !== null) {
                 this._crudTM_Est(dataJSON);
             }
+            this.setState({ downloadEst: true });
         }
 
         if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
             let dataJSON = newProps.landUse.landUse;
-            this.setState({ downloadLandUse: true });
             if (dataJSON !== null) {
                 this._crudTM_LandUse(dataJSON);
             }
+            this.setState({ downloadLandUse: true });
         }
 
         if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
             let dataJSON = newProps.comp.comp;
-            this.setState({ downloadComp: true });
             if (dataJSON !== null) {
                 this._crudTM_Comp(dataJSON);
             }
+            this.setState({ downloadComp: true });
         }
 
         if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
             let dataJSON = newProps.content.content;
-            this.setState({ downloadContent: true });
             if (dataJSON !== null) {
                 this._crudTM_Content(dataJSON);
             }
+            this.setState({ downloadContent: true });
         }
 
         // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
 
         if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
             let dataJSON = newProps.contentLabel.contentLabel;
-            this.setState({ downloadContentLabel: true });
             if (dataJSON !== null) {
                 this._crudTM_ContentLabel(dataJSON);
             }
+            this.setState({ downloadContentLabel: true });
         }
 
         if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
             let dataJSON = newProps.kriteria.kriteria;
-            this.setState({ downloadKriteria: true });
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
             }
+            this.setState({ downloadKriteria: true });
         }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
             let dataJSON = newProps.category.category;
-            console.log(JSON.stringify(dataJSON))
-            this.setState({ downloadCategory: true });
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
+            this.setState({ downloadCategory: true });
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
             let dataJSON = newProps.contact.contact;
-            this.setState({ downloadContact: true });
             if (dataJSON !== null) {
                 this._crudTM_Contact(dataJSON);
             }
+            this.setState({ downloadContact: true });
+        }
+
+        if(downloadBlok && downloadAfd && downloadRegion && downloadEst 
+            && downloadLandUse && downloadComp && downloadContent && downloadContentLabel
+            && downloadKriteria && downloadCategory && downloadContact){
+
+                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
         }
 
         // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
@@ -568,45 +572,6 @@ class SyncScreen extends React.Component {
         return (
             <Container style={{ flex: 1, padding: 16 }}>
                 <Content>
-                    {/* <View style={styles.section}>
-                        <View style={{ marginRight: 10 }}>
-                            <ProgressCircle
-                                percent={50}
-                                radius={50}
-                                borderWidth={12}
-                                color={Colors.brandSecondary}
-                                shadowColor="#999"
-                                bgColor="#fff">
-
-                                <Text style={{ fontSize: 18 }}>{'50%'}</Text>
-                            </ProgressCircle>
-                        </View>
-                        <View style={styles.sectionRow}>
-                            <Text style={{ fontSize: 16, color: Colors.brandSecondary, textAlign: 'center' }}>100 Data Tersimpan</Text>
-                            <Text style={{ fontSize: 12, color: 'grey', marginTop: 5, textAlign: 'center' }}>Klik sync untuk sinkronisasi data</Text>
-                        </View>
-                    </View>
-
-                    <View style={[styles.section, { marginTop: 16 }]}>
-                        <View style={{ marginRight: 10 }}>
-                            <ProgressCircle
-                                percent={0}
-                                radius={50}
-                                borderWidth={12}
-                                color={Colors.tintColor}
-                                shadowColor="#999"
-                                bgColor="#fff">
-
-                                <Text style={{ fontSize: 18 }}>{'0%'}</Text>
-                            </ProgressCircle>
-                        </View>
-
-                        <View style={styles.sectionRow}>
-                            <Text style={{ fontSize: 16, color: Colors.tintColor, textAlign: 'center' }}>150 Data Masuk</Text>
-                            <Text style={{ fontSize: 12, color: 'grey', marginTop: 5, textAlign: 'center' }}>Klik sync untuk sinkronisasi data</Text>
-                        </View>
-                    </View> */}
-
                     <View style={{ flex: 1, marginTop: 0 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text>TM BLOCK</Text>
