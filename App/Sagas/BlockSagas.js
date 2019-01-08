@@ -9,13 +9,13 @@ export function* getBlock(api, action) {
         console.log(response);
         console.log('^^^ GET ALL BLOCK ^^^');
     }
+
     if (response.ok) {
         switch (response.data.status) {
             case false:
                 yield put(BlockAction.blockFailure('Paramater Salah'));
                 break;
             case true:
-
                 console.log('^^^ SUCCESS BLOCK ^^^');
                 yield put(BlockAction.blockSuccess(response.data.data));
                 break;

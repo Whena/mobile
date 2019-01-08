@@ -115,7 +115,8 @@ class BuatInspeksiRedesign extends Component {
         }
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
-        return person.filter(person => person.blokName.search(regex) >= 0);
+        return person.filter(person => person.allShow.search(regex) >= 0);
+
         // var letters = /^[A-Za-z]+$/;
         // if(query.match(letters)){
         //     console.log('osan');
@@ -130,13 +131,16 @@ class BuatInspeksiRedesign extends Component {
     componentDidMount() {
         let data = TaskService.getAllData('TM_BLOCK');
         for(var i=0; i<data.length; i++){
+            let statusBlok= this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
+            let estateName = this.getEstateName(data[i].COMP_CODE);
             this.state.person.push({
                 blokCode: data[i].BLOCK_CODE, 
                 blokName: data[i].BLOCK_NAME, 
                 werksAfdCode: data[i].WERKS_AFD_CODE, 
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
-                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
-                compCode: data[i].COMP_CODE
+                statusBlok: statusBlok,
+                compCode: data[i].COMP_CODE,
+                allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
             });
         }
         this.getLocation();
@@ -148,9 +152,9 @@ class BuatInspeksiRedesign extends Component {
         }else{
             this.setState({showBaris: true, clickLOV: false});
         }
-        if(param.length > 2){
-            this.setState({blok: param, showBaris: true, clickLOV: false});
-        }
+        // if(param.length > 2){
+        //     this.setState({blok: param, showBaris: true, clickLOV: false});
+        // }
         
     }
 
@@ -329,17 +333,17 @@ class BuatInspeksiRedesign extends Component {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 containerStyle={styles.autocompleteContainer}
-                                data={person.length === 1 && comp(query, person[0].blokName) ? [] : person}
+                                data={person.length === 1 && comp(query, person[0].allShow) ? [] : person}
                                 defaultValue={query}
                                 onChangeText={text => {
                                     this.setState({ query: text }); 
                                     this.hideAndShowBaris(text)}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, compCode}) => (
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, allShow, compCode}) => (
                                     <TouchableOpacity onPress={() => {
                                         this.setState({ 
                                             blok : blokCode, 
-                                            query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
+                                            query: allShow,//`${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
                                             werksAfdCode: werksAfdCode, 
                                             werksAfdBlokCode:werksAfdBlokCode, 
                                             clickLOV: true,

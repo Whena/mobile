@@ -10,14 +10,18 @@ export function* getCategory(api, action) {
         console.log(response);
         console.log('^^^ GET ALL CATEGORY ^^^');
     }
-    if (response.data.status && response.data.data.length > 0) {
-        yield put(CategoryActions.categorySuccess(response.data));
-
-        response.data.data.map(item => {
-            TaskServices.saveData('TR_CATEGORY', item);
-        })
-
-    } else {
-        yield put(CategoryActions.categoryFailure(response.problem));
+    if(response.ok){
+        switch (response.data.status) {
+            case false:
+                yield put(BlockAction.categoryFailure('Paramater Salah'));
+                break;
+            case true:
+                console.log('^^^ SUCCESS Category ^^^');
+                yield put(CategoryActions.categorySuccess(response.data.data));
+                break;
+            default:
+                yield put(CategoryActions.categoryFailure('Unknown responseType'));
+                break;
+        }
     }
 }

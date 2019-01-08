@@ -42,8 +42,11 @@ const radioGroupList = [{
 }];
 
 class FormStep2 extends Component {
+    
     constructor(props) {
         super(props);
+        
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         
         let params = props.navigation.state.params;
         let foto = R.clone(params.image);
@@ -102,17 +105,37 @@ class FormStep2 extends Component {
     componentDidMount() {
         let data = TaskServices.getAllData('TM_BLOCK');
         for(var i=0; i<data.length; i++){
+            let statusBlok= this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
+            let estateName = this.getEstateName(data[i].COMP_CODE);
             this.state.person.push({
                 blokCode: data[i].BLOCK_CODE, 
                 blokName: data[i].BLOCK_NAME, 
                 werksAfdCode: data[i].WERKS_AFD_CODE, 
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
                 statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
-                compCode: data[i].COMP_CODE
+                compCode: data[i].COMP_CODE,
+                allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
             });
         }        
         this.getLocation();
-        this.handleAndroidBackButton(this.exitAlert);
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        // this.handleAndroidBackButton(this.exitAlert);
+    }
+
+    componentWillUnmount(){
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackButtonClick() { 
+        Alert.alert(
+            'Peringatan',
+            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+            [
+                { text: 'NO', style: 'cancel' },
+                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+            ]
+        );
+        return true;
     }
 
     getStatusBlok(werk_afd_blok_code){
@@ -156,23 +179,23 @@ class FormStep2 extends Component {
         navigation.dispatch(resetAction);
     }
 
-    exitAlert = () => {
-        Alert.alert(
-            'Peringatan',
-            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-            [
-                { text: 'NO', style: 'cancel' },
-                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-            ]
-        );
-    };
+    // exitAlert = () => {
+    //     Alert.alert(
+    //         'Peringatan',
+    //         'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+    //         [
+    //             { text: 'NO', style: 'cancel' },
+    //             { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+    //         ]
+    //     );
+    // };
 
-    handleAndroidBackButton = callback => {
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            callback();
-            return true;
-        });
-    };
+    // handleAndroidBackButton = callback => {
+    //     BackHandler.addEventListener('hardwareBackPress', () => {
+    //         callback();
+    //         return true;
+    //     });
+    // };
 
     _onBtnSaveClicked = () => {
         var valid = true;
@@ -288,7 +311,7 @@ class FormStep2 extends Component {
         }
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
-        return person.filter(person => person.blokName.search(regex) >= 0);        
+        return person.filter(person => person.allShow.search(regex) >= 0);        
     }
 
     render() {
@@ -373,24 +396,25 @@ class FormStep2 extends Component {
 
                     <View style={style.line} />
 
+                    
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Lokasi <Text style={style.mandatory}>*</Text></Text>
-                        {isEmpty(this.state.blok) && (
-                            <Text onPress={this._showLocation} style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
-                        {!isEmpty(this.state.blok) && (
-                            <Text onPress={this._showLocation} style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
-                    </View>
+                        <TouchableOpacity onPress={this._showLocation}>
+                            {isEmpty(this.state.blok) && (<Text style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
+                            {!isEmpty(this.state.blok) && (<Text style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
+                        </TouchableOpacity> 
+                    </View>                   
 
                     <View style={style.line} />
-
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Kategori <Text style={style.mandatory}>*</Text></Text>
-                        {isEmpty(this.state.category) && (
-                            <Text onPress={() => this.setState({ isCategoryVisible: true })} style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
-                        {!isEmpty(this.state.category) && (
-                            <Text onPress={() => this.setState({ isCategoryVisible: true })} style={{ fontSize: 14 }}> {this.state.category} </Text>)}
+                        <TouchableOpacity onPress={() => this.setState({ isCategoryVisible: true })}>                        
+                            {isEmpty(this.state.category) && (<Text style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
+                            {!isEmpty(this.state.category) && (<Text style={{ fontSize: 14 }}> {this.state.category} </Text>)}
+                        </TouchableOpacity>
 
                     </View>
+                    
 
                     <View style={[style.line]} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -433,10 +457,13 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}> Ditugaskan Kepada </Text>
-                        {isEmpty(this.state.tugasKepada) && (
-                            <Text onPress={() => this.setState({ isContactVisible: true })} style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
-                        {!isEmpty(this.state.tugasKepada) && (
-                            <Text onPress={() => this.setState({ isContactVisible: true })} style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
+                        <TouchableOpacity onPress={() => this.setState({ isContactVisible: true })}>
+                            {isEmpty(this.state.tugasKepada) && (
+                                <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
+                            {!isEmpty(this.state.tugasKepada) && (
+                                <Text style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
+                        </TouchableOpacity>
+                        
                     </View>
 
                     <View style={[style.line]} />
@@ -492,20 +519,17 @@ class FormStep2 extends Component {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 containerStyle={{width: '60%'}}
-                                data={person.length === 1 && comp(query, person[0].blokName) ? [] : person}
+                                data={person.length === 1 && comp(query, person[0].allShow) ? [] : person}
                                 defaultValue={query}
                                 onChangeText={text => {
                                     this.setState({ query: text })}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, compCode}) => (
+                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, allShow, compCode}) => (
                                     <TouchableOpacity onPress={() => {
+                                        // alert(allShow)
                                         this.setState({ 
-                                            blok : query,//blokCode, 
-                                            query: `${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
-                                            // werksAfdCode: werksAfdCode, 
-                                            // werksAfdBlokCode:werksAfdBlokCode, 
-                                            // clickLOV: true,
-                                            // showBaris: true 
+                                            blok : allShow,//blokCode, 
+                                            query: allShow
                                         }
                                         )}}>
                                         <View style={{padding:10}}>
@@ -521,8 +545,9 @@ class FormStep2 extends Component {
 
                         <View style={{ marginTop: 10, width: '100%' }}>
                             <TouchableOpacity style={[style.buttonSetLoc, { alignSelf: 'flex-end' }]}
-                                onPress={() =>
+                                onPress={() =>{             
                                     this.setState({ isMapsVisible: false })
+                                    }
                                 }>
                                 <Text style={style.buttonText}>Set Lokasi</Text>
                             </TouchableOpacity>
@@ -532,7 +557,7 @@ class FormStep2 extends Component {
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
 
-                        <MapView
+                        {/* <MapView
                             style={{ height: 300, borderRadius: 10 }}
                             provider={PROVIDER_GOOGLE}
                             region={{
@@ -547,7 +572,7 @@ class FormStep2 extends Component {
                                 coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
                                 title={"Your Location"}
                             />}
-                        </MapView>
+                        </MapView> */}
                     </View>
                 </SlidingUpPanel>
 

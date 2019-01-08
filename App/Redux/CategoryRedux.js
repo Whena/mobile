@@ -15,7 +15,7 @@ export default Creators;
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-	fetching: null,
+	fetchingCategory: null,
 	error: null,
 	category: null
 });
@@ -29,16 +29,16 @@ export const CategorySelectors = {
 /* ------------- Reducers ------------- */
 
 // request the data from an api
-export const request = (state, { data }) => state.merge({ fetching: true, error: null, category: null });
+export const request = (state, { data }) => state.merge({ fetchingCategory: true, error: null, category: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetching: false, error: null, category: payload });
+	return state.merge({ fetchingCategory: false, error: null, category: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetching: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingCategory: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 

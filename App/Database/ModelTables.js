@@ -171,9 +171,9 @@ const TM_BLOCK = {
 
 const TR_CATEGORY = {
     name: 'TR_CATEGORY',
-    primaryKey: '_id',
+    // primaryKey: '_id',
     properties: {
-        _id: 'string',
+        // _id: 'string',
         CATEGORY_NAME: 'string',
         ICON: 'string'
     }
@@ -181,15 +181,15 @@ const TR_CATEGORY = {
 
 const TR_CONTACT = {
     name: 'TR_CONTACT',
-    primaryKey: 'EMPLOYEE_NIK',
+    primaryKey: 'USER_AUTH_CODE',
     properties: {
         USER_AUTH_CODE: 'string',
         EMPLOYEE_NIK: 'string',
         USER_ROLE: 'string',
         LOCATION_CODE: 'string',
         REF_ROLE: 'string',
-        HRIS_JOB: 'string',
-        HRIS_FULLNAME: 'string'
+        JOB: 'string',
+        FULLNAME: 'string'
     }
 }
 

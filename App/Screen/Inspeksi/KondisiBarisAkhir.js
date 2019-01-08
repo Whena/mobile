@@ -236,9 +236,9 @@ class KondisiBarisAkhir extends Component{
 
         let bobotPiringan = 4;
         let bobotSarkul = 5;
-        let bobotTph = 1;
-        let bobotGwg = 3;
-        let bobotPrun = 2;
+        let bobotTph = 2;
+        let bobotGwg = 1;
+        let bobotPrun = 3;
 
         let nilai = 0;
         if(this.state.statusBlok === 'TM'){
@@ -538,7 +538,7 @@ class KondisiBarisAkhir extends Component{
                                                     underlineColorAndroid={'transparent'}
                                                     style={[styles.searchInput,{marginBottom:10, position:'absolute', right:0}]}
                                                     value={this.state.txtBaris}                                    
-                                                    onChangeText={(baris) => { this.setState({ txtBaris: baris }) }}/>
+                                                    onChangeText={(baris) => { baris = baris.replace(/[^0-9]/g, ''); this.setState({ txtBaris: baris }) }}/>
                                             </View>
                                         }
                                         {/*SLIDER*/}

@@ -63,6 +63,8 @@ class SyncScreen extends React.Component {
             progressContent: 0,
             progressContentLabel: 0,
             progressKriteria: 0,
+            progressCategory: 0,
+            progressContact: 0,
             progressFinding: 0,
             indeterminate: false,
             downloadRegion: false,
@@ -75,6 +77,7 @@ class SyncScreen extends React.Component {
             downloadContact: false,
             downloadContentLabel: false,
             downloadKriteria: false,
+            downloadCategory: false,
             donwloadFinding: false,
             fetchLocation: false,
             downloadApa: 'Download sedang dalam proses',
@@ -97,7 +100,11 @@ class SyncScreen extends React.Component {
             valueKriteriaDownload: '0',
             totalKriteriaDownload: '0',
             valueFindingDownload: '0',
-            totalFindingDownload: '0'
+            totalFindingDownload: '0',
+            valueCategoryDownload: '0',
+            totalCategoryDownload: '0',
+            valueContactDownload: '0',
+            totalContactDownload: '0'
         }
     }
 
@@ -345,20 +352,50 @@ class SyncScreen extends React.Component {
             this.setState({ valueFindingDownload: 0 });
             this.setState({ totalFindingDownload: 0 });
         }
+    }    
+
+    _crudTM_Category(data) {
+        console.log("Simpan Category : " + data.length);
+
+        if (data.length > 0) {
+
+            for (i = 1; i <= data.length; i++) {
+                this.setState({ progressCategory: i / data.length });
+                this.setState({ valueCategoryDownload: i });
+                this.setState({ totalCategoryDownload: data.length });
+            }
+
+            data.map(item => {
+                TaskServices.saveData('TR_CATEGORY', item);
+            })
+        } else {
+            this.setState({ progressCategory: 1 })
+            this.setState({ valueCategoryDownload: 0 });
+            this.setState({ totalCategoryDownload: 0 });
+        }
     }
 
     _crudTM_Contact(data) {        
         console.log("Simpan Contact : " + data.data.length);
         var dataContact = data.data;
         console.log(JSON.stringify(dataContact))
+
         if (dataContact.length > 0) {
-            data.data.map(item => {
+
+            for (i = 1; i <= dataContact.length; i++) {
+                this.setState({ progressContact: i / dataContact.length });
+                this.setState({ valueContactDownload: i });
+                this.setState({ totalContactDownload: dataContact.length });
+            }
+
+            dataContact.map(item => {
                 TaskServices.saveData('TR_CONTACT', item);
-                this.setState({downloadApa: `TR_CONTACT ${item.USER_AUTH_CODE}`});
-            });
+            })
+        } else {
+            this.setState({ progressContact: 1 })
+            this.setState({ valueContactDownload: 0 });
+            this.setState({ totalContactDownload: 0 });
         }
-        
-        this.setState({fetchLocation: false})
     }
 
     _get_IMEI_Number() {
@@ -392,6 +429,7 @@ class SyncScreen extends React.Component {
             downloadContentLabel: false,
             downloadKriteria: false,
             downloadFinding: false,
+            downloadCategory: false,
             fetchLocation: false
 
         });
@@ -406,6 +444,8 @@ class SyncScreen extends React.Component {
         this.props.compRequest();
         this.props.contentLabelRequest();
         this.props.kriteriaRequest();
+        this.props.categoryRequest();
+        this.props.contactRequest();
         // this.props.findingRequest();
     }
 
@@ -413,25 +453,12 @@ class SyncScreen extends React.Component {
         let progress = 0;
         let countData = 200;
         this.setState({ progress });
-        // setTimeout(() => {
-        // this.setState({ indeterminate: false });
-        // countData += progress;
-
         progress = 100 / countData;
         this.setState({ progress });
         console.log("Progress : " + progress + "%")
-        // setInterval(() => {
-        //     countData += x;
-
-        //     currentProgress = 50 / countData * 100;
-
-        //     this.setState({ currentProgress });
-        //     console.log("Progress : " + currentProgress)
-        // }, 200);
     }
 
     componentWillReceiveProps(newProps) {
-
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -505,6 +532,23 @@ class SyncScreen extends React.Component {
             this.setState({ downloadKriteria: true });
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
+            }
+        }
+
+        if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
+            let dataJSON = newProps.category.category;
+            console.log(JSON.stringify(dataJSON))
+            this.setState({ downloadCategory: true });
+            if (dataJSON !== null) {
+                this._crudTM_Category(dataJSON);
+            }
+        }
+
+        if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
+            let dataJSON = newProps.contact.contact;
+            this.setState({ downloadContact: true });
+            if (dataJSON !== null) {
+                this._crudTM_Contact(dataJSON);
             }
         }
 
@@ -715,6 +759,40 @@ class SyncScreen extends React.Component {
                             indeterminate={this.state.indeterminate} />
                     </View>
 
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>TR CATEGORY</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueCategoryDownload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalCategoryDownload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressCategory}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>TR CONTACT</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueContactDownload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalContactDownload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressContact}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
                     <View style={{ flex: 1, marginTop: 48 }}>
                         <TouchableOpacity style={styles.button} onPress={() => this._onSync()}>
                             <Text style={styles.buttonText}>Sync</Text>
@@ -743,7 +821,8 @@ const mapStateToProps = state => {
         contentLabel: state.contentLabel,
         kriteria: state.kriteria,
         contact: state.contact,
-        finding: state.finding
+        finding: state.finding,
+        category: state.category
     };
 };
 

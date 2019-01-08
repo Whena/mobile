@@ -37,6 +37,8 @@ class FormStep1 extends Component {
 
     constructor(props) {
         super(props);
+        
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.state = {
             user: TaskServices.getAllData('TR_LOGIN')[0],
             photos: [],
@@ -53,6 +55,23 @@ class FormStep1 extends Component {
 
     componentDidMount() {
        this.getLocation();
+       BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+
+    componentWillUnmount(){
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackButtonClick() { 
+        Alert.alert(
+            'Peringatan',
+            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+            [
+                { text: 'NO', style: 'cancel' },
+                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+            ]
+        );
+        return true;
     }
 
     getLocation() {
@@ -79,31 +98,31 @@ class FormStep1 extends Component {
         );
     }
     
-    exitAlert = () => {
-        if (this.state.photos.length == 0) {
-            this.props.navigation.goBack(null)
-        } else {
-            Alert.alert(
-                'Peringatan',
-                'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-                [
-                    { text: 'NO', style: 'cancel' },
-                    { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-                ]
-            );
-        }
+    // exitAlert = () => {
+    //     if (this.state.photos.length == 0) {
+    //         this.props.navigation.goBack(null)
+    //     } else {
+    //         Alert.alert(
+    //             'Peringatan',
+    //             'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+    //             [
+    //                 { text: 'NO', style: 'cancel' },
+    //                 { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+    //             ]
+    //         );
+    //     }
 
-    };
+    // };
 
-    handleAndroidBackButton = callback => {
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            callback();
-            return true;
-        });
-    };
+    // handleAndroidBackButton = callback => {
+    //     BackHandler.addEventListener('hardwareBackPress', () => {
+    //         callback();
+    //         return true;
+    //     });
+    // };
 
     componentDidMount() {
-        this.handleAndroidBackButton(this.exitAlert);
+        // this.handleAndroidBackButton(this.exitAlert);
     }
 
     onBtnClick() {

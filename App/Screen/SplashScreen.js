@@ -36,6 +36,15 @@ class SplashScreen extends Component {
 
     async componentDidMount() {
 
+        // let data= [ { id: 1, name: 'Mike', city: 'philps', state:'New York'}, { id: 2, name: 'Steve', city: 'Square', state: 'Chicago'}, { id: 3, name: 'Jhon', city: 'market', state: 'New York'}, { id: 4, name: 'philps', city: 'booket', state: 'Texas'}, { id: 5, name: 'smith', city: 'brookfield', state: 'Florida'}, { id: 6, name: 'Broom', city: 'old street', state: 'Florida'}, ]
+
+        // data = data.filter(function(item){
+        // return item.state == 'New York';
+        // }).map(function({id, name, city}){
+        //     return {id, name, city};
+        // });
+        // alert(JSON.stringify(data));
+
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
             //buat folder internal      
