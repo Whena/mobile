@@ -1,13 +1,18 @@
 import React from 'react';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './HomeScreen';
 import FindingScreen from '../Finding/FindingScreen';
 import InspectionScreen from '../Inspeksi/InspectionScreen';
 import EbccValidationScreen from '../Ebcc/EbccValidationScreen';
 import MoreScreen from '../More/MoreScreen';
+
+
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Entypo from 'react-native-vector-icons/Entypo';
+
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -26,7 +31,7 @@ FindingStack.navigationOptions = {
 };
 
 const InspectionStack = createStackNavigator({
-  Inspection : {screen: InspectionScreen},
+  Inspection: { screen: InspectionScreen },
 
 });
 
@@ -63,21 +68,23 @@ export default (
           const { routeName } = navigation.state;
           let iconName;
           if (routeName === 'HomeStack') {
-            iconName = `home${focused ? '' : '-outline'}`;
-            return <MaterialCommunityIcons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
+            iconName = `home`;
+            return <Entypo name={iconName} size={horizontal ? 20 : 20} color={tintColor} />;
           } else if (routeName === 'FindingStack') {
-            iconName = `md-flashlight`;
+            iconName = `flashlight`;
+            return <Entypo name={iconName} size={horizontal ? 20 : 20} color={tintColor} />;
           } else if (routeName === 'InspectionStack') {
-            iconName = `ios-search${focused ? '' : ''}`;
+            iconName = `search`;
+            return <FontAwesome name={iconName} size={horizontal ? 20 : 20} color={tintColor} />;
           } else if (routeName === 'EbccValidationStack') {
-            iconName = `ios-checkmark-circle${focused ? '' : '-outline'}`;
+            iconName = `check-circle`;
+            return <FontAwesome name={iconName} size={horizontal ? 20 : 20} color={tintColor} />;
           } else if (routeName === 'MoreStack') {
-            iconName = `ios-more${focused ? '' : ''}`;
+            iconName = `more-horiz`;
+            // You can return any component that you like here! We usually use an
+            // icon component from react-native-vector-icons
+            return <MaterialIcons name={iconName} size={horizontal ? 20 : 20} color={tintColor} />;
           }
-
-          // You can return any component that you like here! We usually use an
-          // icon component from react-native-vector-icons
-          return <Ionicons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
         },
       }),
       tabBarOptions: {
