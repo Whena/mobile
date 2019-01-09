@@ -279,8 +279,8 @@ const TM_KRITERIA = {
         VALUE: 'string',
         COLOR: 'string',
         GRADE: 'string',
-        BATAS_ATAS: {type: 'int', default: 0},
-        BATAS_BAWAH: {type: 'int', default: 0}
+        BATAS_ATAS: 'float',
+        BATAS_BAWAH: 'float'
     }
 }
 

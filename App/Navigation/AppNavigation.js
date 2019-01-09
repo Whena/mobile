@@ -28,14 +28,14 @@ import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import Colors from '../Constant/Colors';
 import test from '../Screen/Inspeksi/test';
-import TestAutoComplete from '../Screen/TestAutocomplete';
+// import TestAutoComplete from '../Screen/TestAutocomplete';
 
 
 const main = createStackNavigator({
     MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
     SplashScreen: { screen: SplashScreen },
     Login: { screen: Login },
-    TestAutoComplete: { screen: TestAutoComplete },
+    // TestAutoComplete: { screen: TestAutoComplete },
 
     FindingFormNavigator: {
         screen: FindingFormNavigator,

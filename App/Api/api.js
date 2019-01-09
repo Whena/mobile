@@ -5,7 +5,7 @@ const user = TaskServices.getAllData('TR_LOGIN')
 
 const create = () => {
     let api = apisauce.create({
-        baseURL: 'http://149.129.244.86:3008/api',
+        baseURL: 'http://149.129.245.230:3008/api',
         headers: {
             'Cache-Control': 'no-cache',
             Accept: 'application/json',
