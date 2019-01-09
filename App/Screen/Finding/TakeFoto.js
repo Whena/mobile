@@ -39,7 +39,7 @@ class TakeFoto extends Component{
         fontWeight: '400'
       },
       headerLeft: (
-          <TouchableOpacity onPress={() => {this.clearFoto()}}>
+          <TouchableOpacity onPress={() => {params.clearFoto()}}>
               <Icon style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={45} color={'white'} />
           </TouchableOpacity>
       )

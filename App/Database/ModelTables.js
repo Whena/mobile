@@ -235,8 +235,8 @@ const TR_IMAGE_FINDING = {
         IMAGE_NAME: 'string',
         IMAGE_PATH: 'string',
         STATUS_IMAGE: 'string',
-        STATUS_SYNG: 'string',
-        SYNG_TIME: 'string',
+        STATUS_SYNC: 'string',
+        SYNC_TIME: 'string',
         INSERT_USER: 'string',
         INSERT_TIME: 'string',
         UPDATE_USER: 'string',
@@ -245,19 +245,6 @@ const TR_IMAGE_FINDING = {
         DELETE_TIME: 'string'
     }
 }
-
-// export default {
-//     TR_LOGIN,
-//     TR_BLOCK_INSPECTION_H,
-//     TR_BLOCK_INSPECTION_D,
-//     TR_IMAGE,
-//     TR_TRACK_INSPECTION,
-//     TR_BARIS_INSPECTION,
-//     TM_AFD,
-//     TR_CATEGORY,
-//     TR_CONTACT,
-//     TR_FINDING
-// }
 
 const T_LOG_IMAGE = {
     name: 'T_LOG_IMAGE',
@@ -272,7 +259,8 @@ const T_LOG_IMAGE = {
 }
 
 const TM_KRITERIA = {
-    name: 'KRITERIA_CODE',
+    name: 'TM_KRITERIA',
+    primaryKey: 'KRITERIA_CODE',
     properties: {
         KRITERIA_CODE: 'string',
         CONTENT_LABEL_CODE: 'string',
@@ -354,7 +342,8 @@ const TM_LAND_USE = {
 }
 
 const TM_CONTENT = {
-    name: 'CONTENT_CODE',
+    name: 'TM_CONTENT',
+    primaryKey: 'CONTENT_CODE',
     properties: {
         CONTENT_CODE: 'string',
         GROUP_CATEGORY: 'string',
@@ -367,7 +356,8 @@ const TM_CONTENT = {
 }
 
 const TM_CONTENT_LABEL = {
-    name: 'CONTENT_LABEL_CODE',
+    name: 'TM_CONTENT_LABEL',
+    primaryKey: 'CONTENT_LABEL_CODE',
     properties: {
         CONTENT_LABEL_CODE: 'string',
         CONTENT_CODE: 'string',

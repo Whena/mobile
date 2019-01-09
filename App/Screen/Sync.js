@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 
 const IMEI = require('react-native-imei');
+var RNFS = require('react-native-fs');
 
 import TaskServices from '../Database/TaskServices'
 // import { stat } from 'fs';
@@ -509,6 +510,7 @@ class SyncScreen extends React.Component {
         // this.props.categoryRequest();
         // this.props.contactRequest();
         // this.props.findingRequest();
+
     }
 
     animate() {
@@ -540,11 +542,10 @@ class SyncScreen extends React.Component {
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
-            this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
-
+            this.setState({ downloadRegion: true })
         }
 
         // `if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
@@ -581,37 +582,43 @@ class SyncScreen extends React.Component {
 
         // // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
 
-        // if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
-        //     let dataJSON = newProps.contentLabel.contentLabel;
-        //     this.setState({ downloadContentLabel: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_ContentLabel(dataJSON);
-        //     }
-        // }
+        if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
+            let dataJSON = newProps.contentLabel.contentLabel;
+            if (dataJSON !== null) {
+                this._crudTM_ContentLabel(dataJSON);
+            }
+            this.setState({ downloadContentLabel: true });
+        }
 
-        // if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
-        //     let dataJSON = newProps.kriteria.kriteria;
-        //     this.setState({ downloadKriteria: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Kriteria(dataJSON);
-        //     }
-        // }`
+        if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
+            let dataJSON = newProps.kriteria.kriteria;
+            if (dataJSON !== null) {
+                this._crudTM_Kriteria(dataJSON);
+            }
+            this.setState({ downloadKriteria: true });
+        }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
             let dataJSON = newProps.category.category;
-            console.log(JSON.stringify(dataJSON))
-            this.setState({ downloadCategory: true });
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
+            this.setState({ downloadCategory: true });
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
             let dataJSON = newProps.contact.contact;
-            this.setState({ downloadContact: true });
             if (dataJSON !== null) {
                 this._crudTM_Contact(dataJSON);
             }
+            this.setState({ downloadContact: true });
+        }
+
+        if(downloadBlok && downloadAfd && downloadRegion && downloadEst 
+            && downloadLandUse && downloadComp && downloadContent && downloadContentLabel
+            && downloadKriteria && downloadCategory && downloadContact){
+
+                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
         }
 
         // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
@@ -627,45 +634,6 @@ class SyncScreen extends React.Component {
         return (
             <Container style={{ flex: 1, padding: 16 }}>
                 <Content>
-                    {/* <View style={styles.section}>
-                        <View style={{ marginRight: 10 }}>
-                            <ProgressCircle
-                                percent={50}
-                                radius={50}
-                                borderWidth={12}
-                                color={Colors.brandSecondary}
-                                shadowColor="#999"
-                                bgColor="#fff">
-
-                                <Text style={{ fontSize: 18 }}>{'50%'}</Text>
-                            </ProgressCircle>
-                        </View>
-                        <View style={styles.sectionRow}>
-                            <Text style={{ fontSize: 16, color: Colors.brandSecondary, textAlign: 'center' }}>100 Data Tersimpan</Text>
-                            <Text style={{ fontSize: 12, color: 'grey', marginTop: 5, textAlign: 'center' }}>Klik sync untuk sinkronisasi data</Text>
-                        </View>
-                    </View>
-
-                    <View style={[styles.section, { marginTop: 16 }]}>
-                        <View style={{ marginRight: 10 }}>
-                            <ProgressCircle
-                                percent={0}
-                                radius={50}
-                                borderWidth={12}
-                                color={Colors.tintColor}
-                                shadowColor="#999"
-                                bgColor="#fff">
-
-                                <Text style={{ fontSize: 18 }}>{'0%'}</Text>
-                            </ProgressCircle>
-                        </View>
-
-                        <View style={styles.sectionRow}>
-                            <Text style={{ fontSize: 16, color: Colors.tintColor, textAlign: 'center' }}>150 Data Masuk</Text>
-                            <Text style={{ fontSize: 12, color: 'grey', marginTop: 5, textAlign: 'center' }}>Klik sync untuk sinkronisasi data</Text>
-                        </View>
-                    </View> */}
-
                     <View style={{ flex: 1, marginTop: 0 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text>BLOCK</Text>
@@ -825,7 +793,7 @@ class SyncScreen extends React.Component {
                         <View style={{ flexDirection: 'row' }}>
                             <Text>TR CATEGORY</Text>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueCategoryDownload}</Text>
+                                <Text>{this.state.valueCategoryDownload}</Text> 
                                 <Text>/</Text>
                                 <Text>{this.state.totalCategoryDownload}</Text>
                             </View>

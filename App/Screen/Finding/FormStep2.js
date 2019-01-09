@@ -197,75 +197,161 @@ class FormStep2 extends Component {
     //     });
     // };
 
-    _onBtnSaveClicked = () => {
-        var valid = true;
-        if (
-            isEmpty(this.state.keterangan) ||
-            isEmpty(this.state.blok) ||
-            isEmpty(this.state.category) ||
-            isEmpty(this.state.priority) ||
-            (isEmpty(this.tugasKepada) && isEmpty(this.batasWaktu))) {
-            valid = false;
-        }
-
-        if (!valid) {
-            Alert.alert(
+    validation(){
+        let isSameUser = this.state.assignto == this.state.user.USER_AUTH_CODE ? true : false;
+        if(isEmpty(this.state.keterangan)){
+            alert(
+                'Peringatan',
+                "Keterangan harus diisi"
+            );
+        }else if(isEmpty(this.state.blok)){
+            alert(
+                'Peringatan',
+                "Blok harus diisi"
+            );
+        }else if(isEmpty(this.state.category)){
+            alert(
+                'Peringatan',
+                "Kategori harus diisi"
+            );
+        }else if(isEmpty(this.state.priority)){
+            alert(
+                'Peringatan',
+                "Prioritas harus diisi"
+            );
+        }else if(isSameUser){
+            alert(
                 'Peringatan',
                 "Semua isian dengan tanda * harus diisi"
             );
-        } else {
-            var data = {
-                FINDING_CODE: this.state.TRANS_CODE,
-                WERKS: "",
-                AFD_CODE: "",
-                BLOCK_CODE: this.state.blok,
-                FINDING_CATEGORY: this.state.categoryid,
-                FINDING_DESC: this.state.keterangan,
-                FINDING_PRIORITY: this.state.priority,
-                DUE_DATE: this.state.batasWaktu,
-                ASSIGN_TO: this.state.assignto,
-                PROGRESS: 0,
-                LAT_FINDING: this.state.latitude,
-                LONG_FINDING: this.state.longitude,
-                REFFERENCE_INS_CODE: "",
+        }else{
+            this.saveData()
+        }
+    }
+
+    saveData(){
+        var data = {
+            FINDING_CODE: this.state.TRANS_CODE,
+            WERKS: "",
+            AFD_CODE: "",
+            BLOCK_CODE: this.state.blok,
+            FINDING_CATEGORY: this.state.categoryid,
+            FINDING_DESC: this.state.keterangan,
+            FINDING_PRIORITY: this.state.priority,
+            DUE_DATE: this.state.batasWaktu,
+            ASSIGN_TO: this.state.assignto,
+            PROGRESS: 0,
+            LAT_FINDING: this.state.latitude,
+            LONG_FINDING: this.state.longitude,
+            REFFERENCE_INS_CODE: ""
+        }
+        TaskServices.saveData('TR_FINDING', data);
+
+        this.state.foto.map((image, i) => {
+            var imagetr = {
+                IMAGE_CODE: image.replace(".jpg", ""),
+                TR_CODE: this.state.TRANS_CODE,
+                IMAGE_NAME: image,
+                IMAGE_PATH: dirPhotoTemuan + "/" + image,
+                STATUS_IMAGE: 'N',
+                STATUS_SYNC: '',
+                SYNC_TIME: '',
                 INSERT_USER: this.state.user.USER_AUTH_CODE,
-                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-                UPDATE_USER: "",
-                UPDATE_TIME: "",
-                DELETE_USER: "",
-                DELETE_TIME: ""
+                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+                UPDATE_USER: '',
+                UPDATE_TIME: '',
+                DELETE_USER: '',
+                DELETE_TIME: ''
             }
 
-            TaskServices.saveData('TR_FINDING', data);
+            TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
+        });
+        this.props.navigation.goBack(null);
+    }
 
-            this.state.foto.map((image, i) => {
-                var imagetr = {
-                    IMAGE_CODE: image.replace(".jpg", ""),
-                    TR_CODE: this.state.TRANS_CODE,
-                    IMAGE_NAME: image,
-                    IMAGE_PATH: dirPhotoTemuan + "/" + image,
-                    STATUS_IMAGE: 'SEBELUM',
-                    STATUS_SYNG: '',
-                    SYNG_TIME: '',
-                    INSERT_USER: this.state.user.USER_AUTH_CODE,
-                    INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
-                    UPDATE_USER: '',
-                    UPDATE_TIME: '',
-                    DELETE_USER: '',
-                    DELETE_TIME: ''
-                }
+    // _onBtnSaveClicked = () => {
+    //     var valid = true;
+    //     if (
+    //         isEmpty(this.state.keterangan) ||
+    //         isEmpty(this.state.blok) ||
+    //         isEmpty(this.state.category) ||
+    //         isEmpty(this.state.priority) ||
+    //         (isEmpty(this.tugasKepada) && isEmpty(this.batasWaktu))) {
+    //         valid = false;
+    //     }
 
-                TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
-            })
+    //     if (!valid) {
+    //         Alert.alert(
+    //             'Peringatan',
+    //             "Semua isian dengan tanda * harus diisi"
+    //         );
+    //     } else {
+    //         var data = {
+    //             FINDING_CODE: this.state.TRANS_CODE,
+    //             WERKS: "",
+    //             AFD_CODE: "",
+    //             BLOCK_CODE: this.state.blok,
+    //             FINDING_CATEGORY: this.state.categoryid,
+    //             FINDING_DESC: this.state.keterangan,
+    //             FINDING_PRIORITY: this.state.priority,
+    //             DUE_DATE: this.state.batasWaktu,
+    //             ASSIGN_TO: this.state.assignto,
+    //             PROGRESS: 0,
+    //             LAT_FINDING: this.state.latitude,
+    //             LONG_FINDING: this.state.longitude,
+    //             REFFERENCE_INS_CODE: "",
+    //             INSERT_USER: this.state.user.USER_AUTH_CODE,
+    //             INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+    //             UPDATE_USER: "",
+    //             UPDATE_TIME: "",
+    //             DELETE_USER: "",
+    //             DELETE_TIME: ""
+    //         }
 
-            this.props.navigation.goBack(null);
-        }
+    //         TaskServices.saveData('TR_FINDING', data);
+
+    //         this.state.foto.map((image, i) => {
+    //             var imagetr = {
+    //                 IMAGE_CODE: image.replace(".jpg", ""),
+    //                 TR_CODE: this.state.TRANS_CODE,
+    //                 IMAGE_NAME: image,
+    //                 IMAGE_PATH: dirPhotoTemuan + "/" + image,
+    //                 STATUS_IMAGE: 'SEBELUM',
+    //                 STATUS_SYNG: '',
+    //                 SYNG_TIME: '',
+    //                 INSERT_USER: this.state.user.USER_AUTH_CODE,
+    //                 INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
+    //                 UPDATE_USER: '',
+    //                 UPDATE_TIME: '',
+    //                 DELETE_USER: '',
+    //                 DELETE_TIME: ''
+    //             }
+
+    //             TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
+    //         })
+
+    //         this.props.navigation.goBack(null);
+    //     }
+    // }
+
+    renderContact = (user) =>{
+        return (
+            <View style={{ flex: 1 }}>
+				<TouchableOpacity style={{ flex: 1, flexDirection: 'row', marginBottom: 16 }}
+					onPress={()=>{this._onContactSelected(user)}}>
+					<View style={{ flex: 1 }} >
+						<Text style={{ fontSize: 14, color: 'black' }}>{user.FULLNAME}</Text>
+						<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{user.USER_ROLE}</Text>
+					</View>
+				</TouchableOpacity>
+			</View>
+        )
     }
 
     _onContactSelected = user => {
         this.setState({
             isContactVisible: false,
-            tugasKepada: user.EMPLOYEE_NIK,
+            tugasKepada: user.FULLNAME,
             assignto: user.EMPLOYEE_NIK
         })
     }
@@ -462,14 +548,13 @@ class FormStep2 extends Component {
                                 <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
                             {!isEmpty(this.state.tugasKepada) && (
                                 <Text style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
-                        </TouchableOpacity>
-                        
+                        </TouchableOpacity>                        
                     </View>
 
                     <View style={[style.line]} />
 
                     <TouchableOpacity style={[style.button, { margin: 16 }]}
-                        onPress={this._onBtnSaveClicked}>
+                        onPress={()=>{this.validation()}}>
                         <Text style={style.buttonText}>Simpan</Text>
                     </TouchableOpacity>
                 </Content>
@@ -524,7 +609,7 @@ class FormStep2 extends Component {
                                 onChangeText={text => {
                                     this.setState({ query: text })}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, allShow, compCode}) => (
+                                renderItem={({ blokCode, blokName, statusBlok, allShow, compCode}) => (
                                     <TouchableOpacity onPress={() => {
                                         // alert(allShow)
                                         this.setState({ 
@@ -538,14 +623,12 @@ class FormStep2 extends Component {
                                     </TouchableOpacity>
                                 )}
                             />
-                            {/* <TextInput style={style.inputloc}
-                                onChangeText={(blok) => this.setState({ blok })}
-                                value={this.state.blok} /> */}
                         </View>
 
                         <View style={{ marginTop: 10, width: '100%' }}>
                             <TouchableOpacity style={[style.buttonSetLoc, { alignSelf: 'flex-end' }]}
-                                onPress={() =>{             
+                                onPress={() =>{                                    
+                                    alert(this.state.blok); 
                                     this.setState({ isMapsVisible: false })
                                     }
                                 }>
@@ -557,7 +640,7 @@ class FormStep2 extends Component {
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
 
-                        {/* <MapView
+                        <MapView
                             style={{ height: 300, borderRadius: 10 }}
                             provider={PROVIDER_GOOGLE}
                             region={{
@@ -572,10 +655,11 @@ class FormStep2 extends Component {
                                 coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
                                 title={"Your Location"}
                             />}
-                        </MapView> */}
+                        </MapView>
                     </View>
                 </SlidingUpPanel>
 
+                {/* slidingup contacts */}
                 <SlidingUpPanel
                     visible={this.state.isContactVisible}
                     onRequestClose={() => this.setState({ isContactVisible: false })}>
@@ -594,11 +678,13 @@ class FormStep2 extends Component {
                             onTouchEnd={() => this.setState({ allowDragging: true })}
                             onTouchCancel={() => this.setState({ allowDragging: true })}
                             onTouchStart={() => this.setState({ allowDragging: false })}>
+                            {/* {this.state.contacts.map(user => {this.renderContact(user)})} */}
                             {this.state.contacts.map(this._renderContact)}
                         </ScrollView>
                     </View>
                 </SlidingUpPanel>
 
+                {/* slidingup category */}
                 <SlidingUpPanel
                     height={340}
                     draggableRange={{ top: 420, bottom: 0 }}

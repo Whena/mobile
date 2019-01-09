@@ -49,28 +49,33 @@ class FormStep1 extends Component {
             ],
             latitude: 0.0,
             longitude: 0.0,
-            fetchLocation: false
+            fetchLocation: false,
+            isMounted: false,
         }
     }
 
     componentDidMount() {
        this.getLocation();
+       this.setState({isMounted: true});
        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
     componentWillUnmount(){
+        this.setState({isMounted: false});
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     handleBackButtonClick() { 
-        Alert.alert(
-            'Peringatan',
-            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-            [
-                { text: 'NO', style: 'cancel' },
-                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-            ]
-        );
+        if(isMounted){
+            Alert.alert(
+                'Peringatan',
+                'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+                [
+                    { text: 'NO', style: 'cancel' },
+                    { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+                ]
+            );
+        }
         return true;
     }
 

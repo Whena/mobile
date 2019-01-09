@@ -86,15 +86,8 @@ class Login extends Component{
 			this.setState({ fetching: newProps.auth.fetching });
         }
 		if (!isNil(newProps.auth.user)) {
-            console.log(newProps.auth.user);
-            // console.log(newProps.auth.user.ACCESS_TOKEN);
-            // this.setState({token:newProps.auth.user.ACCESS_TOKEN});
-            // this.insertUser;
             this.insertUser;
             this.navigateScreen('MainMenu');
-            // var ID = realm.objects('trn_login').length + 1;
-            // Alert.alert(ID+'');
-            // console.log(ID);
 
 		}
     }

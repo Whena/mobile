@@ -106,9 +106,9 @@ export default class HistoryInspection extends Component {
       case 'A':
         return Colors.brand;
       case 'B':
-        return '#ff7b25';
-      case 'C':
         return '#feb236';
+      case 'C':
+        return '#ff7b25';
       case 'F':
         return 'red';
       case 'string':

@@ -10,7 +10,8 @@ import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 import RegionAction from '../Redux/RegionRedux'
 var RNFS = require('react-native-fs');
-import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie } from '../Lib/dirStorage'
+import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie } from '../Lib/dirStorage';
+import RNFetchBlob from 'rn-fetch-blob'
 
 class SplashScreen extends Component {
 
@@ -34,43 +35,58 @@ class SplashScreen extends Component {
         navigation.dispatch(resetAction);
     }
 
-    async componentDidMount() {
-
-        // let data= [ { id: 1, name: 'Mike', city: 'philps', state:'New York'}, { id: 2, name: 'Steve', city: 'Square', state: 'Chicago'}, { id: 3, name: 'Jhon', city: 'market', state: 'New York'}, { id: 4, name: 'philps', city: 'booket', state: 'Texas'}, { id: 5, name: 'smith', city: 'brookfield', state: 'Florida'}, { id: 6, name: 'Broom', city: 'old street', state: 'Florida'}, ]
-
-        // data = data.filter(function(item){
-        // return item.state == 'New York';
-        // }).map(function({id, name, city}){
-        //     return {id, name, city};
-        // });
-        // alert(JSON.stringify(data));
+    async componentDidMount() {  
 
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
-            //buat folder internal      
-            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Baris');
-            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Inspeksi/Selfie');
-            // RNFS.mkdir(RNFS.ExternalDirectoryPath + '/Photo/Temuan');
 
-            
-            //buat Folder DiExtrnal
+        //     //buat Folder DiExtrnal
             RNFS.mkdir('file:///storage/emulated/0/MobileInspection');
+        
+            this.download()
 
-            RNFS.mkdir(dirPhotoInspeksiBaris);
-            RNFS.mkdir(dirPhotoInspeksiSelfie);
-            RNFS.mkdir(dirPhotoTemuan);
+        //     //buat folder internal    
+        //     RNFS.mkdir(dirPhotoInspeksiBaris);
+        //     RNFS.mkdir(dirPhotoInspeksiSelfie);
+        //     RNFS.mkdir(dirPhotoTemuan);
 
 
-            setTimeout(() => {
-                if (TaskServices.getTotalData('TR_LOGIN') > 0) {
-                    this.navigateScreen('MainMenu');
-                } else {
-                    this.navigateScreen('Login');
-                }
-            }, 2000);
-        } else {
-            Alert.alert('Seluruh Permission harus di hidupkan')
+        //     setTimeout(() => {
+        //         if (TaskServices.getTotalData('TR_LOGIN') > 0) {
+        //             this.navigateScreen('MainMenu');
+        //         } else {
+        //             this.navigateScreen('Login');
+        //         }
+        //     }, 2000);
+        // } else {
+        //     Alert.alert('Seluruh Permission harus di hidupkan')
         }
+    }
+
+    download(){
+        var date      = new Date();
+        var url       = "http://www.clker.com/cliparts/B/B/1/E/y/r/marker-pin-google-md.png";
+        var ext       = this.extention(url);
+        ext = "."+ext[0];
+        const { config, fs } = RNFetchBlob
+        let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
+        // alert(PictureDir)
+        let options = {
+          fileCache: true,
+          addAndroidDownloads : {
+            useDownloadManager : true,
+            notification : true,
+            path:  PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+            description : 'Image'
+          }
+        }
+        config(options).fetch('GET', url).then((res) => {
+          alert("Success Downloaded " + res);
+        });
+    }
+
+    extention(filename){
+        return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
     }
 
     render() {

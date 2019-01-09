@@ -307,7 +307,7 @@ class KondisiBaris2 extends Component {
             alert('Piringan belim dipilih');
         }else if(this.state.sarKul == ''){
             alert('Pasar Pikul belim dipilih');
-        }else if((this.state.statusBlok == 'TM' || this.state.statusBlok == 'TBM3') && this.state.TPH == ''){
+        }else if((this.state.statusBlok == 'TM' || this.state.statusBlok == 'TBM 3') && this.state.TPH == ''){
             alert('TPH belum dipilih')
         }else if(this.state.TPH == '' && this.state.switchTPH == true){
             alert('TPH belim dipilih');
@@ -317,9 +317,9 @@ class KondisiBaris2 extends Component {
             alert('Prunning belim dipilih');
         }else if(this.state.TIPA == '' && this.state.switchTIPA == true){
             alert('Titi Panen belim dipilih');
-        }else if(this.state.KASTRASI == '' && this.state.statusBlok == 'TBM3'){
+        }else if(this.state.KASTRASI == '' && this.state.statusBlok == 'TBM 3'){
             alert('Kastrasi belum dipilih')
-        }else if(this.state.SANITASI == '' && this.state.statusBlok == 'TBM3'){
+        }else if(this.state.SANITASI == '' && this.state.statusBlok == 'TBM 3'){
             alert('Sanitasi belum dipilih')
         }else if(this.kodisiPemupukanIsOn() && this.state.PENABUR == ''){
             alert('Sistem Penaburan belum dipilih')
