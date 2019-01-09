@@ -45,21 +45,21 @@ class SplashScreen extends Component {
         
             this.download()
 
-        //     //buat folder internal    
-        //     RNFS.mkdir(dirPhotoInspeksiBaris);
-        //     RNFS.mkdir(dirPhotoInspeksiSelfie);
-        //     RNFS.mkdir(dirPhotoTemuan);
+            //buat folder internal    
+            // RNFS.mkdir(dirPhotoInspeksiBaris);
+            // RNFS.mkdir(dirPhotoInspeksiSelfie);
+            // RNFS.mkdir(dirPhotoTemuan);
 
 
-        //     setTimeout(() => {
-        //         if (TaskServices.getTotalData('TR_LOGIN') > 0) {
-        //             this.navigateScreen('MainMenu');
-        //         } else {
-        //             this.navigateScreen('Login');
-        //         }
-        //     }, 2000);
-        // } else {
-        //     Alert.alert('Seluruh Permission harus di hidupkan')
+            setTimeout(() => {
+                if (TaskServices.getTotalData('TR_LOGIN') > 0) {
+                    this.navigateScreen('MainMenu');
+                } else {
+                    this.navigateScreen('Login');
+                }
+            }, 2000);
+        } else {
+            Alert.alert('Seluruh Permission harus di hidupkan')
         }
     }
 

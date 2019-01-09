@@ -171,9 +171,9 @@ const TM_BLOCK = {
 
 const TR_CATEGORY = {
     name: 'TR_CATEGORY',
-    // primaryKey: '_id',
+    primaryKey: '_id',
     properties: {
-        // _id: 'string',
+        _id: 'string',
         CATEGORY_NAME: 'string',
         ICON: 'string'
     }

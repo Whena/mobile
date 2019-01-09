@@ -31,6 +31,7 @@ const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
 
 import TaskServices from '../Database/TaskServices'
+// import { isNull } from 'util';
 // import { stat } from 'fs';
 
 
@@ -83,7 +84,7 @@ class SyncScreen extends React.Component {
             downloadCategory: false,
             donwloadFinding: false,
             fetchLocation: false,
-            isBtnEnable: true,
+            isBtnEnable: false,
             downloadApa: 'Download sedang dalam proses',
             valueDownload: '0',
             totalDownload: '0',
@@ -141,7 +142,7 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_BLOCK', item);
             })
 
-            this._postMobileSync("block");
+            // this._postMobileSync("block");
         } else {
             this.setState({ valueRegionDownload: i });
         }
@@ -167,7 +168,7 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_AFD', item);
             });
 
-            this._postMobileSync("afd");
+            // this._postMobileSync("afd");
         } else {
             this.setState({ progressAfd: 1 })
             this.setState({ valueAfdDownload: 0 });
@@ -216,10 +217,10 @@ class SyncScreen extends React.Component {
     }
 
     _crudTM_Est(data) {
-        console.log("Simpan Est : " + data.simpan.length);
-
+        console.log('Data : ' + data);
+        // if(data != null){
         var i = 1;
-        if (data.simpan.length > 0) {
+        if (data.simpan.length > 0 && data) {
 
             for (i = 1; i <= data.simpan.length; i++) {
                 this.setState({ progressEst: i / data.simpan.length })
@@ -239,11 +240,12 @@ class SyncScreen extends React.Component {
 
             this._postMobileSync("est");
         }
+        // }
     }
 
     _crudTM_LandUse(data) {
+        // if (data != null) {
         console.log("Simpan Land Use : " + data.simpan.length);
-
         var i = 0;
         if (data.simpan.length > 0) {
 
@@ -266,12 +268,12 @@ class SyncScreen extends React.Component {
             this.setState({ fetchLocation: false });
         }
 
-        this.setState({ isBtnEnable: true });
+        this.setState({ isBtnEnable: false });
+        // }
     }
 
     _crudTM_Comp(data) {
         console.log("Simpan Comp : " + data.simpan.length);
-
         var i = 0;
         if (data.simpan.length > 0) {
 
@@ -293,6 +295,7 @@ class SyncScreen extends React.Component {
 
             this._postMobileSync("comp");
         }
+        // }
     }
 
     _crudTM_Content(data) {
@@ -493,22 +496,22 @@ class SyncScreen extends React.Component {
             downloadFinding: false,
             downloadCategory: false,
             fetchLocation: false,
-            isBtnEnable: false
+            isBtnEnable: true
 
         });
 
         // GET DATA MASTER
-        // this.props.contentRequest();
-        // this.props.blockRequest();
-        // this.props.afdRequest();
+        this.props.contentRequest();
+        this.props.blockRequest();
+        this.props.afdRequest();
         this.props.regionRequest();
         this.props.estRequest();
-        // this.props.landUseRequest();
-        // this.props.compRequest();
-        // this.props.contentLabelRequest();
-        // this.props.kriteriaRequest();
-        // this.props.categoryRequest();
-        // this.props.contactRequest();
+        this.props.landUseRequest();
+        this.props.compRequest();
+        this.props.contentLabelRequest();
+        this.props.kriteriaRequest();
+        this.props.categoryRequest();
+        this.props.contactRequest();
         // this.props.findingRequest();
 
     }
@@ -524,21 +527,21 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
-        // if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
-        //     let dataJSON = newProps.block.block;
-        //     this.setState({ downloadBlok: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Block(dataJSON);
-        //     }
-        // }
+        if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
+            let dataJSON = newProps.block.block;
+            this.setState({ downloadBlok: true });
+            if (dataJSON !== null) {
+                this._crudTM_Block(dataJSON);
+            }
+        }
 
-        // if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
-        //     let dataJSON = newProps.afd.afd;
-        //     this.setState({ downloadAfd: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Afd(dataJSON);
-        //     }
-        // }
+        if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
+            let dataJSON = newProps.afd.afd;
+            this.setState({ downloadAfd: true });
+            if (dataJSON !== null) {
+                this._crudTM_Afd(dataJSON);
+            }
+        }
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
@@ -548,39 +551,39 @@ class SyncScreen extends React.Component {
             this.setState({ downloadRegion: true })
         }
 
-        // `if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
-        //     let dataJSON = newProps.est.est;
-        //     this.setState({ downloadEst: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Est(dataJSON);
-        //     }
-        // }
+        if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
+            let dataJSON = newProps.est.est;
+            this.setState({ downloadEst: true });
+            if (dataJSON !== null) {
+                this._crudTM_Est(dataJSON);
+            }
+        }
 
-        // if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
-        //     let dataJSON = newProps.landUse.landUse;
-        //     this.setState({ downloadLandUse: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_LandUse(dataJSON);
-        //     }
-        // }
+        if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
+            let dataJSON = newProps.landUse.landUse;
+            this.setState({ downloadLandUse: true });
+            if (dataJSON !== null) {
+                this._crudTM_LandUse(dataJSON);
+            }
+        }
 
-        // if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
-        //     let dataJSON = newProps.comp.comp;
-        //     this.setState({ downloadComp: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Comp(dataJSON);
-        //     }
-        // }
+        if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
+            let dataJSON = newProps.comp.comp;
+            this.setState({ downloadComp: true });
+            if (dataJSON !== null) {
+                this._crudTM_Comp(dataJSON);
+            }
+        }
 
-        // if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
-        //     let dataJSON = newProps.content.content;
-        //     this.setState({ downloadContent: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Content(dataJSON);
-        //     }
-        // }
+        if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
+            let dataJSON = newProps.content.content;
+            this.setState({ downloadContent: true });
+            if (dataJSON !== null) {
+                this._crudTM_Content(dataJSON);
+            }
+        }
 
-        // // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
+        // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
 
         if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
             let dataJSON = newProps.contentLabel.contentLabel;
@@ -614,13 +617,6 @@ class SyncScreen extends React.Component {
             this.setState({ downloadContact: true });
         }
 
-        if(downloadBlok && downloadAfd && downloadRegion && downloadEst 
-            && downloadLandUse && downloadComp && downloadContent && downloadContentLabel
-            && downloadKriteria && downloadCategory && downloadContact){
-
-                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
-        }
-
         // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
         //     let dataJSON = newProps.finding.finding;
         //     this.setState({ downloadFinding: true });
@@ -628,6 +624,12 @@ class SyncScreen extends React.Component {
         //         this._crudTM_Finding(dataJSON);
         //     }
         // }
+
+        if(this.setState.downloadBlok && this.setState.downloadAfd && this.setState.downloadRegion && this.setState.downloadEst 
+            && this.setState.downloadLandUse && this.setState.downloadComp && this.setState.downloadContent && this.setState.downloadContentLabel
+            && this.setState.downloadKriteria && this.setState.downloadCategory && this.setState.downloadContact){
+                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+        }
     }
 
     render() {
@@ -791,9 +793,9 @@ class SyncScreen extends React.Component {
 
                     <View style={{ flex: 1, marginTop: 12 }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text>TR CATEGORY</Text>
+                            <Text>CATEGORY</Text>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueCategoryDownload}</Text> 
+                                <Text>{this.state.valueCategoryDownload}</Text>
                                 <Text>/</Text>
                                 <Text>{this.state.totalCategoryDownload}</Text>
                             </View>
@@ -808,7 +810,7 @@ class SyncScreen extends React.Component {
 
                     <View style={{ flex: 1, marginTop: 12 }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text>TR CONTACT</Text>
+                            <Text>CONTACT</Text>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
                                 <Text>{this.state.valueContactDownload}</Text>
                                 <Text>/</Text>
