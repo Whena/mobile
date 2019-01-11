@@ -233,21 +233,12 @@ const TR_LOG_FINDING = {
 
 const TR_IMAGE_FINDING = {
     name: 'TR_IMAGE_FINDING',
-    //primaryKey: 'IMAGE_CODE',
+    primaryKey: 'IMAGE_CODE',
     properties: {
-        IMAGE_CODE: 'string',
         TR_CODE: 'string',
+        IMAGE_CODE: 'string',
         IMAGE_NAME: 'string',
-        IMAGE_PATH: 'string',
-        STATUS_IMAGE: 'string',
-        STATUS_SYNC: 'string',
-        SYNC_TIME: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        DELETE_USER: 'string',
-        DELETE_TIME: 'string'
+        IMAGE_URL: 'string'
     }
 }
 

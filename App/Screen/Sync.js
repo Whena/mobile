@@ -21,12 +21,14 @@ import ContentLabelAction from '../Redux/ContentLabelRedux';
 import ContactAction from '../Redux/ContactRedux';
 import CategoryAction from '../Redux/CategoryRedux';
 import FindingAction from '../Redux/FindingRedux';
+import FindingImageAction from '../Redux/FindingImageRedux';
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori } from '../Lib/dirStorage';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
+import RNFetchBlob from 'rn-fetch-blob'
 
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
@@ -72,6 +74,7 @@ class SyncScreen extends React.Component {
             progressCategory: 0,
             progressContact: 0,
             progressFinding: 0,
+            progressFindingImage: 0,
             indeterminate: false,
             downloadRegion: false,
             downloadAfd: false,
@@ -84,9 +87,18 @@ class SyncScreen extends React.Component {
             downloadContentLabel: false,
             downloadKriteria: false,
             downloadCategory: false,
-            donwloadFinding: false,
+            downloadFinding: false,
+            downloadFindingImage: false,
             fetchLocation: false,
             isBtnEnable: false,
+            isFinishBlock: false,
+            isFinishAfd: false,
+            isFinisRegion: false,
+            isFinishEst: false,
+            isFinishContent: false,
+            isFinishContentLabel: false,
+            isFinishFinding: false,
+            isFinishFindingImage: false,
             downloadApa: 'Download sedang dalam proses',
             valueDownload: '0',
             totalDownload: '0',
@@ -111,7 +123,10 @@ class SyncScreen extends React.Component {
             valueCategoryDownload: '0',
             totalCategoryDownload: '0',
             valueContactDownload: '0',
-            totalContactDownload: '0'
+            totalContactDownload: '0',
+            valueFindingImageDownload: '0',
+            totalFindingImageDownload: '0',
+            showButton: true
         }
     }
 
@@ -136,12 +151,15 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.simpan.length; i++) {
                 this.setState({ progress: i / data.simpan.length })
-                this.setState({ valueDownload: i })
                 this.setState({ totalDownload: data.simpan.length })
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
+
+                // let countDataInsert = TaskServices.getTotalData('TM_BLOCK');
+                // console.log("countDataInsert : " + countDataInsert);
+                // this.setState({ valueDownload: countDataInsert })
             })
 
             // this._postMobileSync("block");
@@ -149,12 +167,11 @@ class SyncScreen extends React.Component {
             this.setState({ valueRegionDownload: i });
         }
         // this.animate();
-
     }
 
     _crudTM_Afd(data) {
-        console.log("Simpan AFD : " + data.simpan.length);
 
+        console.log("Simpan AFD : " + data.simpan.length);
         // this.setState({ downloadApa: "Sedang Download TM Afdeling" });
 
         var i = 1;
@@ -162,19 +179,27 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.simpan.length; i++) {
                 this.setState({ progressAfd: i / data.simpan.length })
-                this.setState({ valueAfdDownload: i })
                 this.setState({ totalAfdDownload: data.simpan.length })
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_AFD', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_AFD');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueAfdDownload: countDataInsert });
+
+                this.setState({ isFinishAfd: true });
             });
 
-            // this._postMobileSync("afd");
+            // this._postMobileSync("afdeling");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_AFD');
             this.setState({ progressAfd: 1 })
-            this.setState({ valueAfdDownload: 0 });
+            this.setState({ valueAfdDownload: countDataInsert })
             this.setState({ totalAfdDownload: 0 });
+
+            // this._postMobileSync("afdeling");
         }
     }
 
@@ -184,19 +209,23 @@ class SyncScreen extends React.Component {
         if (data.simpan.length > 0) {
 
             for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressRegion: i / data.simpan.length })
-                this.setState({ valueRegionDownload: i });
+                this.setState({ progressRegion: i / data.simpan.length });
                 this.setState({ totalRegionDownload: data.simpan.length });
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_REGION');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueRegionDownload: countDataInsert });
             });
 
             // this._postMobileSync("region");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_REGION');
             this.setState({ progressRegion: 1 })
-            this.setState({ valueRegionDownload: 0 });
+            this.setState({ valueRegionDownload: countDataInsert });
             this.setState({ totalRegionDownload: 0 });
 
             // this._postMobileSync("region");
@@ -215,34 +244,31 @@ class SyncScreen extends React.Component {
         //     console.log("All Data" + TaskServices.getAllData('TM_REGION'));
         // }
 
-        this.setState({ isBtnEnable: true });
+        // this.setState({ isBtnEnable: true });
     }
 
     _crudTM_Est(data) {
         console.log('Data : ' + data);
-        // if(data != null){
         var i = 1;
         if (data.simpan.length > 0 && data) {
 
             for (i = 1; i <= data.simpan.length; i++) {
                 this.setState({ progressEst: i / data.simpan.length })
-                this.setState({ valueEstDownload: i });
                 this.setState({ totalEstDownload: data.simpan.length });
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
-            })
-
+            });
             // this._postMobileSync("est");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_EST');
             this.setState({ progressEst: 1 })
-            this.setState({ valueEstDownload: 0 });
-            this.setState({ totalRegionDownload: 0 });
+            this.setState({ valueEstDownload: countDataInsert });
+            this.setState({ totalEstDownload: 0 });
 
             // this._postMobileSync("est");
         }
-        // }
     }
 
     _crudTM_LandUse(data) {
@@ -253,24 +279,29 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.simpan.length; i++) {
                 this.setState({ progressLandUse: i / data.simpan.length });
-                this.setState({ valueLandUseDownload: i });
                 this.setState({ totalLandUseDownload: data.simpan.length });
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_LAND_USE', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueLandUseDownload: countDataInsert });
             })
 
             // this._postMobileSync("landUse");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
+
             this.setState({ progressLandUse: 1 })
-            this.setState({ valueLandUseDownload: 0 });
+            this.setState({ valueLandUseDownload: countDataInsert });
             this.setState({ totalLandUseDownload: 0 });
 
-            this.setState({ fetchLocation: false });
+            // this.setState({ fetchLocation: false });
         }
 
-        this.setState({ isBtnEnable: false });
+        // this.setState({ isBtnEnable: false });
         // }
     }
 
@@ -287,12 +318,17 @@ class SyncScreen extends React.Component {
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_COMP', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_COMP');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueCompDownload: countDataInsert });
             })
 
             // this._postMobileSync("comp");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_COMP');
             this.setState({ progressComp: 1 })
-            this.setState({ valueCompDownload: 0 });
+            this.setState({ valueCompDownload: countDataInsert });
             this.setState({ totalCompDownload: 0 });
 
             // this._postMobileSync("comp");
@@ -307,19 +343,22 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.length; i++) {
                 this.setState({ progressContent: i / data.length });
-                this.setState({ valueContentDownload: i });
                 this.setState({ totalContentDownload: data.length });
             }
 
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT', item);
-                // this.setState({ downloadApa: `TM_CONTENT ${item.CONTENT_CODE}` });
+
+                let countDataInsert = TaskServices.getTotalData('TM_CONTENT');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueContentDownload: countDataInsert });
             });
 
             // this._postMobileSync("content");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_CONTENT');
             this.setState({ progressContent: 1 })
-            this.setState({ valueContentDownload: 0 });
+            this.setState({ valueContentDownload: countDataInsert });
             this.setState({ totalContentDownload: 0 });
 
             // this._postMobileSync("content");
@@ -333,18 +372,22 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.length; i++) {
                 this.setState({ progressContentLabel: i / data.length });
-                this.setState({ valueContentLabelDownload: i });
                 this.setState({ totalContentLabelDownload: data.length });
             }
 
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT_LABEL', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_CONTENT_LABEL');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueContentLabelDownload: countDataInsert });
             });
 
             // this._postMobileSync("content-label");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_CONTENT_LABEL');
             this.setState({ progressContentLabel: 1 })
-            this.setState({ valueContentLabelDownload: 0 });
+            this.setState({ valueContentLabelDownload: countDataInsert });
             this.setState({ totalContentLabelDownload: 0 });
 
             // this._postMobileSync("content-label");
@@ -358,18 +401,22 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.length; i++) {
                 this.setState({ progressKriteria: i / data.length });
-                this.setState({ valueKriteriaDownload: i });
                 this.setState({ totalKriteriaDownload: data.length });
             }
 
             data.map(item => {
                 TaskServices.saveData('TM_KRITERIA', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_KRITERIA');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueKriteriaDownload: countDataInsert });
             });
 
             // this._postMobileSync("kriteria");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TM_KRITERIA');
             this.setState({ progressKriteria: 1 })
-            this.setState({ valueKriteriaDownload: 0 });
+            this.setState({ valueKriteriaDownload: countDataInsert });
             this.setState({ totalKriteriaDownload: 0 });
 
             // this._postMobileSync("kriteria");
@@ -377,24 +424,31 @@ class SyncScreen extends React.Component {
     }
 
     _crudTM_Finding(data) {
-        console.log("Simpan Finding : " + data.length);
+        var dataSimpan = data.simpan;
+        console.log("Simpan Finding : " + dataSimpan.length);
 
-        if (data.length > 0) {
+        if (dataSimpan.length > 0) {
 
-            for (i = 1; i <= data.length; i++) {
-                this.setState({ progressFinding: i / data.length });
-                this.setState({ valueFindingDownload: i });
-                this.setState({ totalFindingDownload: data.length });
+            for (i = 1; i <= dataSimpan.length; i++) {
+                this.setState({ progressFinding: i / dataSimpan.length });
+                this.setState({ totalFindingDownload: dataSimpan.length });
             }
 
-            data.map(item => {
-                TaskServices.saveData('TM_KRITERIA', item);
+            dataSimpan.map(item => {
+                TaskServices.saveData('TR_FINDING', item);
+
+                let countDataInsert = TaskServices.getTotalData('TR_FINDING');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueFindingDownload: countDataInsert });
+
+                this.setState({ isFinishFinding: true });
             });
 
             // this._postMobileSync("finding");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TR_FINDING');
             this.setState({ progressFinding: 1 })
-            this.setState({ valueFindingDownload: 0 });
+            this.setState({ valueFindingDownload: countDataInsert });
             this.setState({ totalFindingDownload: 0 });
 
             // this._postMobileSync("finding");
@@ -408,22 +462,25 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= data.length; i++) {
                 this.setState({ progressCategory: i / data.length });
-                this.setState({ valueCategoryDownload: i });
                 this.setState({ totalCategoryDownload: data.length });
             }
 
             data.map(item => {
                 TaskServices.saveData('TR_CATEGORY', item);
+                let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueCategoryDownload: countDataInsert });
                 this.download(item);
-            })
+            });
         } else {
+            let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
             this.setState({ progressCategory: 1 })
-            this.setState({ valueCategoryDownload: 0 });
+            this.setState({ valueCategoryDownload: countDataInsert });
             this.setState({ totalCategoryDownload: 0 });
-
-            // this._postMobileSync("category");
         }
+        // this._postMobileSync("category");
     }
+
 
     _crudTM_Contact(data) {
         console.log("Simpan Contact : " + data.data.length);
@@ -434,17 +491,59 @@ class SyncScreen extends React.Component {
 
             for (i = 1; i <= dataContact.length; i++) {
                 this.setState({ progressContact: i / dataContact.length });
-                this.setState({ valueContactDownload: i });
                 this.setState({ totalContactDownload: dataContact.length });
             }
 
             dataContact.map(item => {
                 TaskServices.saveData('TR_CONTACT', item);
-            })
+
+                let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueContactDownload: countDataInsert });
+
+                this.setState({ isFinishFinding: true });
+            });
+
+            // this._postMobileSync("contact");
         } else {
+            let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
             this.setState({ progressContact: 1 })
-            this.setState({ valueContactDownload: 0 });
+            this.setState({ valueContactDownload: countDataInsert });
             this.setState({ totalContactDownload: 0 });
+        }
+    }
+
+    _crudTM_Finding_Image(data) {
+
+        var dataSimpan = data.simpan;
+        console.log("Simpan Finding Image : " + dataSimpan.length);
+
+        if (dataSimpan.length > 0) {
+
+            for (i = 1; i <= dataSimpan.length; i++) {
+                this.setState({ progressFindingImage: i / dataSimpan.length });
+                this.setState({ totalFindingImageDownload: dataSimpan.length });
+            }
+
+            dataSimpan.map(item => {
+                TaskServices.saveData('TR_IMAGE_FINDING', item);
+
+                this._downloadImageFinding(item);
+
+                let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueFindingImageDownload: countDataInsert });
+
+                this.setState({ isFinishFindingImage: true });
+                this.setState({ showButton: true })
+            });
+
+            // this._postMobileSync("contact");
+        } else {
+            let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
+            this.setState({ progressFindingImage: 1 })
+            this.setState({ valueFindingImageDownload: countDataInsert });
+            this.setState({ totalFindingImageDownload: 0 });
         }
     }
 
@@ -454,32 +553,32 @@ class SyncScreen extends React.Component {
         return IMEI_2;
     }
 
+
+    _downloadImageFinding(data) {
+        console.log(data)
+        var date = new Date();
+        var url = data.IMAGE_URL;
+        const { config, fs } = RNFetchBlob
+        let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
+        // alert(PictureDir)
+        let options = {
+            fileCache: true,
+            addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                path: `${PictureDir}/${data.IMAGE_NAME}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+                description: 'Image'
+            }
+        }
+        config(options).fetch('GET', url).then((res) => {
+            //   alert("Success Downloaded " + res);
+        });
+    }
+
     _onSync() {
 
-        // this.props.afdPost({
-        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-        //     TABEL_UPDATE: "hectare-statement/block"
-        // });
-
-        // this.props.blockPost({
-        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-        //     TABEL_UPDATE: "hectare-statement/block"
-        // });
-
-        // this.props.estPost({
-        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-        //     TABEL_UPDATE: "hectare-statement/block"
-        // });
-
-        // this.props.landUsePost({
-        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-        //     TABEL_UPDATE: "hectare-statement/block"
-        // });
-
-        // this.props.comp({
-        //     TGL_MOBILE_SYNC: "2018-12-17 00:00:00",
-        //     TABEL_UPDATE: "hectare-statement/block"
-        // });
+        this.setState({ progressFinding: 0 })
+        this.setState({ progressFindingImage: 0 })
 
         this.setState({
             downloadRegion: false,
@@ -493,9 +592,10 @@ class SyncScreen extends React.Component {
             downloadContentLabel: false,
             downloadKriteria: false,
             downloadFinding: false,
+            downloadFindingImage: false,
             downloadCategory: false,
             fetchLocation: false,
-            isBtnEnable: true
+            isBtnEnable: false
 
         });
 
@@ -526,6 +626,9 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
+
+        // console.log(newProps)
+
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
             this.setState({ downloadBlok: true });
@@ -544,10 +647,10 @@ class SyncScreen extends React.Component {
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
-            this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
+            this.setState({ downloadRegion: true })
         }
 
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
@@ -592,63 +695,81 @@ class SyncScreen extends React.Component {
 
         if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
             let dataJSON = newProps.kriteria.kriteria;
-            this.setState({ downloadKriteria: true });
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
             }
+            this.setState({ downloadKriteria: true });
         }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
             let dataJSON = newProps.category.category;
-            this.setState({ downloadCategory: true });
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
+            this.setState({ downloadCategory: true });
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
             let dataJSON = newProps.contact.contact;
-            this.setState({ downloadContact: true });
             if (dataJSON !== null) {
                 this._crudTM_Contact(dataJSON);
             }
+            this.setState({ downloadContact: true });
         }
 
-        if(this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst 
+        if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
+            let dataJSON = newProps.finding.finding;
+            this.setState({ downloadFinding: true });
+            if (dataJSON !== null) {
+                this._crudTM_Finding(dataJSON);
+            }
+        }
+
+        if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
+            let dataJSON = newProps.findingImage.findingImage;
+            this.setState({ downloadFindingImage: true });
+            if (dataJSON !== null) {
+                this._crudTM_Finding_Image(dataJSON);
+            }
+        }
+
+        if (this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst
             && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
-            && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact){
+            && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact) {
 
-                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+            RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
         }
-
-        // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
-        //     let dataJSON = newProps.finding.finding;
-        //     this.setState({ downloadFinding: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Finding(dataJSON);
-        //     }
-        // }
     }
 
-    download(data){
+    download(data) {
         console.log(data)
-        var date      = new Date();
-        var url       = data.ICON_URL;
+        var date = new Date();
+        var url = data.ICON_URL;
         const { config, fs } = RNFetchBlob
         // let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
         // alert(PictureDir)
         let options = {
-          fileCache: true,
-          addAndroidDownloads : {
-            useDownloadManager : true,
-            notification : true,
-            path:  `${dirPhotoKategori}/${data.ICON}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
-            description : 'Image'
-          }
+            fileCache: true,
+            addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                path: `${dirPhotoKategori}/${data.ICON}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+                description: 'Image'
+            }
         }
         config(options).fetch('GET', url).then((res) => {
-        //   alert("Success Downloaded " + res);
+            //   alert("Success Downloaded " + res);
         });
+        if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
+            this.setState({ showButton: true });
+        }
+
+
+        // if (this.setState.downloadBlok && this.setState.downloadAfd && this.setState.downloadRegion && this.setState.downloadEst
+        //     && this.setState.downloadLandUse && this.setState.downloadComp && this.setState.downloadContent && this.setState.downloadContentLabel
+        //     && this.setState.downloadKriteria && this.setState.downloadCategory && this.setState.downloadContact) {
+        //     RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+        // }
     }
 
     render() {
@@ -844,11 +965,45 @@ class SyncScreen extends React.Component {
                             indeterminate={this.state.indeterminate} />
                     </View>
 
-                    <View style={{ flex: 1, marginTop: 48 }}>
-                        <TouchableOpacity disabled={this.state.isBtnEnable} style={styles.button} onPress={() => this._onSync()}>
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>FINDING</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueFindingDownload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalFindingDownload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressFinding}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>FINDING IMAGE</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueFindingImageDownload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalFindingImageDownload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressFindingImage}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    {this.state.showButton && <View style={{ flex: 1, marginTop: 48 }}>
+                        <TouchableOpacity disabled={this.state.isBtnEnable} style={styles.button} onPress={() => { this.setState({ showButton: false }); this._onSync() }}>
                             <Text style={styles.buttonText}>Sync</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View>}
 
                     <ProgressDialog
                         visible={this.state.fetchLocation}
@@ -873,7 +1028,8 @@ const mapStateToProps = state => {
         kriteria: state.kriteria,
         contact: state.contact,
         finding: state.finding,
-        category: state.category
+        category: state.category,
+        findingImage: state.findingImage
     };
 };
 
@@ -902,7 +1058,8 @@ const mapDispatchToProps = dispatch => {
         contactRequest: () => dispatch(ContactAction.contactRequest()),
         categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
         findingRequest: () => dispatch(FindingAction.findingRequest()),
-        findingPost: obj => dispatch(FindingAction.findingPost(obj))
+        findingPost: obj => dispatch(FindingAction.findingPost(obj)),
+        findingImageRequest: () => dispatch(FindingImageAction.findingImageRequest()),
     };
 };
 

@@ -10,7 +10,7 @@ import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 import RegionAction from '../Redux/RegionRedux'
 var RNFS = require('react-native-fs');
-import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie } from '../Lib/dirStorage';
+import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoKategori } from '../Lib/dirStorage';
 
 class SplashScreen extends Component {
 
@@ -46,6 +46,7 @@ class SplashScreen extends Component {
             RNFS.mkdir(dirPhotoInspeksiBaris);
             RNFS.mkdir(dirPhotoInspeksiSelfie);
             RNFS.mkdir(dirPhotoTemuan);
+            RNFS.mkdir(dirPhotoKategori);
 
             setTimeout(() => {
                 if (TaskServices.getTotalData('TR_LOGIN') > 0) {

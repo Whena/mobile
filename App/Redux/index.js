@@ -23,6 +23,7 @@ export const reducers = combineReducers({
 	content: require('./ContentRedux').reducer,
 	contentLabel: require('./ContentLabelRedux').reducer,
 	finding: require('./FindingRedux').reducer,
+	findingImage: require('./FindingImageRedux').reducer,
 
 	network
 });

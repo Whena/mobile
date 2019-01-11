@@ -29,23 +29,23 @@ export function* getFinding(api, action) {
 
 }
 
-export function* postFinding(api, action) {
-    const { data } = action;
-    const response = yield call(api.postFinding, data);
+// export function* postFinding(api, action) {
+//     const { data } = action;
+//     const response = yield call(api.postFinding, data);
 
-    if (typeof atob !== 'undefined') {
-        console.log(response);
-        console.log('^^^ POST FINDING ^^^');
-    }
+//     if (typeof atob !== 'undefined') {
+//         console.log(response);
+//         console.log('^^^ POST FINDING ^^^');
+//     }
 
-    if (response.ok) {
-        yield put(FindingActions.findingSuccess({ payload: response.data, change: true }));
-    } else {
-        yield put(FindingActions.findingFailure({
-            path: 'Complete Post Finding',
-            message: response.data.message ? response.data.message : '',
-            response
-        }));
-    }
-}
+//     if (response.ok) {
+//         yield put(FindingActions.findingSuccess({ payload: response.data, change: true }));
+//     } else {
+//         yield put(FindingActions.findingFailure({
+//             path: 'Complete Post Finding',
+//             message: response.data.message ? response.data.message : '',
+//             response
+//         }));
+//     }
+// }
 

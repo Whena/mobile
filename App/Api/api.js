@@ -167,7 +167,12 @@ const create = () => {
 
     const getFinding = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
-        return api.get('/finding')
+        return api.get('/mobile-sync/finding')
+    }
+
+    const getFindingImage = () => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
+        return api.get('/mobile-sync/finding-images')
     }
 
     return {
@@ -207,7 +212,8 @@ const create = () => {
         getComp,
         getContent,
         getContentLabel,
-        getFinding
+        getFinding,
+        getFindingImage
 
     };
 };
