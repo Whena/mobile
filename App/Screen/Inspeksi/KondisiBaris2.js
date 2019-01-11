@@ -836,7 +836,7 @@ class KondisiBaris2 extends Component {
 
                 {/*CIRCLE*/}
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}>
-                    <TouchableOpacity style={styles.cicle} onPress={() => { }}>
+                    <TouchableOpacity style={styles.cicle2} onPress={() => {this.props.navigation.goBack() }}>
                         {/* <Icon name={"chevron-left"}  size={10} color="white" /> */}
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.cicle, { marginLeft: 10 }]} onPress={() => { }}>
@@ -893,12 +893,22 @@ const styles = {
     },
     cicle: {
         borderWidth: 3,
-        borderColor: '#C8C8C8',
+        borderColor: '#A0A0A0',
         alignItems: 'center',
         justifyContent: 'center',
         width: 30,
         height: 30,
-        backgroundColor: '#D8D8D8',
+        backgroundColor: '#A9A9A9',
+        borderRadius: 100,
+    },
+    cicle2: {
+        borderWidth: 3,
+        borderColor: '#DCDCDC',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 30,
+        height: 30,
+        backgroundColor: '#E8E8E8',
         borderRadius: 100,
     },
     button: {

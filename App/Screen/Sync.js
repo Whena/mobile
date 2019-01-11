@@ -23,12 +23,14 @@ import CategoryAction from '../Redux/CategoryRedux';
 import FindingAction from '../Redux/FindingRedux';
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
+import { dirPhotoKategori } from '../Lib/dirStorage';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
+import RNFetchBlob from 'rn-fetch-blob'
 
 import TaskServices from '../Database/TaskServices'
 // import { isNull } from 'util';
@@ -191,13 +193,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_REGION', item);
             });
 
-            this._postMobileSync("region");
+            // this._postMobileSync("region");
         } else {
             this.setState({ progressRegion: 1 })
             this.setState({ valueRegionDownload: 0 });
             this.setState({ totalRegionDownload: 0 });
 
-            this._postMobileSync("region");
+            // this._postMobileSync("region");
         }
 
         if (data.ubah.length > 0) {
@@ -232,13 +234,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_EST', item);
             })
 
-            this._postMobileSync("est");
+            // this._postMobileSync("est");
         } else {
             this.setState({ progressEst: 1 })
             this.setState({ valueEstDownload: 0 });
             this.setState({ totalRegionDownload: 0 });
 
-            this._postMobileSync("est");
+            // this._postMobileSync("est");
         }
         // }
     }
@@ -259,7 +261,7 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_LAND_USE', item);
             })
 
-            this._postMobileSync("landUse");
+            // this._postMobileSync("landUse");
         } else {
             this.setState({ progressLandUse: 1 })
             this.setState({ valueLandUseDownload: 0 });
@@ -287,13 +289,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_COMP', item);
             })
 
-            this._postMobileSync("comp");
+            // this._postMobileSync("comp");
         } else {
             this.setState({ progressComp: 1 })
             this.setState({ valueCompDownload: 0 });
             this.setState({ totalCompDownload: 0 });
 
-            this._postMobileSync("comp");
+            // this._postMobileSync("comp");
         }
         // }
     }
@@ -314,16 +316,14 @@ class SyncScreen extends React.Component {
                 // this.setState({ downloadApa: `TM_CONTENT ${item.CONTENT_CODE}` });
             });
 
-            this._postMobileSync("content");
+            // this._postMobileSync("content");
         } else {
             this.setState({ progressContent: 1 })
             this.setState({ valueContentDownload: 0 });
             this.setState({ totalContentDownload: 0 });
 
-            this._postMobileSync("content");
+            // this._postMobileSync("content");
         }
-        // this.setState({fetchLocation: false})
-        // alert('selesai')
     }
 
     _crudTM_ContentLabel(data) {
@@ -341,13 +341,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_CONTENT_LABEL', item);
             });
 
-            this._postMobileSync("content-label");
+            // this._postMobileSync("content-label");
         } else {
             this.setState({ progressContentLabel: 1 })
             this.setState({ valueContentLabelDownload: 0 });
             this.setState({ totalContentLabelDownload: 0 });
 
-            this._postMobileSync("content-label");
+            // this._postMobileSync("content-label");
         }
     }
 
@@ -366,13 +366,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_KRITERIA', item);
             });
 
-            this._postMobileSync("kriteria");
+            // this._postMobileSync("kriteria");
         } else {
             this.setState({ progressKriteria: 1 })
             this.setState({ valueKriteriaDownload: 0 });
             this.setState({ totalKriteriaDownload: 0 });
 
-            this._postMobileSync("kriteria");
+            // this._postMobileSync("kriteria");
         }
     }
 
@@ -391,13 +391,13 @@ class SyncScreen extends React.Component {
                 TaskServices.saveData('TM_KRITERIA', item);
             });
 
-            this._postMobileSync("finding");
+            // this._postMobileSync("finding");
         } else {
             this.setState({ progressFinding: 1 })
             this.setState({ valueFindingDownload: 0 });
             this.setState({ totalFindingDownload: 0 });
 
-            this._postMobileSync("finding");
+            // this._postMobileSync("finding");
         }
     }
 
@@ -414,15 +414,14 @@ class SyncScreen extends React.Component {
 
             data.map(item => {
                 TaskServices.saveData('TR_CATEGORY', item);
-            });
-
-            this._postMobileSync("category");
+                this.download(item);
+            })
         } else {
             this.setState({ progressCategory: 1 })
             this.setState({ valueCategoryDownload: 0 });
             this.setState({ totalCategoryDownload: 0 });
 
-            this._postMobileSync("category");
+            // this._postMobileSync("category");
         }
     }
 
@@ -512,7 +511,7 @@ class SyncScreen extends React.Component {
         this.props.kriteriaRequest();
         this.props.categoryRequest();
         this.props.contactRequest();
-        // this.props.findingRequest();
+        this.props.findingRequest();
 
     }
 
@@ -545,10 +544,10 @@ class SyncScreen extends React.Component {
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
+            this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
-            this.setState({ downloadRegion: true })
         }
 
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
@@ -583,38 +582,43 @@ class SyncScreen extends React.Component {
             }
         }
 
-        // console.log("Fetching Content Label : " + newProps.contentLabel.fetchingContentLabel);
-
         if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
             let dataJSON = newProps.contentLabel.contentLabel;
+            this.setState({ downloadContentLabel: true });
             if (dataJSON !== null) {
                 this._crudTM_ContentLabel(dataJSON);
             }
-            this.setState({ downloadContentLabel: true });
         }
 
         if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
             let dataJSON = newProps.kriteria.kriteria;
+            this.setState({ downloadKriteria: true });
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
             }
-            this.setState({ downloadKriteria: true });
         }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
             let dataJSON = newProps.category.category;
+            this.setState({ downloadCategory: true });
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
-            this.setState({ downloadCategory: true });
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
             let dataJSON = newProps.contact.contact;
+            this.setState({ downloadContact: true });
             if (dataJSON !== null) {
                 this._crudTM_Contact(dataJSON);
             }
-            this.setState({ downloadContact: true });
+        }
+
+        if(this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst 
+            && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
+            && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact){
+
+                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
         }
 
         // if (newProps.finding.fetchingFinding !== null && !newProps.kriteria.fetchingFinding && !this.state.downloadFinding) {
@@ -624,12 +628,27 @@ class SyncScreen extends React.Component {
         //         this._crudTM_Finding(dataJSON);
         //     }
         // }
+    }
 
-        if(this.setState.downloadBlok && this.setState.downloadAfd && this.setState.downloadRegion && this.setState.downloadEst 
-            && this.setState.downloadLandUse && this.setState.downloadComp && this.setState.downloadContent && this.setState.downloadContentLabel
-            && this.setState.downloadKriteria && this.setState.downloadCategory && this.setState.downloadContact){
-                RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+    download(data){
+        console.log(data)
+        var date      = new Date();
+        var url       = data.ICON_URL;
+        const { config, fs } = RNFetchBlob
+        // let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
+        // alert(PictureDir)
+        let options = {
+          fileCache: true,
+          addAndroidDownloads : {
+            useDownloadManager : true,
+            notification : true,
+            path:  `${dirPhotoKategori}/${data.ICON}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+            description : 'Image'
+          }
         }
+        config(options).fetch('GET', url).then((res) => {
+        //   alert("Success Downloaded " + res);
+        });
     }
 
     render() {

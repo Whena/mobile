@@ -89,16 +89,15 @@ export async function getPermission(){
 			  'message': 'ReactNativeCode App needs access to your personal data. '
 			}
 		);
-		const storageWrite =  await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE ,
-			{
-			  'title': 'ReactNativeCode wants to WRITE_EXTERNAL_STORAGE',
-			  'message': 'ReactNativeCode App needs access to your personal data. '
-			}
-		);
+		// const storageWrite =  await PermissionsAndroid.request(
+		// 	PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE ,
+		// 	{
+		// 	  'title': 'ReactNativeCode wants to WRITE_EXTERNAL_STORAGE',
+		// 	  'message': 'ReactNativeCode App needs access to your personal data. '
+		// 	}
+		// );
 		if(phone === PermissionsAndroid.RESULTS.GRANTED && camera === PermissionsAndroid.RESULTS.GRANTED && 
-			storage === PermissionsAndroid.RESULTS.GRANTED && location === PermissionsAndroid.RESULTS.GRANTED &&
-			storageWrite == PermissionsAndroid.RESULTS.GRANTED){
+			storage === PermissionsAndroid.RESULTS.GRANTED && location === PermissionsAndroid.RESULTS.GRANTED){
 			return true;
 		}
 	}catch(e){

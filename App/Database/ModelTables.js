@@ -10,6 +10,7 @@ const TR_LOGIN = {
         USERNAME: 'string',
         USER_AUTH_CODE: 'string',
         USER_ROLE: 'string',
+        STATUS:'string'
     }
 }
 
@@ -171,11 +172,12 @@ const TM_BLOCK = {
 
 const TR_CATEGORY = {
     name: 'TR_CATEGORY',
-    primaryKey: '_id',
+    primaryKey: 'CATEGORY_CODE',
     properties: {
-        _id: 'string',
+        CATEGORY_CODE: 'string',
         CATEGORY_NAME: 'string',
-        ICON: 'string'
+        ICON: 'string',
+        ICON_URL: 'string'
     }
 }
 
@@ -201,6 +203,7 @@ const TR_FINDING = {
         WERKS: 'string',
         AFD_CODE: 'string',
         BLOCK_CODE: 'string',
+        BLOCK_FULL_NAME: 'string',
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
         FINDING_PRIORITY: 'string',
@@ -208,8 +211,10 @@ const TR_FINDING = {
         ASSIGN_TO: 'string',
         PROGRESS: 'string',
         LAT_FINDING: 'string',
-        LONG_FINDING: 'string',
-        REFFERENCE_INS_CODE: 'string'
+        LON_FINDING: 'string',
+        REFFERENCE_INS_CODE: 'string',
+        INSERT_TIME: 'string',
+        STATUS: 'string'
     }
 }
 

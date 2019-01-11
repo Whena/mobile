@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import TaskServices from '../../Database/TaskServices';
 
 const API = 'https://swapi.co/api';
 const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
@@ -67,20 +68,23 @@ class AutocompleteExample extends Component {
     }
     this.state.person.push(dssa);
 
-    // console.log(JSON.stringify(list));
-    // this.setState({test:list})
-    console.log(JSON.stringify(this.state.person));
+    const { person } = list;
+    this.setState({ person });
+    this.setState({test:list})
+    console.log(JSON.stringify(this.state.person))
 
-    // const { person } = list;
-    // this.setState({ person });
-    // this.setState({test:list})
-    // console.log(JSON.stringify(this.state.person))
+    fetch(`${API}/films/`).then(res => res.json()).then((json) => {
+      const { results: films } = json;
+      console.log(films)
+      this.setState({ films });
+    });
+  }
 
-    // fetch(`${API}/films/`).then(res => res.json()).then((json) => {
-    //   const { results: films } = json;
-    //   console.log(films)
-    //   this.setState({ films });
-    // });
+  search(param){
+    if (param === '') {
+      return [];
+    }
+    let data = TaskServices.findBy('TM_BLOCK')
   }
 
   findPerson(query){
@@ -107,11 +111,8 @@ class AutocompleteExample extends Component {
 
   render() {
     const { query } = this.state;
-    // const films = this.findFilm(query);
-    // console.log('films')
-    // console.log(films)
-    const person = this.findPerson(query);
-    // console.log(person)
+    const films = this.findFilm(query);
+    // const person = this.findPerson(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
 
     return (
@@ -120,26 +121,26 @@ class AutocompleteExample extends Component {
           autoCapitalize="none"
           autoCorrect={false}
           containerStyle={styles.autocompleteContainer}
-        //   data={films.length === 1 && comp(query, films[0].title) ? [] : films}
+          data={films.length === 1 && comp(query, films[0].title) ? [] : films}
         
-          data={person.length === 1 && comp(query, person[0].nama) ? [] : person}
+          // data={person.length === 1 && comp(query, person[0].nama) ? [] : person}
           defaultValue={query}
           onChangeText={text => this.setState({ query: text })}
           placeholder="Enter Star Wars film title"
-        //   renderItem={({ title, release_date }) => (
-        //     <TouchableOpacity onPress={() => this.setState({ query: title })}>
-        //       <Text style={styles.itemText}>
-        //         {title} ({release_date.split('-')[0]})
-        //       </Text>
-        //     </TouchableOpacity>
-        //   )}
-        renderItem={({ nama, alamat }) => (
-            <TouchableOpacity onPress={() => {this.setState({ query: nama }); alert('sadjnsakdas')}}>
+          renderItem={({ title, release_date }) => (
+            <TouchableOpacity onPress={() => this.setState({ query: title })}>
               <Text style={styles.itemText}>
-                {nama}. {alamat} 
+                {title} ({release_date.split('-')[0]})
               </Text>
             </TouchableOpacity>
           )}
+        // renderItem={({ nama, alamat }) => (
+        //     <TouchableOpacity onPress={() => {this.setState({ query: nama }); alert('sadjnsakdas')}}>
+        //       <Text style={styles.itemText}>
+        //         {nama}. {alamat} 
+        //       </Text>
+        //     </TouchableOpacity>
+        //   )}
         />
         <View style={styles.descriptionContainer}>
           {/* {films.length > 0 ? (
@@ -150,15 +151,8 @@ class AutocompleteExample extends Component {
             </Text>
           )} */}
 
-          {person.length > 0 && (AutocompleteExample.person(person[0]))}
-
-          {/* {person.length > 0 ? (
-            AutocompleteExample.person(person[0])
-          ) : (
-            <Text style={styles.infoText}>
-              Enter Title of a Star Wars movie
-            </Text>
-          )} */}
+          {/* {person.length > 0 && (AutocompleteExample.person(person[0]))} */}
+          {films.length > 0 && (AutocompleteExample.person(films[0]))}
         </View>
       </View>
     );

@@ -50,8 +50,6 @@ class LoginScreen extends React.Component {
     }
 
     insertUser(user) {
-        //AsyncStorage.setItem("token", user.ACCESS_TOKEN);
-
         var data = {
             NIK: user.NIK,
             ACCESS_TOKEN: user.ACCESS_TOKEN,
@@ -60,11 +58,19 @@ class LoginScreen extends React.Component {
             REFFERENCE_ROLE: user.REFFERENCE_ROLE,
             USERNAME: user.USERNAME,
             USER_AUTH_CODE: user.USER_AUTH_CODE,
-            USER_ROLE: user.USER_ROLE
+            USER_ROLE: user.USER_ROLE,
+            STATUS: 'LOGIN'
         };
-
-        TaskServices.saveData('TR_LOGIN', data);
+        TaskServices.saveData('TR_LOGIN',data);
     }
+
+    componentDidMount(){
+        // let data = TaskServices.getAllData('TR_LOGIN')[0]
+        // if(data.length > 0){
+
+        // }
+    }
+
 
     componentWillReceiveProps(newProps) {
         if (!isNil(newProps.auth)) {
@@ -72,10 +78,6 @@ class LoginScreen extends React.Component {
         }
         if (!isNil(newProps.auth.user)) {
             this.insertUser(newProps.auth.user);
-            // this.props.categoryRequest();
-            // this.props.contactRequest();
-            // this.props.regionRequest();
-            // this.props.blockRequest();
             this.navigateScreen('MainMenu');
         }
     }

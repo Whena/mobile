@@ -22,8 +22,7 @@ export default class HistoryFinding extends Component {
   )
 
   _initData() {
-    //var data = TaskServices.findBy('TR_FINDING', 'PROGRESS', 100)
-    var data = TaskServices.getAllData('TR_FINDING')
+    var data = TaskServices.getAllData('TR_FINDING');
     this.setState({ data })
   }
 
@@ -31,12 +30,31 @@ export default class HistoryFinding extends Component {
     this.willFocus.remove()
   }
 
+  getCategoryName = (categoryCode) =>{
+    try {
+        let data = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', categoryCode);
+        return data.CATEGORY_NAME;            
+    } catch (error) {
+        return ''
+    }
+  }
 
+  getColor(param){
+    switch(param){
+      case 'SELESAI':
+        return Colors.brand;
+      case 'SEDANG DIPROSES':
+        return '#feb236';
+      case 'BARU':
+        return 'red';
+      default:
+        return '#ff7b25';
+    }
+  }
 
   _renderItem = item => {
     const nav = this.props.navigation
     const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
-    const category = TaskServices.findBy2('TR_CATEGORY', '_id', item.FINDING_CATEGORY)
 
     return (
       <TouchableOpacity
@@ -45,10 +63,10 @@ export default class HistoryFinding extends Component {
       >
         <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }} />
         <View style={styles.sectionDesc} >
-          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_CODE}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_FULL_NAME}</Text></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>{item.INSERT_TIME}</Text></Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>{category.CATEGORY_NAME}</Text ></Text>
-          <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: 'green' }}>Selesai</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>{this.getCategoryName(item.FINDING_CATEGORY)}</Text ></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: this.getColor(item.STATUS) }}>{item.STATUS}</Text ></Text>
         </View>
       </TouchableOpacity>
     );

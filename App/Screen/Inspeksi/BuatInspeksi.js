@@ -103,8 +103,8 @@ class BuatInspeksiRedesign extends Component {
             showBaris: true,
             query: '',
             person:[],
-            werksAfdCode: '',
             werksAfdBlokCode: '',
+            afdCode: '',
             clickLOV: false
         };
     }
@@ -132,11 +132,13 @@ class BuatInspeksiRedesign extends Component {
         let data = TaskService.getAllData('TM_BLOCK');
         for(var i=0; i<data.length; i++){
             let statusBlok= this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
-            let estateName = this.getEstateName(data[i].COMP_CODE);
+            let estateName = this.getEstateName(data[i].WERKS);
             this.state.person.push({
                 blokCode: data[i].BLOCK_CODE, 
                 blokName: data[i].BLOCK_NAME, 
-                werksAfdCode: data[i].WERKS_AFD_CODE, 
+                afdCode: data[i].AFD_CODE,
+                werks: data[i].WERKS,
+                estateName: estateName, 
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
                 statusBlok: statusBlok,
                 compCode: data[i].COMP_CODE,
@@ -224,7 +226,7 @@ class BuatInspeksiRedesign extends Component {
         var NIK = dataLogin[0].NIK;
         var DATE = getTodayDate('YYYYMMDD');
         var WERKS = TaskService.getWerks();
-        var AFD = this.getAfdeling(this.state.werksAfdCode);
+        var AFD = this.state.afdCode;
         var BLOK = this.state.blok;
         var UNIQ_CODE = getUUID();
         UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
@@ -270,14 +272,23 @@ class BuatInspeksiRedesign extends Component {
         });
     }
 
-    getEstateName(compCode){
+    getEstateName(werks){
         try {
-            let data = TaskService.findBy2('TM_EST', 'COMP_CODE', compCode);
+            let data = TaskService.findBy2('TM_EST', 'WERKS', werks);
             return data.EST_NAME;
         } catch (error) {
             return '';
         }
         
+    }
+
+    potong(param){
+        let brs = param;
+        if(brs.charAt(0) == '0'){
+            brs = brs.substring(1);
+            
+        }
+        this.setState({ baris: brs });
     }
 
     render() {        
@@ -339,18 +350,18 @@ class BuatInspeksiRedesign extends Component {
                                     this.setState({ query: text }); 
                                     this.hideAndShowBaris(text)}
                                 }
-                                renderItem={({ blokCode, blokName, werksAfdCode, werksAfdBlokCode, statusBlok, allShow, compCode}) => (
+                                renderItem={({ blokCode, blokName, estateName, werksAfdBlokCode, statusBlok, allShow, werks, afdCode}) => (
                                     <TouchableOpacity onPress={() => {
                                         this.setState({ 
                                             blok : blokCode, 
-                                            query: allShow,//`${blokName}/${statusBlok}/${this.getEstateName(compCode)}`, 
-                                            werksAfdCode: werksAfdCode, 
+                                            query: allShow, 
+                                            afdCode: afdCode,
                                             werksAfdBlokCode:werksAfdBlokCode, 
                                             clickLOV: true,
                                             showBaris: true }
                                         )}}>
                                         <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(compCode)}</Text>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{estateName}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
@@ -365,7 +376,7 @@ class BuatInspeksiRedesign extends Component {
                                 keyboardType={'numeric'}
                                 maxLength={3}
                                 value={this.state.baris}
-                                onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.setState({ baris: text }) }} />
+                                onChangeText={(text) => { text = text.replace(/[^0-9]/g, ''); this.potong(text);  }} />
                         </View>}
                     </Card>
                 </View>
