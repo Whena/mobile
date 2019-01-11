@@ -405,11 +405,11 @@ class HistoryInspeksiDetail extends React.Component {
                         <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.data.AFD_CODE} - {this.state.blockName}/{this.state.blockCode}</Text>
                         {/* <View style={styles.lineDivider} /> */}
                         <View style={styles.sectionRow}>
-                            <View >
+                            <View style={{marginRight:10}} >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.jmlBaris}</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Jumlah Baris</Text>
                             </View>
-                            <View >
+                            <View style={{marginRight:10}} >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.totalWaktu} menit</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Lama Inspeksi</Text>
                             </View>

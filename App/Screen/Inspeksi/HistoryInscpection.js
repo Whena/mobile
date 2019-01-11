@@ -6,6 +6,7 @@ import Colors from '../../Constant/Colors';
 import Taskservice from '../../Database/TaskServices'
 import { NavigationActions, StackActions  } from 'react-navigation';
 import {getTodayDate} from '../../Lib/Utils'
+import TaskServices from '../../Database/TaskServices';
 var RNFS = require('react-native-fs');
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
@@ -29,6 +30,16 @@ export default class HistoryInspection extends Component {
       return <View>{arr}</View>;
     }
   }
+
+  getEstateName(werks){
+    try {
+        let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+        return data.EST_NAME;
+    } catch (error) {
+        return '';
+    }
+    
+}
 
   renderList = (data, index) => {
     let status = '', colorStatus = '';
@@ -58,7 +69,7 @@ export default class HistoryInspection extends Component {
                 <Image style={{ alignItems: 'stretch', width: 100, borderRadius:10 }} source={{uri: path}}></Image>
               </View>
               <View style={styles.sectionDesc} >
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{Taskservice.getEstateName()}</Text>
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{this.getEstateName(dataBlock.WERKS)}</Text>
                 <Text style={{ fontSize: 12 }}>{dataBlock.BLOCK_NAME}/{data.BLOCK_CODE.toLocaleUpperCase()}</Text>
                 <Text style={{ fontSize: 12 }}>{data.INSPECTION_DATE}</Text>
                 <Text style={{ fontSize: 12, color: colorStatus }}>{status}</Text>

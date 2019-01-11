@@ -13,21 +13,27 @@ import R, { isEmpty, isNil } from 'ramda'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import IconLoc from 'react-native-vector-icons/FontAwesome5';
 import RadioGroup from 'react-native-custom-radio-group'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import moment from 'moment'
 import Contact from '../../Component/Contact'
 import SlidingUpPanel from 'rn-sliding-up-panel'
 import FastImage from 'react-native-fast-image'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import TaskServices from '../../Database/TaskServices'
-import { getUUID } from '../../Lib/Utils'
+import { getUUID, getTodayDate } from '../../Lib/Utils'
 import random from 'random-string'
 import IIcon from 'react-native-vector-icons/Ionicons'
 import Carousel from 'react-native-looped-carousel'
 import { dirPhotoTemuan } from '../../Lib/dirStorage'
 import Autocomplete from 'react-native-autocomplete-input';
 import layer from '../../Data/kalimantantimur.json'
+import SearchContact from './Component/SearchContact'
+import Geojson from 'react-native-geojson';
+import { dirPhotoKategori } from '../../Lib/dirStorage';
+// var RNFS = require('react-native-fs');
+// const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 
 const radioGroupList = [{
@@ -41,12 +47,28 @@ const radioGroupList = [{
     value: 'LOW'
 }];
 
+const alcatraz = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [-6.2292229, 106.8253967],
+          latitudeDelta:0.015,
+          longitudeDelta:0.0121 //[-122.42305755615234, 37.82687023785448],
+        }
+      }
+    ]
+};
+
 class FormStep2 extends Component {
     
     constructor(props) {
         super(props);
         
-        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         
         let params = props.navigation.state.params;
         let foto = R.clone(params.image);
@@ -62,8 +84,11 @@ class FormStep2 extends Component {
             tugasKepada: "",
             assignto: "",
             category: "",
-            categoryid: "",
+            categoryCode: "",
             blok: "",
+            blockCode: '',
+            werks: '',
+            afd_code: '',
             contacts: TaskServices.getAllData('TR_CONTACT'),
             categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
@@ -106,10 +131,12 @@ class FormStep2 extends Component {
         let data = TaskServices.getAllData('TM_BLOCK');
         for(var i=0; i<data.length; i++){
             let statusBlok= this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
-            let estateName = this.getEstateName(data[i].COMP_CODE);
+            let estateName = this.getEstateName(data[i].WERKS);
             this.state.person.push({
                 blokCode: data[i].BLOCK_CODE, 
                 blokName: data[i].BLOCK_NAME, 
+                afdCode: data[i].AFD_CODE,
+                werks: data[i].WERKS,
                 werksAfdCode: data[i].WERKS_AFD_CODE, 
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
                 statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
@@ -118,12 +145,12 @@ class FormStep2 extends Component {
             });
         }        
         this.getLocation();
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         // this.handleAndroidBackButton(this.exitAlert);
     }
 
     componentWillUnmount(){
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        // BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     handleBackButtonClick() { 
@@ -147,9 +174,9 @@ class FormStep2 extends Component {
         }
     }
 
-    getEstateName(compCode){
+    getEstateName(werks){
         try {            
-            let data = TaskServices.findBy2('TM_EST', 'COMP_CODE', compCode);
+            let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
             return data.EST_NAME;
         } catch (error) {
             return '';
@@ -200,29 +227,29 @@ class FormStep2 extends Component {
     validation(){
         let isSameUser = this.state.assignto == this.state.user.USER_AUTH_CODE ? true : false;
         if(isEmpty(this.state.keterangan)){
-            alert(
+            Alert.alert(
                 'Peringatan',
                 "Keterangan harus diisi"
             );
         }else if(isEmpty(this.state.blok)){
-            alert(
+            Alert.alert(
                 'Peringatan',
-                "Blok harus diisi"
+                "Lokasi Blok harus diisi"
             );
         }else if(isEmpty(this.state.category)){
-            alert(
+            Alert.alert(
                 'Peringatan',
                 "Kategori harus diisi"
             );
         }else if(isEmpty(this.state.priority)){
-            alert(
+            Alert.alert(
                 'Peringatan',
                 "Prioritas harus diisi"
             );
-        }else if(isSameUser){
-            alert(
+        }else if(isSameUser && isEmpty(this.state.batasWaktu)){
+            Alert.alert(
                 'Peringatan',
-                "Semua isian dengan tanda * harus diisi"
+                "Batas waktu harus diisi"
             );
         }else{
             this.saveData()
@@ -232,18 +259,21 @@ class FormStep2 extends Component {
     saveData(){
         var data = {
             FINDING_CODE: this.state.TRANS_CODE,
-            WERKS: "",
-            AFD_CODE: "",
-            BLOCK_CODE: this.state.blok,
-            FINDING_CATEGORY: this.state.categoryid,
+            WERKS: this.state.werks,
+            AFD_CODE: this.state.afdCode,
+            BLOCK_CODE: this.state.blockCode,
+            BLOCK_FULL_NAME: this.state.query,
+            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            FINDING_CATEGORY: this.state.categoryCode,
             FINDING_DESC: this.state.keterangan,
             FINDING_PRIORITY: this.state.priority,
             DUE_DATE: this.state.batasWaktu,
             ASSIGN_TO: this.state.assignto,
-            PROGRESS: 0,
-            LAT_FINDING: this.state.latitude,
-            LONG_FINDING: this.state.longitude,
-            REFFERENCE_INS_CODE: ""
+            PROGRESS: '0',
+            LAT_FINDING: this.state.latitude.toString(),
+            LON_FINDING: this.state.longitude.toString(),
+            REFFERENCE_INS_CODE: "",
+            STATUS: 'BARU'
         }
         TaskServices.saveData('TR_FINDING', data);
 
@@ -253,7 +283,7 @@ class FormStep2 extends Component {
                 TR_CODE: this.state.TRANS_CODE,
                 IMAGE_NAME: image,
                 IMAGE_PATH: dirPhotoTemuan + "/" + image,
-                STATUS_IMAGE: 'N',
+                STATUS_IMAGE: 'SEBELUM',
                 STATUS_SYNC: '',
                 SYNC_TIME: '',
                 INSERT_USER: this.state.user.USER_AUTH_CODE,
@@ -267,97 +297,6 @@ class FormStep2 extends Component {
             TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
         });
         this.props.navigation.goBack(null);
-    }
-
-    // _onBtnSaveClicked = () => {
-    //     var valid = true;
-    //     if (
-    //         isEmpty(this.state.keterangan) ||
-    //         isEmpty(this.state.blok) ||
-    //         isEmpty(this.state.category) ||
-    //         isEmpty(this.state.priority) ||
-    //         (isEmpty(this.tugasKepada) && isEmpty(this.batasWaktu))) {
-    //         valid = false;
-    //     }
-
-    //     if (!valid) {
-    //         Alert.alert(
-    //             'Peringatan',
-    //             "Semua isian dengan tanda * harus diisi"
-    //         );
-    //     } else {
-    //         var data = {
-    //             FINDING_CODE: this.state.TRANS_CODE,
-    //             WERKS: "",
-    //             AFD_CODE: "",
-    //             BLOCK_CODE: this.state.blok,
-    //             FINDING_CATEGORY: this.state.categoryid,
-    //             FINDING_DESC: this.state.keterangan,
-    //             FINDING_PRIORITY: this.state.priority,
-    //             DUE_DATE: this.state.batasWaktu,
-    //             ASSIGN_TO: this.state.assignto,
-    //             PROGRESS: 0,
-    //             LAT_FINDING: this.state.latitude,
-    //             LONG_FINDING: this.state.longitude,
-    //             REFFERENCE_INS_CODE: "",
-    //             INSERT_USER: this.state.user.USER_AUTH_CODE,
-    //             INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-    //             UPDATE_USER: "",
-    //             UPDATE_TIME: "",
-    //             DELETE_USER: "",
-    //             DELETE_TIME: ""
-    //         }
-
-    //         TaskServices.saveData('TR_FINDING', data);
-
-    //         this.state.foto.map((image, i) => {
-    //             var imagetr = {
-    //                 IMAGE_CODE: image.replace(".jpg", ""),
-    //                 TR_CODE: this.state.TRANS_CODE,
-    //                 IMAGE_NAME: image,
-    //                 IMAGE_PATH: dirPhotoTemuan + "/" + image,
-    //                 STATUS_IMAGE: 'SEBELUM',
-    //                 STATUS_SYNG: '',
-    //                 SYNG_TIME: '',
-    //                 INSERT_USER: this.state.user.USER_AUTH_CODE,
-    //                 INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
-    //                 UPDATE_USER: '',
-    //                 UPDATE_TIME: '',
-    //                 DELETE_USER: '',
-    //                 DELETE_TIME: ''
-    //             }
-
-    //             TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
-    //         })
-
-    //         this.props.navigation.goBack(null);
-    //     }
-    // }
-
-    renderContact = (user) =>{
-        return (
-            <View style={{ flex: 1 }}>
-				<TouchableOpacity style={{ flex: 1, flexDirection: 'row', marginBottom: 16 }}
-					onPress={()=>{this._onContactSelected(user)}}>
-					<View style={{ flex: 1 }} >
-						<Text style={{ fontSize: 14, color: 'black' }}>{user.FULLNAME}</Text>
-						<Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>{user.USER_ROLE}</Text>
-					</View>
-				</TouchableOpacity>
-			</View>
-        )
-    }
-
-    _onContactSelected = user => {
-        this.setState({
-            isContactVisible: false,
-            tugasKepada: user.FULLNAME,
-            assignto: user.EMPLOYEE_NIK
-        })
-    }
-
-    _renderContact = user => {
-        return <Contact onSelect={this._onContactSelected} user={user} />;
     }
 
     _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -609,16 +548,19 @@ class FormStep2 extends Component {
                                 onChangeText={text => {
                                     this.setState({ query: text })}
                                 }
-                                renderItem={({ blokCode, blokName, statusBlok, allShow, compCode}) => (
+                                renderItem={({ blokCode, blokName, statusBlok, allShow, werks, afdCode}) => (
                                     <TouchableOpacity onPress={() => {
                                         // alert(allShow)
                                         this.setState({ 
+                                            werks: werks,
+                                            afdCode: afdCode,
                                             blok : allShow,//blokCode, 
+                                            blockCode: blokCode,
                                             query: allShow
                                         }
                                         )}}>
                                         <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(compCode)}</Text>
+                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(werks)}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
@@ -639,23 +581,51 @@ class FormStep2 extends Component {
                         <View style={style.line} />
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
+                        <View style={style.containerMap}> 
+                            <MapView
+                                style={style.map}>
+                                <Geojson geojson={alcatraz} />
+                                <Marker
+                                    coordinate={{
+                                    latitude: this.state.latitude,
+                                    longitude: this.state.longitude,
+                                    }}
+                                    centerOffset={{ x: -42, y: -60 }}
+                                    anchor={{ x: 0.84, y: 1 }}
+                                >
+                                </Marker>                      
+                            </MapView>  
+                            <IconLoc
+                                onPress={()=>{this.getLocation()}}
+                                name="location-arrow"
+                                size={24}
+                                style={{ alignSelf: 'flex-end', marginBottom:325, marginRight: 10}}/>  
+                        </View>
+                        
+                        {/* <View>   
+                            <IconLoc
+                                onPress={()=>{this.getLocation()}}
+                                name="location-arrow"
+                                size={24}
+                                style={{ alignSelf: 'flex-end', marginTop: 30, marginRight: 10}}/>  
 
-                        <MapView
-                            style={{ height: 300, borderRadius: 10 }}
-                            provider={PROVIDER_GOOGLE}
-                            region={{
-                                latitude: this.state.regionLat,
-                                longitude: this.state.regionLon,
-                                latitudeDelta: 3,
-                                longitudeDelta: 3
-                            }}
-                        >
+                            <MapView
+                                style={{ height: 300, borderRadius: 10 }}
+                                provider={PROVIDER_GOOGLE}
+                                region={{
+                                    latitude: this.state.regionLat,
+                                    longitude: this.state.regionLon,
+                                    latitudeDelta: 3,
+                                    longitudeDelta: 3
+                                }}
+                            >
 
-                            {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
-                                coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
-                                title={"Your Location"}
-                            />}
-                        </MapView>
+                                {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
+                                    coordinate={{ "latitude": this.state.latitude, "longitude": this.state.longitude }}
+                                    title={"Your Location"}
+                                />}
+                            </MapView>
+                        </View>                         */}
                     </View>
                 </SlidingUpPanel>
 
@@ -674,13 +644,11 @@ class FormStep2 extends Component {
                         </View>
 
                         <Text style={{ marginBottom: 20, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Contact</Text>
-                        <ScrollView
-                            onTouchEnd={() => this.setState({ allowDragging: true })}
-                            onTouchCancel={() => this.setState({ allowDragging: true })}
-                            onTouchStart={() => this.setState({ allowDragging: false })}>
-                            {/* {this.state.contacts.map(user => {this.renderContact(user)})} */}
-                            {this.state.contacts.map(this._renderContact)}
-                        </ScrollView>
+                        <SearchContact onSelect={user=>{this.setState({
+                            isContactVisible: false, 
+                            tugasKepada: user.user.fullName, 
+                            assignto: user.user.userAuth
+                        })}}/>
                     </View>
                 </SlidingUpPanel>
 
@@ -712,16 +680,19 @@ class FormStep2 extends Component {
                                             this.setState({
                                                 isCategoryVisible: false,
                                                 category: item.CATEGORY_NAME,
-                                                categoryid: item._id
+                                                categoryCode: item.CATEGORY_CODE
                                             })
                                         }}
                                         style={style.itemCategory}>
                                         <FastImage style={{ width: 40, height: 40 }}
                                             resizeMode={FastImage.resizeMode.contain}
                                             source={{
-                                                uri: "https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
+                                                uri: `${dirPhotoKategori}/${item.ICON}`,//"https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
                                                 priority: FastImage.priority.normal,
                                             }} />
+                                        {/* <Image 
+                                            source={{ uri: `file:///storage/emulated/0/MobileInspection/${item.ICON}` }}
+                                            style={{ width: 40, height: 40 }} /> */}
                                         <Text style={style.textCategory}>{item.CATEGORY_NAME}</Text>
                                     </TouchableOpacity>
                                 );
@@ -830,5 +801,18 @@ const style = {
     mandatory: {
         fontSize: 12,
         color: 'red',
-    }
+    },
+    containerMap: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    map: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+    },
 };

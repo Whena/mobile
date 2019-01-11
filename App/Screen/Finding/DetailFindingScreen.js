@@ -31,8 +31,8 @@ export default class DetailFindingScreen extends Component {
         var ID = this.props.navigation.state.params.ID
         var user = TaskServices.getAllData('TR_LOGIN')[0]
         var data = TaskServices.findBy2('TR_FINDING', 'FINDING_CODE', ID)
-        var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`)
-        var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`)
+        var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`);
+        var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`);
 
         this.state = {
             user,
@@ -41,7 +41,7 @@ export default class DetailFindingScreen extends Component {
             image: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
             bukti: bukti.length > 0 ? "file://" + bukti[0].IMAGE_PATH : "",
             data,
-            progress: data.PROGRESS,
+            progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
             updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE
         }
@@ -74,6 +74,19 @@ export default class DetailFindingScreen extends Component {
         return "Sedang di proses"
     }
 
+    getColor(param){
+        switch(param){
+          case 'SELESAI':
+            return 'rgba(35, 144, 35, 0.7)';
+          case 'SEDANG DIPROSES':
+            return 'rgba(254, 178, 54, 0.7)';
+          case 'BARU':
+            return 'rgba(255, 77, 77, 0.7)';
+          default:
+            return '#ff7b25';
+        }
+      }
+
     _renderCarousel = item => {
         return (
             <View style={{ height: 200, flex: 1 }}>
@@ -84,10 +97,10 @@ export default class DetailFindingScreen extends Component {
                     }} />
 
                 <View style={{
-                    backgroundColor: 'rgba(244, 131, 65, 0.7)', width: '100%',
+                    backgroundColor: this.getColor(this.state.data.STATUS), width: '100%',
                     padding: 5, position: 'absolute', bottom: 0, justifyContent: 'center', alignItems: 'center'
                 }}>
-                    <Text style={{ fontSize: 14, color: 'white' }}>{this._getStatus()}</Text>
+                    <Text style={{ fontSize: 14, color: 'white' }}>{this.state.data.STATUS}</Text>
                 </View>
             </View>
         )
@@ -126,13 +139,7 @@ export default class DetailFindingScreen extends Component {
             PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
             LONG_FINDING: this.state.data.LONG_FINDING,
-            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,
-            INSERT_USER: this.state.data.INSERT_USER,
-            INSERT_TIME: this.state.data.INSERT_TIME,
-            UPDATE_USER: this.state.data.UPDATE_USER,
-            UPDATE_TIME: this.state.data.UPDATE_TIME,
-            DELETE_USER: this.state.data.DELETE_USER,
-            DELETE_TIME: this.state.data.DELETE_TIME
+            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE
         }
 
         TaskServices.saveData('TR_FINDING', save)
@@ -173,7 +180,6 @@ export default class DetailFindingScreen extends Component {
                 this._saveToDB();
 
             }).catch((err) => {
-                console.tron.log("Error moveFile: " + err.message)
                 this._makeAlert("Informasi", "Terjadi kesalahan, silahkan coba lagi")
             });
         } else {
@@ -184,8 +190,17 @@ export default class DetailFindingScreen extends Component {
         }
     }
 
+    getContactName = (userAuth) =>{
+        try {
+            let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
+            return data.FULLNAME;            
+        } catch (error) {
+            return ''
+        }
+      }
+
     render() {
-        const category = TaskServices.findBy2('TR_CATEGORY', '_id', this.state.data.FINDING_CATEGORY)
+        const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY)
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1, padding: 16, }}>
@@ -222,7 +237,7 @@ export default class DetailFindingScreen extends Component {
                         <Image style={{ alignItems: 'stretch', width: 28, height: 40 }}
                             source={require('../../Images/icon/ic_map_point_green.png')}></Image>
                         <View style={{ flex: 2, marginLeft: 16 }}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Gawi Inti 1-A-A01/001</Text>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{this.state.data.BLOCK_FULL_NAME}</Text>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Kategori </Text>
@@ -251,7 +266,7 @@ export default class DetailFindingScreen extends Component {
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Ditugaskan Kepada </Text>
-                                <Text style={styles.item}>: {this.state.data.ASSIGN_TO}</Text>
+                                <Text style={styles.item}>: {this.getContactName(this.state.data.ASSIGN_TO)}</Text>
                             </View>
                         </View>
                     </View>
@@ -266,15 +281,15 @@ export default class DetailFindingScreen extends Component {
                                 ref='sliderProgress'
                                 step={25}
                                 thumbTouchSize={{ width: 40, height: 40 }}
-                                disabled={this.state.PROGRESS == 100 ? true : false}
+                                disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
                                 maximumValue={100}
                                 thumbStyle={{ backgroundColor: Colors.brand }}
                                 style={{ height: 20, flex: 1 }}
                                 trackStyle={{ height: 5 }}
                                 value={this.state.progress}
                                 onSlidingComplete={(value) => {
-                                    if (parseInt(value) < this.state.data.PROGRESS) {
-                                        var progress = R.clone(this.state.data.PROGRESS)
+                                    if (parseInt(value) < parseInt(this.state.PROGRESS)) {
+                                        var progress = R.clone(parseInt(this.state.PROGRESS))
                                         this.refs['sliderProgress']._setCurrentValue(progress)
 
                                         this.setState({

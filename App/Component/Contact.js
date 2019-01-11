@@ -7,6 +7,7 @@ import FastImage from 'react-native-fast-image'
 import R from 'ramda'
 
 class Contact extends React.PureComponent {
+	
 	static propTypes = {
 		onSelect: PropTypes.func.isRequired,
 		user: PropTypes.object.isRequired

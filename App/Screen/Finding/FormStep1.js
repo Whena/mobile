@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import R from 'ramda'
 import { dirPhotoTemuan } from '../../Lib/dirStorage'
 import ImagePickerCrop from 'react-native-image-crop-picker'
@@ -22,23 +23,46 @@ const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
 
-    static navigationOptions = {
-        headerStyle: {
+    // static navigationOptions = {
+    //     headerStyle: {
+    //         backgroundColor: Colors.tintColor
+    //     },
+    //     title: 'Buat Laporan Temuan',
+    //     headerTintColor: '#fff',
+    //     headerTitleStyle: {
+    //         flex: 1,
+    //         fontSize: 18,
+    //         fontWeight: '400'
+    //     },
+    // };
+
+    static navigationOptions = ({ navigation }) => {
+        const { params = {} } = navigation.state;
+        return {
+          headerStyle: {
             backgroundColor: Colors.tintColor
-        },
-        title: 'Buat Laporan Temuan',
-        headerTintColor: '#fff',
-        headerTitleStyle: {
+          },
+          title: 'Buat Laporan Temuan',
+          headerTintColor: '#fff',
+          headerTitleStyle: {
             flex: 1,
             fontSize: 18,
             fontWeight: '400'
-        },
-    };
+          },
+          headerLeft: (
+              <TouchableOpacity onPress={() => {navigation.goBack(null)}}>
+                  <Icon2 style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={45} color={'white'} />
+              </TouchableOpacity>
+          )
+        };
+    }
 
     constructor(props) {
         super(props);
         
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        this.clearFoto = this.clearFoto.bind(this);
+
         this.state = {
             user: TaskServices.getAllData('TR_LOGIN')[0],
             photos: [],
@@ -54,19 +78,29 @@ class FormStep1 extends Component {
         }
     }
 
+    clearFoto(){
+        // if(this.state.hasPhoto){
+        //   RNFS.unlink(this.state.path);
+        //   RNFS.unlink(this.state.pathCacheInternal);
+        //   RNFS.unlink(this.state.pathCacheResize);
+        //   this.setState({ pathView: '', hasPhoto: false });
+        // }
+        this.props.navigation.goBacknull(); 
+    }
+
     componentDidMount() {
+        // console.log(this.props.navigation)
        this.getLocation();
-       this.setState({isMounted: true});
+       this.props.navigation.setParams({ clearFoto: this.clearFoto })
        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
     componentWillUnmount(){
-        this.setState({isMounted: false});
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     handleBackButtonClick() { 
-        if(isMounted){
+        // if(isMounted){
             Alert.alert(
                 'Peringatan',
                 'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
@@ -75,7 +109,8 @@ class FormStep1 extends Component {
                     { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
                 ]
             );
-        }
+        // }
+        this.props.navigation.goBack(null); 
         return true;
     }
 
@@ -144,23 +179,6 @@ class FormStep1 extends Component {
         // } else {
             let images = [];
             this.state.selectedPhotos.map((item) => {
-                // var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
-                // var path = dirPhotoTemuan + '/' + pname;
-
-                // RNFS.copyFile(item, path).then((success) => {
-                //     params.push(pname)
-
-                //     const navigation = this.props.navigation;
-                //     const resetAction = StackActions.reset({
-                //         index: 0,
-                //         actions: [NavigationActions.navigate({ routeName: 'Step2', params })],
-                //     });
-                //     navigation.dispatch(resetAction);
-                // }).catch((err) => {
-                //     console.tron.log("Error moveFile: " + err.message)
-                //     alert("Terjadi kesalahan, silahkan coba lagi" + err.message)
-                // });
-
                 let da = item.split('/')
                 let imgName = da[da.length-1];
                 images.push(imgName);
@@ -171,7 +189,7 @@ class FormStep1 extends Component {
                 });
                 navigation.dispatch(resetAction);
 
-            })
+            });
         // }
     }
 
@@ -185,19 +203,6 @@ class FormStep1 extends Component {
 
     takePicture() {
         this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh, authCode: this.state.user.USER_AUTH_CODE})
-
-        // ImagePickerCrop.openCamera({
-        //     width: 640,
-        //     height: 480,
-        //     cropping: true,
-        // }).then(image => {
-        //     console.log(image.path)
-        //     const photos = R.clone(this.state.photos)
-        //     photos.push({ uri: image.path })
-        //     this.setState({
-        //         photos,
-        //     })
-        // });
     }
 
     _onSelectedPhoto = foto => {

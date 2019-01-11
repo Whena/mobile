@@ -19,10 +19,7 @@ import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { NavigationActions, StackActions  } from 'react-navigation';
 import {isNil } from 'ramda';
-import LoginTaskService from '../Database/TaskLoginService'
-
-// var Realm = require('realm'); 
-// let realm ;
+import TaskServices from '../Database/TaskServices';
 
 class Login extends Component{
 
@@ -34,37 +31,11 @@ class Login extends Component{
             user_name:'',
             token:'',
         }
-
-        // realm = new Realm({
-        //     schema: [{name: 'trn_login', 
-        //     primaryKey:'NIK',
-        //     properties: 
-        //     {
-        //         NIK: 'string',
-        //         ACCESS_TOKEN: 'string',
-        //         JOB_CODE: 'string', 
-        //         LOCATION_CODE: 'string',
-        //         REFFERENCE_ROLE: 'string',
-        //         USERNAME: 'string', 
-        //         USER_AUTH_CODE: 'string',
-        //         USER_ROLE: 'string', 
-        //     }}]
-        // });
     }
 
     static navigationOptions = {
         header: null,        
     }
-
-    // insertUser=()=>{
-    //     realm.write(() => {    
-    //           realm.create('trn_login', {
-    //             // user_id: this.state.user_id, 
-    //             // user_name: this.state.user_name, 
-    //             token: this.state.token
-    //           });          
-    //     });     
-    //   }
 
     insertUser=(user)=>{
         var data = {
@@ -75,10 +46,17 @@ class Login extends Component{
             REFFERENCE_ROLE: user.REFFERENCE_ROLE,
             USERNAME: user.REFFERENCE_ROLE,
             USER_AUTH_CODE: user.USER_AUTH_CODE,
-            USER_ROLE: user.USER_ROLE
+            USER_ROLE: user.USER_ROLE,
+            STATUS: 'LOGIN'
         };
-        var saved = LoginTaskService.save(data);
-        console.log(saved);
+        TaskServices.saveData('TR_LOGIN',data);
+    }
+
+    componentDidMount(){
+        let data = TaskServices.getAllData('TR_LOGIN')[0]
+        if(data.length > 0){
+
+        }
     }
 
     componentWillReceiveProps(newProps) {
@@ -99,7 +77,14 @@ class Login extends Component{
             actions: [NavigationActions.navigate({ routeName: screenName })],
         });
         navigation.dispatch(resetAction);
-	}
+    }
+    
+    checkUser(username){
+        let data = TaskServices.findBy2('TR_LOGIN', 'USERNAME', username);
+        if(data.length > 0){
+
+        }
+    }
 
     onLogin(username, password) {
         Keyboard.dismiss();
