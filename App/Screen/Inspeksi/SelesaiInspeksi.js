@@ -245,7 +245,7 @@ class SelesaiInspeksi extends React.Component {
             data = {
                 idx: 6,
                 name : 'Sistem Penaburan',
-                value: `${nilaiPenabur}/${avg_penabur}`
+                value: `${nilaiPenabur}/${avg_penabur.toFixed(2)}`
             }
             listData.push(this.renderComponent(data));
         }

@@ -43,7 +43,8 @@ export default class DetailFindingScreen extends Component {
             data,
             progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
-            updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE
+            updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE,
+            imgBukti: []
         }
     }
 
@@ -61,6 +62,17 @@ export default class DetailFindingScreen extends Component {
         headerTintColor: '#fff'
     };
 
+    loadAllImages(){
+        let images = [];
+        this.state.images.map(item => {
+            var img = {
+                path: item,
+                status: before
+            }
+            images.push(img);
+        })
+    }
+
     _makeAlert(title, msg) {
         Alert.alert(title, msg, [
             {
@@ -68,10 +80,20 @@ export default class DetailFindingScreen extends Component {
             }], { cancelable: false })
     }
 
+    onLoadImage = data => {
+        if(this.state.progress == 100){
+            data.map(item => {
+                this.state.images.push(item);
+            })
+        }
+    }
+
     _getStatus() {
-        if (this.state.data.PROGRESS == 100) return "Selesai"
-        if (this.state.data.PROGRESS == 0) return "Baru"
-        return "Sedang di proses"
+        if (this.state.data.PROGRESS == 100){ 
+            return "After"
+        } else if (this.state.data.PROGRESS == 0) {
+            return "Before"
+        }
     }
 
     getColor(param){
@@ -90,6 +112,9 @@ export default class DetailFindingScreen extends Component {
     _renderCarousel = item => {
         return (
             <View style={{ height: 200, flex: 1 }}>
+                <TouchableOpacity style ={style.button}>
+                    <Text style={style.buttonText}>Before</Text>
+                </TouchableOpacity>
                 <FastImage style={{ alignItems: 'center', width: '100%', height: 200 }}
                     source={{
                         uri: "file://" + item.IMAGE_PATH,
@@ -106,14 +131,15 @@ export default class DetailFindingScreen extends Component {
         )
     }
 
-    _takePicture() {
-        ImagePickerCrop.openCamera({
-            width: 640,
-            height: 480,
-            cropping: true,
-        }).then(image => {
-            this.setState({ image: image.path })
-        });
+    _takePicture() { 
+        this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage});
+        // ImagePickerCrop.openCamera({
+        //     width: 640,
+        //     height: 480,
+        //     cropping: true,
+        // }).then(image => {
+        //     this.setState({ image: image.path })
+        // });
     }
 
     _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -131,6 +157,8 @@ export default class DetailFindingScreen extends Component {
             WERKS: this.state.data.WERKS,
             AFD_CODE: this.state.data.AFD_CODE,
             BLOCK_CODE: this.state.data.BLOCK_CODE,
+            BLOCK_FULL_NAME: this.state.data.BLOCK_FULL_NAME,
+            INSERT_TIME: this.state.data.INSERT_TIME, //getTodayDate('YYYY-MM-DD HH:mm:ss'),
             FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
             FINDING_DESC: this.state.data.FINDING_DESC,
             FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
@@ -139,7 +167,8 @@ export default class DetailFindingScreen extends Component {
             PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
             LONG_FINDING: this.state.data.LONG_FINDING,
-            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE
+            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,            
+            STATUS: 'BARU'
         }
 
         TaskServices.saveData('TR_FINDING', save)
@@ -226,7 +255,7 @@ export default class DetailFindingScreen extends Component {
                             indicatorOffset={30}
                             animate={false}
                             indicatorSize={15}
-                            indicatorColor="red"
+                            indicatorColor={this.getColor(this.state.data.STATUS)}
                         >
                             {this.state.images.map(this._renderCarousel)}
 
@@ -315,8 +344,21 @@ export default class DetailFindingScreen extends Component {
                         </View>
                     </View>
 
-                    <Text style={styles.title}>Bukti Kerja:</Text>
-                    {isEmpty(this.state.image) &&
+                    <View style={{flexDirection:'row', marginTop: 20}}>
+                        <Text style={styles.title}>Bukti Kerja:</Text>
+                        <Card style={[styles.cardContainer, {marginLeft: 15}]}>
+                            <TouchableOpacity style={{ padding: 40 }}
+                                onPress={() => { this._takePicture() }}
+                            >
+                                <Image style={{
+                                    alignSelf: 'center', alignItems: 'stretch',
+                                    width: 30, height: 30
+                                }}
+                                    source={require('../../Images/icon/ic_camera_big.png')}></Image>
+                            </TouchableOpacity>
+                        </Card>
+                    </View>
+                    {/* {isEmpty(this.state.image) &&
                         <Card style={[styles.cardContainer]}>
 
                             <TouchableOpacity style={{ padding: 70 }}
@@ -337,10 +379,10 @@ export default class DetailFindingScreen extends Component {
                                     uri: this.state.image,
                                     priority: FastImage.priority.normal,
                                 }} />
-                        </View>}
+                        </View>} */}
 
                     {(this.state.data.PROGRESS < 100) &&
-                        <TouchableOpacity style={[styles.button, { marginTop: 16, marginBottom: 30 }]}
+                        <TouchableOpacity style={[styles.button, { marginTop: 25, marginBottom: 30 }]}
                             onPress={() => { this._saveData() }}>
                             <Text style={styles.buttonText}>Simpan</Text>
                         </TouchableOpacity>}
@@ -373,23 +415,34 @@ const styles = StyleSheet.create({
         width: '60%',
         color: "#999",
         fontSize: 14
-    }, title: {
+    }, 
+    title: {
         fontWeight: 'bold',
         fontSize: 15,
-        flex: 1,
         marginTop: 16
     },
     cardContainer: {
-        flex: 1,
         borderRadius: 10,
         borderWidth: 1,
         backgroundColor: '#eee',
         borderColor: '#ddd'
-    }, button: {
+    }, 
+    button: {
+        position: 'absolute',
+        top: 10,
+        right: 15, 
         width: 200,
         backgroundColor: Colors.brand,
         borderRadius: 25,
         padding: 15,
+        alignSelf: 'center',
+        justifyContent: 'center',
+    },
+    btnStatus: {
+        width: 200,
+        backgroundColor: '#686868',
+        borderRadius: 25,
+        padding: 10,
         alignSelf: 'center',
         justifyContent: 'center',
     },

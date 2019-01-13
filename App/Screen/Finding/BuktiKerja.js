@@ -23,26 +23,13 @@ const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
 
-    // static navigationOptions = {
-    //     headerStyle: {
-    //         backgroundColor: Colors.tintColor
-    //     },
-    //     title: 'Buat Laporan Temuan',
-    //     headerTintColor: '#fff',
-    //     headerTitleStyle: {
-    //         flex: 1,
-    //         fontSize: 18,
-    //         fontWeight: '400'
-    //     },
-    // };
-
     static navigationOptions = ({ navigation }) => {
         const { params = {} } = navigation.state;
         return {
           headerStyle: {
             backgroundColor: Colors.tintColor
           },
-          title: 'Buat Laporan Temuan',
+          title: 'Bukti Kerja',
           headerTintColor: '#fff',
           headerTitleStyle: {
             flex: 1,
@@ -85,11 +72,10 @@ class FormStep1 extends Component {
         //   RNFS.unlink(this.state.pathCacheResize);
         //   this.setState({ pathView: '', hasPhoto: false });
         // }
-        this.props.navigation.goBack(null); 
+        this.props.navigation.goBacknull(); 
     }
 
     componentDidMount() {
-        // console.log(this.props.navigation)
        this.getLocation();
        this.props.navigation.setParams({ clearFoto: this.clearFoto })
        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
@@ -100,16 +86,6 @@ class FormStep1 extends Component {
     }
 
     handleBackButtonClick() { 
-        // if(isMounted){
-            // Alert.alert(
-            //     'Peringatan',
-            //     'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-            //     [
-            //         { text: 'NO', style: 'cancel' },
-            //         { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-            //     ]
-            // );
-        // }
         this.props.navigation.goBack(null); 
         return true;
     }
@@ -131,37 +107,12 @@ class FormStep1 extends Component {
                 }
                 this.setState({fetchLocation:false})
                 alert('Informasi', message);
-                // console.log(message);
             }, // go here if error while fetch location
             { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
         );
     }
-    
-    // exitAlert = () => {
-    //     if (this.state.photos.length == 0) {
-    //         this.props.navigation.goBack(null)
-    //     } else {
-    //         Alert.alert(
-    //             'Peringatan',
-    //             'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-    //             [
-    //                 { text: 'NO', style: 'cancel' },
-    //                 { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-    //             ]
-    //         );
-    //     }
-
-    // };
-
-    // handleAndroidBackButton = callback => {
-    //     BackHandler.addEventListener('hardwareBackPress', () => {
-    //         callback();
-    //         return true;
-    //     });
-    // };
 
     componentDidMount() {
-        // this.handleAndroidBackButton(this.exitAlert);
     }
 
     onBtnClick() {
@@ -181,18 +132,14 @@ class FormStep1 extends Component {
                 let da = item.split('/')
                 let imgName = da[da.length-1];
                 images.push(imgName);
-                const navigation = this.props.navigation;
-                const resetAction = StackActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({ routeName: 'Step2', params:{image: images, lat: this.state.latitude, lon:this.state.longitude} })],
-                });
-                navigation.dispatch(resetAction);
-
             });
+            
+            this.props.navigation.state.params.onLoadImage(images);
+            this.props.navigation.goBack(); 
         }
     }
 
-    onRefresh = image =>{
+    addImage = image =>{
         const photos = R.clone(this.state.photos)
         photos.push({ uri: FILE_PREFIX+image, index: photos.length })
         this.setState({
@@ -201,7 +148,7 @@ class FormStep1 extends Component {
     }
 
     takePicture() {
-        this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh, authCode: this.state.user.USER_AUTH_CODE})
+        this.props.navigation.navigate('TakeFotoBukti', {addImage: this.addImage, authCode: this.state.user.USER_AUTH_CODE, from: 'BuktiKerja'})
     }
 
     _onSelectedPhoto = foto => {
@@ -247,62 +194,7 @@ class FormStep1 extends Component {
         const initialPage = '1';
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
-                <Content style={{ flex: 1 }}>
-                    {/* STEPPER */}
-                    <FlatList
-                        style={[style.stepperContainer, { margin: 15, alignSelf: 'center' }]}
-                        horizontal
-                        data={this.state.stepper}
-                        getItemLayout={this.getItemLayout}
-                        initialScrollIndex={Number(initialPage) - 1}
-                        initialNumToRender={2}
-                        renderItem={({ item: rowData }) => {
-                            return (
-                                <TouchableOpacity>
-                                    <View
-                                        style={[
-                                            style.stepperListContainer,
-                                            { paddingRight: rowData.step === '2' ? 16 : 0 }
-                                        ]}
-                                    >
-                                        <View
-                                            style={[
-                                                style.stepperNumber,
-                                                {
-                                                    backgroundColor:
-                                                        rowData.step === initialPage
-                                                            ? Colors.brand
-                                                            : Colors.buttonDisabled
-                                                }
-                                            ]}
-                                        >
-                                            <Text style={style.stepperNumberText}>{rowData.step}</Text>
-                                        </View>
-                                        <Text
-                                            style={[
-                                                Fonts.style.caption,
-                                                { paddingLeft: 3, color: rowData.step == initialPage ? Colors.brand : Colors.textSecondary }
-                                            ]}
-                                        >
-                                            {rowData.title}
-                                        </Text>
-                                        {rowData.step !== '2' && (
-                                            <View style={{ flex: 1 }}>
-                                                <Icon
-                                                    name="chevron-right"
-                                                    size={24}
-                                                    color={Colors.buttonDisabled}
-                                                    style={style.stepperNext}
-                                                />
-                                            </View>
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        }}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
-
+                <Content style={{ flex: 1, marginTop: 30 }}>
                     <Card style={[style.cardContainer]}>
                         <TouchableOpacity style={{ padding: 70 }}
                             onPress={() => { this.takePicture() }}

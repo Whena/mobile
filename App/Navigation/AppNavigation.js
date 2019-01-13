@@ -9,7 +9,8 @@ import FindingFormNavigator from '../Screen/Finding/FindingFormNavigator';
 import FormStep1 from '../Screen/Finding/FormStep1';
 import FormStep2 from '../Screen/Finding/FormStep2';
 import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen';
-import TakeFoto from '../Screen/Finding/TakeFoto'
+import BuktiKerja from '../Screen/Finding/BuktiKerja'
+import TakeFotoBukti from '../Screen/Finding/TakeFoto'
 // import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspectionNavigator';
 
 //inspeksi
@@ -26,16 +27,13 @@ import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 
 import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
-import Colors from '../Constant/Colors';
 import test from '../Screen/Inspeksi/test';
-// import TestAutoComplete from '../Screen/TestAutocomplete';
 
 
 const main = createStackNavigator({
     MainMenu: { screen: MainMenu, navigationOptions: { header: null } },
     SplashScreen: { screen: SplashScreen },
     Login: { screen: Login },
-    // TestAutoComplete: { screen: TestAutoComplete },
 
     FindingFormNavigator: {
         screen: FindingFormNavigator,
@@ -58,7 +56,8 @@ const main = createStackNavigator({
     // FormStep1: {screen: FormStep1},
     // FormStep2: {screen: FormStep2},
     DetailFinding: { screen: DetailFindingScreen },
-    // TakeFoto : {screen: TakeFoto},
+    BuktiKerja: { screen: BuktiKerja },
+    TakeFotoBukti : {screen: TakeFotoBukti},
     // FormInspection: {
     //     screen: FormInspectionNavigator,
     //     navigationOptions: {

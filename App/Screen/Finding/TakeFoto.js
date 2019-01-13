@@ -54,6 +54,7 @@ class TakeFoto extends Component{
     
     let params = props.navigation.state.params;
     let baris = R.clone(params.authCode);
+    let from = R.clone(params.from)
 
     this.state = {
       user: TaskServices.getAllData('TR_LOGIN')[0],
@@ -62,7 +63,8 @@ class TakeFoto extends Component{
       pathView: '',
       pathCacheInternal: '',
       pathCacheResize: '',
-      baris
+      baris,
+      from
     };
   }     
       
@@ -143,7 +145,12 @@ class TakeFoto extends Component{
   }
 
   goBack() {
-    this.props.navigation.state.params.onRefresh(this.state.path);
+    if(this.state.from == 'BuktiKerja'){
+      this.props.navigation.state.params.addImage(this.state.path);
+    }else{
+      this.props.navigation.state.params.onRefresh(this.state.path);
+    }
+    
     RNFS.unlink(this.state.pathCacheInternal);
     RNFS.unlink(this.state.pathCacheResize);
     this.props.navigation.goBack();

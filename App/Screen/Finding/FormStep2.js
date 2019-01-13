@@ -687,7 +687,7 @@ class FormStep2 extends Component {
                                         <FastImage style={{ width: 40, height: 40 }}
                                             resizeMode={FastImage.resizeMode.contain}
                                             source={{
-                                                uri: `${dirPhotoKategori}/${item.ICON}`,//"https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
+                                                uri: `file://${dirPhotoKategori}/${item.ICON}`,//"https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
                                                 priority: FastImage.priority.normal,
                                             }} />
                                         {/* <Image 

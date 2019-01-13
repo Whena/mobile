@@ -49,10 +49,6 @@ class Form extends Component{
                 props.onBtnClick({
                     ...this.state
                 });
-                // this.setState({
-                //     strEmail:'',
-                //     strPassword:''
-                // });
             break;
         }
     }
@@ -63,8 +59,9 @@ class Form extends Component{
         return(
             <View style={styles.container}>
 
-                <Text style={[styles.tapText,{marginLeft:20, marginRight:20}]}>PT TRIPUTRA ARGO PERSADA</Text>
-                <Text style={[styles.appText, {marginLeft:20, marginRight:20}]}>Mobile Inspection</Text>
+                {/* <Text style={[styles.tapText,{marginLeft:20, marginRight:20}]}>PT TRIPUTRA ARGO PERSADA</Text>
+                <Text style={[styles.appText, {marginLeft:20, marginRight:20}]}>Mobile Inspection</Text> */}
+                <Image source={require('../Images/logo_mobile_inspection.png')} style={{ width: 300, height: 100, resizeMode: 'stretch', marginBottom: 30}} />
 
                 <View style={styles.sectionInput}>
                     <Image source={require('../Images/icon/ic_login.png')} style={styles.iconInput} />
@@ -72,8 +69,8 @@ class Form extends Component{
                         style={styles.inputBox}
                         underlineColorAndroid='rgba(0,0,0,0)'
                         placeholder="Email"
-                        placeholderTextColor="#068D0D"
-                        selectionColor="#068D0D"
+                        placeholderTextColor="#51a977"
+                        selectionColor="#51a977"
                         keyboardType="email-address"
                         onChangeText={(strEmail) => { this.setState({ strEmail: strEmail }) }}
                         value={this.state.strEmail}
@@ -86,7 +83,7 @@ class Form extends Component{
                         underlineColorAndroid='rgba(0,0,0,0)'
                         placeholder="Password"
                         secureTextEntry={true}
-                        placeholderTextColor="#068D0D"
+                        placeholderTextColor="#51a977"
                         onChangeText={(strPassword) => { this.setState({ strPassword: strPassword }) }}
                         value={this.state.strPassword}
                         ref={(input) => this.password = input} />
@@ -111,7 +108,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop:100
+        marginTop:200
     },
     tapText: {
         height: 41,
@@ -132,7 +129,9 @@ const styles = StyleSheet.create({
         opacity: 0.67,
         backgroundColor: '#FFFFFF',
         borderRadius: 25,
-        marginVertical: 10
+        marginVertical: 10,
+        borderColor: '#51a977',
+        borderWidth: 1
     },
     iconInput: {
         padding: 10,
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
         width: 320,
         height: 42,
         fontSize: 16,
-        color: '#068D0D',
+        color: '#51a977',
         textAlign: "left",
         paddingVertical: 10,
 

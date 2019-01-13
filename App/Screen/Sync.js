@@ -30,11 +30,10 @@ import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 import RNFetchBlob from 'rn-fetch-blob'
 
+import TaskServices from '../Database/TaskServices'
+
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
-import RNFetchBlob from 'rn-fetch-blob'
-
-import TaskServices from '../Database/TaskServices'
 // import { isNull } from 'util';
 // import { stat } from 'fs';
 
@@ -156,10 +155,6 @@ class SyncScreen extends React.Component {
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
-
-                // let countDataInsert = TaskServices.getTotalData('TM_BLOCK');
-                // console.log("countDataInsert : " + countDataInsert);
-                // this.setState({ valueDownload: countDataInsert })
             })
 
             // this._postMobileSync("block");
@@ -170,7 +165,6 @@ class SyncScreen extends React.Component {
     }
 
     _crudTM_Afd(data) {
-
         console.log("Simpan AFD : " + data.simpan.length);
         // this.setState({ downloadApa: "Sedang Download TM Afdeling" });
 
@@ -626,9 +620,6 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
-
-        // console.log(newProps)
-
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
             this.setState({ downloadBlok: true });
@@ -647,10 +638,10 @@ class SyncScreen extends React.Component {
 
         if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
+            this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
-            this.setState({ downloadRegion: true })
         }
 
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
@@ -695,18 +686,18 @@ class SyncScreen extends React.Component {
 
         if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
             let dataJSON = newProps.kriteria.kriteria;
+            this.setState({ downloadKriteria: true });
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
             }
-            this.setState({ downloadKriteria: true });
         }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
             let dataJSON = newProps.category.category;
+            this.setState({ downloadCategory: true });
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
-            this.setState({ downloadCategory: true });
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
