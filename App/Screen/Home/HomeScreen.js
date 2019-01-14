@@ -12,13 +12,6 @@ import RegionAction from '../../Redux/RegionRedux'
 var RNFS = require('react-native-fs');
 
 class HomeScreen extends React.Component {
-  
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: TaskServices.getAllData('TR_LOGIN')
-    }
-  }
 
   static navigationOptions = ({ navigation }) => ({
     headerStyle: {
@@ -49,26 +42,118 @@ class HomeScreen extends React.Component {
     )
   });
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      // user: TaskServices.getAllData('TR_LOGIN'),
+      data: [],
+      // images,
+      // bukti
+    }
+  }
+
+  // loadAllImages() {
+  //   let images = [];
+  //   this.state.images.map(item => {
+  //     var img = {
+  //       path: item,
+  //       status: before
+  //     }
+  //     images.push(img);
+  //   })
+  // }
+
+  _getStatus() {
+    if (this.state.data.PROGRESS == 100) {
+      return "After"
+    } else if (this.state.data.PROGRESS == 0) {
+      return "Before"
+    }
+  }
+
+  willFocus = this.props.navigation.addListener(
+    'willFocus',
+    () => {
+      this._initData()
+    }
+  )
+
+  _initData() {
+    var data = TaskServices.getAllData('TR_FINDING');
+    this.setState({ data })
+  }
+
+  componentWillUnmount() {
+    this.willFocus.remove()
+  }
+
   async componentDidMount() {
     RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
   }
 
-  // componentDidMount() {
-  //   if (TaskServices.getTotalData('TR_CATEGORY') == 0) {
-  //     // this.props.categoryRequest();
-  //   }
-
-  //   if (TaskServices.getTotalData('TR_CONTACT') == 0) {
-  //     // this.props.contactRequest();
-  //   }
-
-  //   if (TaskServices.getTotalData('TM_REGION') == 0){
-  //     // this.props.regionRequest(); 
+  // getCategoryName = (categoryCode) =>{
+  //   try {
+  //       let data = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', categoryCode);
+  //       return data.CATEGORY_NAME;            
+  //   } catch (error) {
+  //       return ''
   //   }
   // }
 
+  getColor(param) {
+    switch (param) {
+      case 'SELESAI':
+        return Colors.brand;
+      case 'SEDANG DIPROSES':
+        return '#feb236';
+      case 'BARU':
+        return 'red';
+      default:
+        return 'rgba(52, 52, 52, 0.5)';
+    }
+  }
+
   alertItemName = (item) => {
-    alert(item.status)
+    alert(item.STATUS)
+  }
+
+  _renderItem = item => {
+    const nav = this.props.navigation
+    const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE);
+    const name  = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
+
+    // var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${item.FINDING_CODE}' AND STATUS_IMAGE='SEBELUM'`);
+    // var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${item.FINDING_CODE}' AND STATUS_IMAGE='SESUDAH'`);
+    return (
+      <View>
+        <TouchableOpacity style={{ marginTop: 12 }} key={item.id} onPress={() => this.alertItemName(item)}>
+          <Card >
+            <CardItem>
+              <Left>
+                <Thumbnail style={{ borderColor: 'grey', borderWidth: 0.5, height: 48, width: 48 }} source={require('../../Images/img_no_photo.jpg')} />
+                <Body><Text>{name.FULLNAME}</Text></Body>
+              </Left>
+            </CardItem>
+            <CardItem cardBody>
+              <ImageBackground source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
+                <View style={{ alignContent: 'center', paddingTop: 2, paddingLeft: 12, flexDirection: 'row', height: 42, backgroundColor: this.getColor(item.STATUS) }} >
+                  <Image style={{ marginTop: 2, height: 28, width: 28 }} source={require('../../Images/icon/ic_new_timeline.png')}></Image>
+                  <Text style={{ marginLeft: 12, color: 'white' }}>{item.STATUS}</Text>
+                </View>
+              </ImageBackground>
+            </CardItem>
+            <CardItem>
+              <Body>
+                <Text>{item.DUE_DATE}</Text>
+                <Text style={{ marginTop: 6 }}>Lokasi : {item.BLOCK_CODE}</Text>
+                <Text style={{ marginTop: 6 }}>{item.FINDING_DESC}</Text>
+              </Body>
+            </CardItem>
+          </Card>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   render() {
@@ -79,48 +164,19 @@ class HomeScreen extends React.Component {
       <Container style={{ padding: 16 }}>
         <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
         <Content>
+          <View style={styles.sectionTimeline}>
+            <Text style={styles.textTimeline}>Timeline</Text>
+            <View style={styles.rightSection}>
+              <Text style={styles.textFilter}>Filter</Text>
+              <TouchableOpacity>
+                <Icons name="filter-list" size={28} style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+            </View>
+          </View>
           <ScrollView
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}>
-            <View style={styles.sectionTimeline}>
-              <Text style={styles.textTimeline}>Timeline</Text>
-              <View style={styles.rightSection}>
-                <Text style={styles.textFilter}>Filter</Text>
-                <TouchableOpacity>
-                  <Icons name="filter-list" size={28} style={{ marginLeft: 6 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {
-              homeData.data.items.map((item, index) => (
-                <TouchableOpacity style={{ marginTop: 12 }} key={item.id} onPress={() => this.alertItemName(item)}>
-                  <Card >
-                    <CardItem>
-                      <Left>
-                        <Thumbnail style={{ height: 48, width: 48 }} source={item.image_thum} />
-                        <Body><Text>{item.name}</Text></Body>
-                      </Left>
-                    </CardItem>
-                    <CardItem cardBody>
-                      <ImageBackground source={item.image_thum} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
-                        <View style={{ alignContent: 'center', paddingTop: 2, paddingLeft: 12, flexDirection: 'row', height: 42, backgroundColor: 'rgba(52, 52, 52, 0.5)' }} >
-                          <Image style={{ marginTop: 2, height: 28, width: 28 }} source={require('../../Images/icon/ic_new_timeline.png')}></Image>
-                          <Text style={{ marginLeft: 12, color: 'white' }}>{item.status}</Text>
-                        </View>
-                      </ImageBackground>
-                    </CardItem>
-                    <CardItem>
-                      <Body>
-                        <Text>{item.date}</Text>
-                        <Text style={{ marginTop: 6 }}>Lokasi : {item.ba}</Text>
-                        <Text style={{ marginTop: 6 }}>{item.description}</Text>
-                      </Body>
-                    </CardItem>
-                  </Card>
-                </TouchableOpacity>
-              ))
-            }
+            {this.state.data.map(this._renderItem)}
           </ScrollView>
         </Content>
       </Container>
@@ -163,7 +219,7 @@ const mapDispatchToProps = dispatch => {
   return {
     categoryRequest: () => dispatch(CategoryAction.categoryRequest()),
     contactRequest: () => dispatch(ContactAction.contactRequest()),
-    regionRequest:() => dispatch(RegionAction.regionRequest())
+    regionRequest: () => dispatch(RegionAction.regionRequest())
   };
 };
 

@@ -24,19 +24,18 @@ import FindingAction from '../Redux/FindingRedux';
 import FindingImageAction from '../Redux/FindingImageRedux';
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
-import { dirPhotoKategori } from '../Lib/dirStorage';
+import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 import RNFetchBlob from 'rn-fetch-blob'
 
 import TaskServices from '../Database/TaskServices'
-
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
+
 // import { isNull } from 'util';
 // import { stat } from 'fs';
-
 
 class SyncScreen extends React.Component {
 
@@ -129,9 +128,61 @@ class SyncScreen extends React.Component {
         }
     }
 
-    // componentDidMount() {
-    //     this.state.downloadApa
-    // }
+    componentDidMount() {
+        this.props.navigation.setParams({
+            loadData: this.loadData,
+            loadDataDetail: this.loadDataDetail
+        });
+    }
+
+    loadData() {
+        let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
+        if (dataHeader !== null) {
+            for (var i = 0; i < dataHeader.length; i++) {
+                this.kirimInspeksiHeader(dataHeader[i]);
+            }
+        }
+    }
+
+    kirimInspeksi(param) {
+        this.props.postInspeksi({
+            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
+            WERKS: param.WERKS,
+            AFD_CODE: param.AFD_CODE,
+            BLOCK_CODE: param.AFD_CODE,
+            INSPECTION_DATE: param.INSPECTION_DATE,
+            INSPECTION_RESULT: param.INSPECTION_RESULT,
+            STATUS_SYNC: 'YES',
+            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            START_INSPECTION: param.START_INSPECTION,
+            END_INSPECTION: param.END_INSPECTION,
+            LAT_START_INSPECTION: param.LAT_START_INSPECTION,
+            LONG_START_INSPECTION: param.LONG_START_INSPECTION,
+            LAT_END_INSPECTION: param.LAT_END_INSPECTION,
+            LONG_END_INSPECTION: param.LONG_END_INSPECTION
+        });
+    }
+
+    loadDataDetail(param) {
+        let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', param);
+        if (data !== null) {
+            for (var i = 0; i < data.length; i++) {
+                this.kirimInspeksiDetail(data[i]);
+            }
+        }
+    }
+
+    kirimInspeksiDetail(param) {
+        this.props.postInspeksiDetail({
+            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
+            BLOCK_INSPECTION_CODE_D: param.BLOCK_INSPECTION_CODE_D,
+            CONTENT_CODE: param.CONTENT_CODE,
+            AREAL: param.AREAL,
+            VALUE: param.VALUE,
+            STATUS_SYNC: 'YES',
+            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
+        });
+    }
 
     // POST MOBILE SYNC
     _postMobileSync(tableName) {
@@ -155,6 +206,10 @@ class SyncScreen extends React.Component {
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_BLOCK');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueDownload: countDataInsert })
             })
 
             // this._postMobileSync("block");
@@ -253,6 +308,10 @@ class SyncScreen extends React.Component {
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
+
+                let countDataInsert = TaskServices.getTotalData('TM_EST');
+                console.log("countDataInsert : " + countDataInsert);
+                this.setState({ valueEstDownload: countDataInsert });
             });
             // this._postMobileSync("est");
         } else {
@@ -283,8 +342,9 @@ class SyncScreen extends React.Component {
                 console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueLandUseDownload: countDataInsert });
             })
-
+            this.setState({ showButton: true });
             // this._postMobileSync("landUse");
+            alert('Download data selesai')
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
 
@@ -461,6 +521,7 @@ class SyncScreen extends React.Component {
 
             data.map(item => {
                 TaskServices.saveData('TR_CATEGORY', item);
+
                 let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
                 console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueCategoryDownload: countDataInsert });
@@ -529,7 +590,7 @@ class SyncScreen extends React.Component {
                 this.setState({ valueFindingImageDownload: countDataInsert });
 
                 this.setState({ isFinishFindingImage: true });
-                this.setState({ showButton: true })
+                // this.setState({ showButton: true })
             });
 
             // this._postMobileSync("contact");
@@ -553,14 +614,14 @@ class SyncScreen extends React.Component {
         var date = new Date();
         var url = data.IMAGE_URL;
         const { config, fs } = RNFetchBlob
-        let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
+        // let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
         // alert(PictureDir)
         let options = {
             fileCache: true,
             addAndroidDownloads: {
                 useDownloadManager: true,
                 notification: true,
-                path: `${PictureDir}/${data.IMAGE_NAME}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+                path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
                 description: 'Image'
             }
         }
@@ -570,9 +631,6 @@ class SyncScreen extends React.Component {
     }
 
     _onSync() {
-
-        this.setState({ progressFinding: 0 })
-        this.setState({ progressFindingImage: 0 })
 
         this.setState({
             downloadRegion: false,
@@ -589,7 +647,12 @@ class SyncScreen extends React.Component {
             downloadFindingImage: false,
             downloadCategory: false,
             fetchLocation: false,
-            isBtnEnable: false
+            isBtnEnable: false,
+            progressFinding: 0,
+            progressFindingImage: 0,
+
+            // kirimInspeksi: this.kirimInspeksi,
+            // kirimInspeksiDetail: this.kirimInspeksiDetail
 
         });
 
@@ -605,7 +668,8 @@ class SyncScreen extends React.Component {
         this.props.kriteriaRequest();
         this.props.categoryRequest();
         this.props.contactRequest();
-        this.props.findingRequest();
+        // this.props.findingRequest();
+        // this.props.findingImageRequest();
 
     }
 
@@ -619,6 +683,8 @@ class SyncScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
+
+        console.log(newProps)
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -708,28 +774,31 @@ class SyncScreen extends React.Component {
             this.setState({ downloadContact: true });
         }
 
-        if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
-            let dataJSON = newProps.finding.finding;
-            this.setState({ downloadFinding: true });
-            if (dataJSON !== null) {
-                this._crudTM_Finding(dataJSON);
-            }
-        }
+        // if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
+        //     let dataJSON = newProps.finding.finding;
+        //     this.setState({ downloadFinding: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Finding(dataJSON);
+        //     }
+        // }
 
-        if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
-            let dataJSON = newProps.findingImage.findingImage;
-            this.setState({ downloadFindingImage: true });
-            if (dataJSON !== null) {
-                this._crudTM_Finding_Image(dataJSON);
-            }
-        }
+        // if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
+        //     let dataJSON = newProps.findingImage.findingImage;
+        //     this.setState({ downloadFindingImage: true });
+        //     if (dataJSON !== null) {
+        //         this._crudTM_Finding_Image(dataJSON);
+        //     }
+        // }
 
-        if (this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst
-            && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
-            && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact) {
+        RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
-            RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
-        }
+
+        // if (this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst
+        //     && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
+        //     && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact) {
+
+
+        // }
     }
 
     download(data) {
@@ -754,7 +823,6 @@ class SyncScreen extends React.Component {
         if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
             this.setState({ showButton: true });
         }
-
 
         // if (this.setState.downloadBlok && this.setState.downloadAfd && this.setState.downloadRegion && this.setState.downloadEst
         //     && this.setState.downloadLandUse && this.setState.downloadComp && this.setState.downloadContent && this.setState.downloadContentLabel
@@ -1020,7 +1088,8 @@ const mapStateToProps = state => {
         contact: state.contact,
         finding: state.finding,
         category: state.category,
-        findingImage: state.findingImage
+        findingImage: state.findingImage,
+        inspeksi: state.inspeksi
     };
 };
 
@@ -1051,6 +1120,8 @@ const mapDispatchToProps = dispatch => {
         findingRequest: () => dispatch(FindingAction.findingRequest()),
         findingPost: obj => dispatch(FindingAction.findingPost(obj)),
         findingImageRequest: () => dispatch(FindingImageAction.findingImageRequest()),
+        postInspeksi: obj => dispatch(InspeksiAction.postInspeksi(obj)),
+        postInspeksiDtl: obj => dispatch(InspeksiAction.postInspeksiDtl(obj))
     };
 };
 

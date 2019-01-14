@@ -50,26 +50,26 @@ const radioGroupList = [{
 const alcatraz = {
     type: 'FeatureCollection',
     features: [
-      {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Point',
-          coordinates: [-6.2292229, 106.8253967],
-          latitudeDelta:0.015,
-          longitudeDelta:0.0121 //[-122.42305755615234, 37.82687023785448],
+        {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'Point',
+                coordinates: [-6.2292229, 106.8253967],
+                latitudeDelta: 0.015,
+                longitudeDelta: 0.0121 //[-122.42305755615234, 37.82687023785448],
+            }
         }
-      }
     ]
 };
 
 class FormStep2 extends Component {
-    
+
     constructor(props) {
         super(props);
-        
+
         // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-        
+
         let params = props.navigation.state.params;
         let foto = R.clone(params.image);
         let latitude = R.clone(params.lat);
@@ -110,7 +110,7 @@ class FormStep2 extends Component {
             TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
             colorPriority: '#ddd',
             query: '',
-            person:[],
+            person: [],
         }
     }
 
@@ -129,31 +129,31 @@ class FormStep2 extends Component {
 
     componentDidMount() {
         let data = TaskServices.getAllData('TM_BLOCK');
-        for(var i=0; i<data.length; i++){
-            let statusBlok= this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
+        for (var i = 0; i < data.length; i++) {
+            let statusBlok = this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
             let estateName = this.getEstateName(data[i].WERKS);
             this.state.person.push({
-                blokCode: data[i].BLOCK_CODE, 
-                blokName: data[i].BLOCK_NAME, 
+                blokCode: data[i].BLOCK_CODE,
+                blokName: data[i].BLOCK_NAME,
                 afdCode: data[i].AFD_CODE,
                 werks: data[i].WERKS,
-                werksAfdCode: data[i].WERKS_AFD_CODE, 
+                werksAfdCode: data[i].WERKS_AFD_CODE,
                 werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
                 statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
                 compCode: data[i].COMP_CODE,
                 allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
             });
-        }        
+        }
         this.getLocation();
         // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         // this.handleAndroidBackButton(this.exitAlert);
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         // BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
-    handleBackButtonClick() { 
+    handleBackButtonClick() {
         Alert.alert(
             'Peringatan',
             'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
@@ -165,17 +165,17 @@ class FormStep2 extends Component {
         return true;
     }
 
-    getStatusBlok(werk_afd_blok_code){
+    getStatusBlok(werk_afd_blok_code) {
         try {
             let data = TaskServices.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
-            return data.MATURITY_STATUS;            
+            return data.MATURITY_STATUS;
         } catch (error) {
             return ''
         }
     }
 
-    getEstateName(werks){
-        try {            
+    getEstateName(werks) {
+        try {
             let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
             return data.EST_NAME;
         } catch (error) {
@@ -183,7 +183,7 @@ class FormStep2 extends Component {
         }
     }
 
-    getLocation(){
+    getLocation() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -224,74 +224,70 @@ class FormStep2 extends Component {
     //     });
     // };
 
-    validation(){
+    validation() {
         let isSameUser = this.state.assignto == this.state.user.USER_AUTH_CODE ? true : false;
-        if(isEmpty(this.state.keterangan)){
+        if (isEmpty(this.state.keterangan)) {
             Alert.alert(
                 'Peringatan',
                 "Keterangan harus diisi"
             );
-        }else if(isEmpty(this.state.blok)){
+        } else if (isEmpty(this.state.blok)) {
             Alert.alert(
                 'Peringatan',
                 "Lokasi Blok harus diisi"
             );
-        }else if(isEmpty(this.state.category)){
+        } else if (isEmpty(this.state.category)) {
             Alert.alert(
                 'Peringatan',
                 "Kategori harus diisi"
             );
-        }else if(isEmpty(this.state.priority)){
+        } else if (isEmpty(this.state.priority)) {
             Alert.alert(
                 'Peringatan',
                 "Prioritas harus diisi"
             );
-        }else if(isSameUser && isEmpty(this.state.batasWaktu)){
+        } else if (isSameUser && isEmpty(this.state.batasWaktu)) {
             Alert.alert(
                 'Peringatan',
                 "Batas waktu harus diisi"
             );
-        }else{
+        } else {
             this.saveData()
         }
     }
 
-    saveData(){
+    saveData() {
         var data = {
             FINDING_CODE: this.state.TRANS_CODE,
             WERKS: this.state.werks,
             AFD_CODE: this.state.afdCode,
             BLOCK_CODE: this.state.blockCode,
-            BLOCK_FULL_NAME: this.state.query,
-            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            // BLOCK_FULL_NAME: this.state.query,
             FINDING_CATEGORY: this.state.categoryCode,
             FINDING_DESC: this.state.keterangan,
             FINDING_PRIORITY: this.state.priority,
             DUE_DATE: this.state.batasWaktu,
+            STATUS: 'BARU',
             ASSIGN_TO: this.state.assignto,
             PROGRESS: '0',
             LAT_FINDING: this.state.latitude.toString(),
-            LON_FINDING: this.state.longitude.toString(),
+            LONG_FINDING: this.state.longitude.toString(),
             REFFERENCE_INS_CODE: "",
-            STATUS: 'BARU'
+            INSERT_USER: this.state.user.USER_AUTH_CODE,
+            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
         }
         TaskServices.saveData('TR_FINDING', data);
 
         this.state.foto.map((image, i) => {
             var imagetr = {
-                IMAGE_CODE: image.replace(".jpg", ""),
                 TR_CODE: this.state.TRANS_CODE,
+                IMAGE_CODE: image.replace(".jpg", ""),
                 IMAGE_NAME: image,
-                IMAGE_PATH: dirPhotoTemuan + "/" + image,
+                IMAGE_PATH_LOCAL: dirPhotoTemuan + "/" + image,
+                IMAGE_URL: '',
                 STATUS_IMAGE: 'SEBELUM',
-                STATUS_SYNC: '',
-                SYNC_TIME: '',
                 INSERT_USER: this.state.user.USER_AUTH_CODE,
-                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD"),
-                UPDATE_USER: '',
-                UPDATE_TIME: '',
-                DELETE_USER: '',
-                DELETE_TIME: ''
+                INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
             }
 
             TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
@@ -314,29 +310,29 @@ class FormStep2 extends Component {
         })
     }
 
-    changeColorPriority(priority){
-        switch(priority){
+    changeColorPriority(priority) {
+        switch (priority) {
             case 'HIGH':
-                this.setState({colorPriority: 'red', priority: priority});
+                this.setState({ colorPriority: 'red', priority: priority });
                 break;
             case 'MED':
-                this.setState({colorPriority: '#feb236', priority: priority});
+                this.setState({ colorPriority: '#feb236', priority: priority });
                 break;
             case 'LOW':
-                this.setState({colorPriority: 'blue', priority: priority});
+                this.setState({ colorPriority: 'blue', priority: priority });
                 break;
             default:
                 break;
         }
     }
 
-    findPerson(query){
+    findPerson(query) {
         if (query === '') {
             return [];
         }
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
-        return person.filter(person => person.allShow.search(regex) >= 0);        
+        return person.filter(person => person.allShow.search(regex) >= 0);
     }
 
     render() {
@@ -421,31 +417,31 @@ class FormStep2 extends Component {
 
                     <View style={style.line} />
 
-                    
+
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Lokasi <Text style={style.mandatory}>*</Text></Text>
                         <TouchableOpacity onPress={this._showLocation}>
                             {isEmpty(this.state.blok) && (<Text style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                             {!isEmpty(this.state.blok) && (<Text style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
-                        </TouchableOpacity> 
-                    </View>                   
+                        </TouchableOpacity>
+                    </View>
 
                     <View style={style.line} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Kategori <Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.setState({ isCategoryVisible: true })}>                        
+                        <TouchableOpacity onPress={() => this.setState({ isCategoryVisible: true })}>
                             {isEmpty(this.state.category) && (<Text style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
                             {!isEmpty(this.state.category) && (<Text style={{ fontSize: 14 }}> {this.state.category} </Text>)}
                         </TouchableOpacity>
 
                     </View>
-                    
+
 
                     <View style={[style.line]} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={[style.label, { marginTop: 3 }]}>Priority <Text style={style.mandatory}>*</Text></Text>
                         <RadioGroup
-                            onChange={(priority) => { this.changeColorPriority(priority)}}
+                            onChange={(priority) => { this.changeColorPriority(priority) }}
                             style={style.item}
                             containerStyle={{}}
                             buttonContainerStyle={{ borderRadius: 10, padding: 5, marginRight: 3, width: 55 }}
@@ -487,13 +483,13 @@ class FormStep2 extends Component {
                                 <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
                             {!isEmpty(this.state.tugasKepada) && (
                                 <Text style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
-                        </TouchableOpacity>                        
+                        </TouchableOpacity>
                     </View>
 
                     <View style={[style.line]} />
 
                     <TouchableOpacity style={[style.button, { margin: 16 }]}
-                        onPress={()=>{this.validation()}}>
+                        onPress={() => { this.validation() }}>
                         <Text style={style.buttonText}>Simpan</Text>
                     </TouchableOpacity>
                 </Content>
@@ -542,25 +538,27 @@ class FormStep2 extends Component {
                             <Autocomplete
                                 autoCapitalize="none"
                                 autoCorrect={false}
-                                containerStyle={{width: '60%'}}
+                                containerStyle={{ width: '60%' }}
                                 data={person.length === 1 && comp(query, person[0].allShow) ? [] : person}
                                 defaultValue={query}
                                 onChangeText={text => {
-                                    this.setState({ query: text })}
+                                    this.setState({ query: text })
                                 }
-                                renderItem={({ blokCode, blokName, statusBlok, allShow, werks, afdCode}) => (
+                                }
+                                renderItem={({ blokCode, blokName, statusBlok, allShow, werks, afdCode }) => (
                                     <TouchableOpacity onPress={() => {
                                         // alert(allShow)
-                                        this.setState({ 
+                                        this.setState({
                                             werks: werks,
                                             afdCode: afdCode,
-                                            blok : allShow,//blokCode, 
+                                            blok: allShow,//blokCode, 
                                             blockCode: blokCode,
                                             query: allShow
                                         }
-                                        )}}>
-                                        <View style={{padding:10}}>
-                                            <Text style = {{fontSize: 15,margin: 2}}>{blokName}/{statusBlok}/{this.getEstateName(werks)}</Text>
+                                        )
+                                    }}>
+                                        <View style={{ padding: 10 }}>
+                                            <Text style={{ fontSize: 15, margin: 2 }}>{blokName}/{statusBlok}/{this.getEstateName(werks)}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 )}
@@ -569,10 +567,10 @@ class FormStep2 extends Component {
 
                         <View style={{ marginTop: 10, width: '100%' }}>
                             <TouchableOpacity style={[style.buttonSetLoc, { alignSelf: 'flex-end' }]}
-                                onPress={() =>{                                    
-                                    alert(this.state.blok); 
+                                onPress={() => {
+                                    alert(this.state.blok);
                                     this.setState({ isMapsVisible: false })
-                                    }
+                                }
                                 }>
                                 <Text style={style.buttonText}>Set Lokasi</Text>
                             </TouchableOpacity>
@@ -581,27 +579,27 @@ class FormStep2 extends Component {
                         <View style={style.line} />
 
                         <Text style={{ color: Colors.brand, textAlign: 'center', paddingHorizontal: 25, marginBottom: 10, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Pastikan kamu telah berada di lokasi yang benar</Text>
-                        <View style={style.containerMap}> 
+                        <View style={style.containerMap}>
                             <MapView
                                 style={style.map}>
                                 <Geojson geojson={alcatraz} />
                                 <Marker
                                     coordinate={{
-                                    latitude: this.state.latitude,
-                                    longitude: this.state.longitude,
+                                        latitude: this.state.latitude,
+                                        longitude: this.state.longitude,
                                     }}
                                     centerOffset={{ x: -42, y: -60 }}
                                     anchor={{ x: 0.84, y: 1 }}
                                 >
-                                </Marker>                      
-                            </MapView>  
+                                </Marker>
+                            </MapView>
                             <IconLoc
-                                onPress={()=>{this.getLocation()}}
+                                onPress={() => { this.getLocation() }}
                                 name="location-arrow"
                                 size={24}
-                                style={{ alignSelf: 'flex-end', marginBottom:325, marginRight: 10}}/>  
+                                style={{ alignSelf: 'flex-end', marginBottom: 325, marginRight: 10 }} />
                         </View>
-                        
+
                         {/* <View>   
                             <IconLoc
                                 onPress={()=>{this.getLocation()}}
@@ -644,11 +642,13 @@ class FormStep2 extends Component {
                         </View>
 
                         <Text style={{ marginBottom: 20, fontSize: 16, fontWeight: 'bold', alignSelf: 'center' }}>Contact</Text>
-                        <SearchContact onSelect={user=>{this.setState({
-                            isContactVisible: false, 
-                            tugasKepada: user.user.fullName, 
-                            assignto: user.user.userAuth
-                        })}}/>
+                        <SearchContact onSelect={user => {
+                            this.setState({
+                                isContactVisible: false,
+                                tugasKepada: user.user.fullName,
+                                assignto: user.user.userAuth
+                            })
+                        }} />
                     </View>
                 </SlidingUpPanel>
 

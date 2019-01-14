@@ -117,12 +117,12 @@ export default class DetailFindingScreen extends Component {
                     padding: 5, position: 'absolute', top:0 , right:10, zIndex: 1, justifyContent: 'center', alignItems: 'center', 
                     margin:10, borderRadius: 25,
                 }}>
-                    <Text style={{ fontSize: 10, color: 'white' }}>{this.getStatusImage(item.STATUS_IMAGE)}</Text>
+                    <Text style={{ fontSize: 10, color: 'white' }}>{this._getStatus(item.STATUS_IMAGE)}</Text>
                 </View>
 
                 <FastImage style={{ alignItems: 'center', width: '100%', height: '100%' }}
                     source={{
-                        uri: "file://" + item.IMAGE_PATH,
+                        uri: "file://" + item.IMAGE_PATH_LOCAL,
                         priority: FastImage.priority.normal,
                     }} />
 

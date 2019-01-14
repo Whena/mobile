@@ -10,7 +10,7 @@ const TR_LOGIN = {
         USERNAME: 'string',
         USER_AUTH_CODE: 'string',
         USER_ROLE: 'string',
-        STATUS:'string'
+        STATUS: 'string'
     }
 }
 
@@ -203,18 +203,18 @@ const TR_FINDING = {
         WERKS: 'string',
         AFD_CODE: 'string',
         BLOCK_CODE: 'string',
-        BLOCK_FULL_NAME: 'string',
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
         FINDING_PRIORITY: 'string',
         DUE_DATE: 'string',
+        STATUS: 'string',
         ASSIGN_TO: 'string',
         PROGRESS: 'string',
         LAT_FINDING: 'string',
-        LON_FINDING: 'string',
+        LONG_FINDING: 'string',
         REFFERENCE_INS_CODE: 'string',
-        INSERT_TIME: 'string',
-        STATUS: 'string'
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
     }
 }
 
@@ -238,7 +238,11 @@ const TR_IMAGE_FINDING = {
         TR_CODE: 'string',
         IMAGE_CODE: 'string',
         IMAGE_NAME: 'string',
-        IMAGE_URL: 'string'
+        IMAGE_PATH_LOCAL: 'string',
+        IMAGE_URL: 'string',
+        STATUS_IMAGE: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
     }
 }
 
@@ -320,20 +324,20 @@ const TM_LAND_USE = {
         LAND_USE_CODE: 'string',
         LAND_USE_NAME: 'string',
         LAND_USE_CODE_GIS: 'string',
-        SPMON: {type: 'int', default: 0},
+        SPMON: { type: 'int', default: 0 },
         LAND_CAT: 'string',
         LAND_CAT_L1_CODE: 'string',
         LAND_CAT_L1: 'string',
         LAND_CAT_L2_CODE: 'string',
         MATURITY_STATUS: 'string',
         SCOUT_STATUS: 'string',
-        AGES: {type: 'int', default: 0},
+        AGES: { type: 'int', default: 0 },
         HA_SAP: 'string',
         PALM_SAP: 'string',
         SPH_SAP: 'string',
         HA_GIS: 'string',
-        PALM_GIS: {type: 'int', default: 0},
-        SPH_GIS: {type: 'int', default: 0}
+        PALM_GIS: { type: 'int', default: 0 },
+        SPH_GIS: { type: 'int', default: 0 }
     }
 }
 
@@ -360,7 +364,7 @@ const TM_CONTENT_LABEL = {
         LABEL_NAME: 'string',
         LABEL_ICON: 'string',
         URUTAN_LABEL: 'string',
-        LABEL_SCORE: {type: 'int', default: 0}
+        LABEL_SCORE: { type: 'int', default: 0 }
     }
 }
 export default {
