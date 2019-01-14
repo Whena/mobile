@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { NavigationActions, StackActions } from 'react-navigation';
 import {
     BackHandler, Text, FlatList, ScrollView, TouchableOpacity, View, Image, Alert, Platform
 } from 'react-native';
@@ -11,14 +10,12 @@ import {
 import { connect } from 'react-redux'
 import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import R from 'ramda'
 import { dirPhotoTemuan } from '../../Lib/dirStorage'
-import ImagePickerCrop from 'react-native-image-crop-picker'
+import {getTodayDate} from '../../Lib/Utils'
 import random from 'random-string'
 import TaskServices from '../../Database/TaskServices'
-import RNFS from 'react-native-fs';
 const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
@@ -50,8 +47,9 @@ class FormStep1 extends Component {
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.clearFoto = this.clearFoto.bind(this);
 
+        var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
-            user: TaskServices.getAllData('TR_LOGIN')[0],
+            user,
             photos: [],
             selectedPhotos: [],
             stepper: [
@@ -62,6 +60,7 @@ class FormStep1 extends Component {
             longitude: 0.0,
             fetchLocation: false,
             isMounted: false,
+            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
         }
     }
 
@@ -72,7 +71,7 @@ class FormStep1 extends Component {
         //   RNFS.unlink(this.state.pathCacheResize);
         //   this.setState({ pathView: '', hasPhoto: false });
         // }
-        this.props.navigation.goBacknull(); 
+        this.props.navigation.goBack(nul); 
     }
 
     componentDidMount() {
@@ -131,7 +130,25 @@ class FormStep1 extends Component {
             this.state.selectedPhotos.map((item) => {
                 let da = item.split('/')
                 let imgName = da[da.length-1];
-                images.push(imgName);
+
+                var img = {
+                    IMAGE_CODE: '.jpg',
+                    TR_CODE: this.state.TRANS_CODE,
+                    IMAGE_NAME: imgName,
+                    IMAGE_PATH: dirPhotoTemuan + "/" + item,
+                    STATUS_IMAGE: 'SESUDAH',
+                    STATUS_SYNC: '',
+                    SYNC_TIME: '',
+                    INSERT_USER: this.state.user.USER_AUTH_CODE,
+                    INSERT_TIME: getTodayDate("YYYY-MM-DD"),
+                    UPDATE_USER: '',
+                    UPDATE_TIME: '',
+                    DELETE_USER: '',
+                    DELETE_TIME: ''
+                }
+
+                
+                images.push(img);
             });
             
             this.props.navigation.state.params.onLoadImage(images);

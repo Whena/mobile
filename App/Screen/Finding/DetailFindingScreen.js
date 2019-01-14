@@ -112,10 +112,15 @@ export default class DetailFindingScreen extends Component {
     _renderCarousel = item => {
         return (
             <View style={{ height: 200, flex: 1 }}>
-                <TouchableOpacity style ={style.button}>
-                    <Text style={style.buttonText}>Before</Text>
-                </TouchableOpacity>
-                <FastImage style={{ alignItems: 'center', width: '100%', height: 200 }}
+                <View style={{
+                    backgroundColor: '#5b5a5a', width: 80,
+                    padding: 5, position: 'absolute', top:0 , right:10, zIndex: 1, justifyContent: 'center', alignItems: 'center', 
+                    margin:10, borderRadius: 25,
+                }}>
+                    <Text style={{ fontSize: 10, color: 'white' }}>{this.getStatusImage(item.STATUS_IMAGE)}</Text>
+                </View>
+
+                <FastImage style={{ alignItems: 'center', width: '100%', height: '100%' }}
                     source={{
                         uri: "file://" + item.IMAGE_PATH,
                         priority: FastImage.priority.normal,
@@ -132,7 +137,12 @@ export default class DetailFindingScreen extends Component {
     }
 
     _takePicture() { 
-        this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage});
+        if(this.state.progress < 100){
+            alert('Selesaikan Progress temuan kamu dulu')
+        }else{
+            this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage});
+        }
+        
         // ImagePickerCrop.openCamera({
         //     width: 640,
         //     height: 480,
@@ -427,10 +437,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#eee',
         borderColor: '#ddd'
     }, 
-    button: {
+    statusImg: {        
         position: 'absolute',
         top: 10,
         right: 15, 
+        backgroundColor: Colors.brand,
+        borderRadius: 25,
+        padding: 15,
+        alignSelf: 'center',
+        justifyContent: 'center',
+    },
+    button: {
         width: 200,
         backgroundColor: Colors.brand,
         borderRadius: 25,
