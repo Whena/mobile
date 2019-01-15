@@ -28,6 +28,7 @@ import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import test from '../Screen/Inspeksi/test';
+import FilterScreen from '../Screen/FilterScreen'
 
 
 const main = createStackNavigator({
@@ -67,6 +68,7 @@ const main = createStackNavigator({
     
     Sync: { screen: SyncScreen },
     Inbox: { screen: InboxScreen },
+    Filter: { screen: FilterScreen },
 
     //inspeksi
     BuatInspeksi : {screen: BuatInspeksi},

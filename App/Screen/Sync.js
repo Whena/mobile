@@ -129,10 +129,10 @@ class SyncScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.props.navigation.setParams({
-            loadData: this.loadData,
-            loadDataDetail: this.loadDataDetail
-        });
+        // this.props.navigation.setParams({
+        //     loadData: this.loadData,
+        //     loadDataDetail: this.loadDataDetail
+        // });
     }
 
     loadData() {
@@ -648,8 +648,19 @@ class SyncScreen extends React.Component {
             downloadCategory: false,
             fetchLocation: false,
             isBtnEnable: false,
+            progress: 0,
+            progressAfd: 0,
+            progressRegion: 0,
+            progressEst: 0,
+            progressLandUse: 0,
+            progressComp: 0,
+            progressContent: 0,
+            progressContentLabel: 0,
+            progressKriteria: 0,
+            progressCategory: 0,
+            progressContact: 0,
             progressFinding: 0,
-            progressFindingImage: 0,
+            progressFindingImage: 0
 
             // kirimInspeksi: this.kirimInspeksi,
             // kirimInspeksiDetail: this.kirimInspeksiDetail
@@ -668,8 +679,8 @@ class SyncScreen extends React.Component {
         this.props.kriteriaRequest();
         this.props.categoryRequest();
         this.props.contactRequest();
-        // this.props.findingRequest();
-        // this.props.findingImageRequest();
+        this.props.findingRequest();
+        this.props.findingImageRequest();
 
     }
 
@@ -774,21 +785,21 @@ class SyncScreen extends React.Component {
             this.setState({ downloadContact: true });
         }
 
-        // if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
-        //     let dataJSON = newProps.finding.finding;
-        //     this.setState({ downloadFinding: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Finding(dataJSON);
-        //     }
-        // }
+        if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
+            let dataJSON = newProps.finding.finding;
+            this.setState({ downloadFinding: true });
+            if (dataJSON !== null) {
+                this._crudTM_Finding(dataJSON);
+            }
+        }
 
-        // if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
-        //     let dataJSON = newProps.findingImage.findingImage;
-        //     this.setState({ downloadFindingImage: true });
-        //     if (dataJSON !== null) {
-        //         this._crudTM_Finding_Image(dataJSON);
-        //     }
-        // }
+        if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
+            let dataJSON = newProps.findingImage.findingImage;
+            this.setState({ downloadFindingImage: true });
+            if (dataJSON !== null) {
+                this._crudTM_Finding_Image(dataJSON);
+            }
+        }
 
         RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 

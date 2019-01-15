@@ -4,6 +4,8 @@ import TaskServices from '../../Database/TaskServices'
 import { getFormatDate } from '../../Lib/Utils'
 import moment from 'moment'
 
+
+
 export default class HistoryFinding extends Component {
   constructor(props) {
     super(props)
@@ -30,23 +32,23 @@ export default class HistoryFinding extends Component {
     this.willFocus.remove()
   }
 
-  getCategoryName = (categoryCode) =>{
+  getCategoryName = (categoryCode) => {
     try {
-        let data = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', categoryCode);
-        return data.CATEGORY_NAME;            
+      let data = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', categoryCode);
+      return data.CATEGORY_NAME;
     } catch (error) {
-        return ''
+      return ''
     }
   }
 
-  getColor(param){
-    switch(param){
+  getColor(param) {
+    switch (param) {
       case 'SELESAI':
-        return Colors.brand;
+        return 'rgba(35, 144, 35, 0.7)';
       case 'SEDANG DIPROSES':
-        return '#feb236';
+        return 'rgba(254, 178, 54, 0.7)';
       case 'BARU':
-        return 'red';
+        return 'rgba(255, 77, 77, 0.7)';
       default:
         return '#ff7b25';
     }
@@ -55,15 +57,19 @@ export default class HistoryFinding extends Component {
   _renderItem = item => {
     const nav = this.props.navigation
     const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
+    const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
+    const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
+    const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
 
     return (
       <TouchableOpacity
         style={styles.sectionCardView}
         onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }}
       >
-        <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} />
+        {/* source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} */}
+        <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')} />
         <View style={styles.sectionDesc} >
-          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_CODE}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>{item.INSERT_TIME}</Text></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>{this.getCategoryName(item.FINDING_CATEGORY)}</Text ></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: this.getColor(item.STATUS) }}>{item.STATUS}</Text ></Text>
