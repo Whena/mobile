@@ -4,8 +4,6 @@ import TaskServices from '../../Database/TaskServices'
 import { getFormatDate } from '../../Lib/Utils'
 import moment from 'moment'
 
-
-
 export default class HistoryFinding extends Component {
   constructor(props) {
     super(props)
@@ -24,7 +22,8 @@ export default class HistoryFinding extends Component {
   )
 
   _initData() {
-    var data = TaskServices.getAllData('TR_FINDING');
+    var dataSorted = TaskServices.getAllData('TR_FINDING');
+    let data = dataSorted.sorted('INSERT_TIME', true)
     this.setState({ data })
   }
 
