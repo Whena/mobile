@@ -130,27 +130,20 @@ class FormStep1 extends Component {
             this.state.selectedPhotos.map((item) => {
                 let da = item.split('/')
                 let imgName = da[da.length-1];
-
+                item = item.substring(7);
+                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
                 var img = {
-                    IMAGE_CODE: '.jpg',
                     TR_CODE: this.state.TRANS_CODE,
+                    IMAGE_CODE: pname.replace(".jpg", ""),
                     IMAGE_NAME: imgName,
-                    IMAGE_PATH: dirPhotoTemuan + "/" + item,
+                    IMAGE_PATH_LOCAL: item,
+                    IMAGE_URL: '',
                     STATUS_IMAGE: 'SESUDAH',
-                    STATUS_SYNC: '',
-                    SYNC_TIME: '',
                     INSERT_USER: this.state.user.USER_AUTH_CODE,
-                    INSERT_TIME: getTodayDate("YYYY-MM-DD"),
-                    UPDATE_USER: '',
-                    UPDATE_TIME: '',
-                    DELETE_USER: '',
-                    DELETE_TIME: ''
-                }
-
-                
+                    INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
+                }               
                 images.push(img);
             });
-            
             this.props.navigation.state.params.onLoadImage(images);
             this.props.navigation.goBack(); 
         }

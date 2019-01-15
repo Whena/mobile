@@ -89,7 +89,6 @@ class FormStep1 extends Component {
     }
 
     componentDidMount() {
-        // console.log(this.props.navigation)
        this.getLocation();
        this.props.navigation.setParams({ clearFoto: this.clearFoto })
        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);

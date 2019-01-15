@@ -180,6 +180,14 @@ const TaskServices = {
       }
     });
   },
+  
+  updateFinding: function (table, param, index){
+    let data = RealmSchemas.objects(table)[index];
+    RealmSchemas.write(() => {
+      data.STATUS = param[0];
+      data.PROGRESS = param[1];
+    });
+  },
 
   updateInspectionHScore: function (blockCode, param) {
     let data = RealmSchemas.objects('TR_BLOCK_INSPECTION_H').filtered('BLOCK_INSPECTION_CODE == \"' + blockCode + '\" ')[0];
