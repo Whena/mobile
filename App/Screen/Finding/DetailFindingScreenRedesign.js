@@ -37,11 +37,13 @@ class DetailFindingScreenRedesign extends Component{
             id: ID,
             images: [],
             totalImages: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
+            totalImagesSesudah: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
             data,
             progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
             updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE,
-            imgBukti: []
+            imgBukti: [],
+            disabledView: false
         }
     }
 
@@ -60,11 +62,23 @@ class DetailFindingScreenRedesign extends Component{
     };
 
     componentWillMount(){
+
         this.state.totalImages.map(item=>{
             this.state.images.push(item);
-            this.state.imgBukti.push(item);
+        });
+
+        this.state.totalImagesSesudah.map(item=>{
+            this.state.images.push(item);
         })
 
+        // alert(JSON.stringify(this.state.totalImagesSesudah))
+
+    }
+
+    componentDidMount(){
+        if(this.state.progress == 100){
+            this.setState({disabledView:true});
+        }
     }
 
     getStatusImage(status) {
@@ -91,6 +105,7 @@ class DetailFindingScreenRedesign extends Component{
     onLoadImage = data => {
         data.map(item=>{
             this.state.images.push(item);
+            this.state.imgBukti.push(item);
         })
     }
 
@@ -104,10 +119,10 @@ class DetailFindingScreenRedesign extends Component{
     };
 
     _takePicture() { 
-        if(this.state.progress < 100){
-            alert('Selesaikan Progress temuan kamu dulu')
+        if(this.state.progress == 100){
+            this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage, findingCode : this.state.id});
         }else{
-            this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage});
+            alert('Selesaikan Progress temuan kamu dulu')
         }
     }
 
@@ -118,6 +133,12 @@ class DetailFindingScreenRedesign extends Component{
             return 'SELESAI'
         }else{
             return 'SEDANG DALAM PROSES'
+        }
+    }
+
+    validation(){
+        if(this.state.imgBukti.length > 0 && this.state.progress == 100){
+
         }
     }
 
@@ -148,14 +169,20 @@ class DetailFindingScreenRedesign extends Component{
         if(this.state.progress == 100){
             this._saveImageUpdate();
         }
-        
-        this._makeAlert("Informasi", "Data berhasil di simpan")
+
+        Alert.alert(
+            'Peringatan',
+            'Data Temuan kamu sudah diupdate',
+            [
+                { text: 'OK', onPress: () => this.props.navigation.goBack(null) }
+            ]
+        );
     }
 
     _saveImageUpdate() {
         this.state.imgBukti.map(item=>{
             TaskServices.saveData('TR_IMAGE_FINDING', item);
-        });
+        })
     }
 
     getContactName = (userAuth) =>{
@@ -169,7 +196,6 @@ class DetailFindingScreenRedesign extends Component{
 
     render(){        
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
-        let disableview = this.state.progress == 100 ? true:false;
 
         return(
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
@@ -300,7 +326,7 @@ class DetailFindingScreenRedesign extends Component{
                                 style={{ height: 20, flex: 1 }}
                                 trackStyle={{ height: 5 }}
                                 value={this.state.progress}
-                                disabled={disableview}
+                                disabled={this.state.disabledView}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -334,6 +360,7 @@ class DetailFindingScreenRedesign extends Component{
                         <Card style={[styles.cardContainer, {marginLeft: 15}]}>
                             <TouchableOpacity style={{ padding: 40 }}
                                 onPress={() => { this._takePicture() }}
+                                disabled={this.state.disabledView}
                             >
                                 <Image style={{
                                     alignSelf: 'center', alignItems: 'stretch',

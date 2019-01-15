@@ -68,7 +68,7 @@ class FormStep2 extends Component {
     constructor(props) {
         super(props);
 
-        // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
         let params = props.navigation.state.params;
         let foto = R.clone(params.image);
@@ -145,12 +145,12 @@ class FormStep2 extends Component {
             });
         }
         this.getLocation();
-        // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-        // this.handleAndroidBackButton(this.exitAlert);
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        this.handleAndroidBackButton(this.exitAlert);
     }
 
     componentWillUnmount() {
-        // BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     handleBackButtonClick() {
@@ -206,23 +206,23 @@ class FormStep2 extends Component {
         navigation.dispatch(resetAction);
     }
 
-    // exitAlert = () => {
-    //     Alert.alert(
-    //         'Peringatan',
-    //         'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-    //         [
-    //             { text: 'NO', style: 'cancel' },
-    //             { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-    //         ]
-    //     );
-    // };
+    exitAlert = () => {
+        Alert.alert(
+            'Peringatan',
+            'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
+            [
+                { text: 'NO', style: 'cancel' },
+                { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
+            ]
+        );
+    };
 
-    // handleAndroidBackButton = callback => {
-    //     BackHandler.addEventListener('hardwareBackPress', () => {
-    //         callback();
-    //         return true;
-    //     });
-    // };
+    handleAndroidBackButton = callback => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            callback();
+            return true;
+        });
+    };
 
     validation() {
         let isSameUser = this.state.assignto == this.state.user.USER_AUTH_CODE ? true : false;

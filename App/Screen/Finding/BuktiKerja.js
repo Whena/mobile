@@ -46,6 +46,8 @@ class FormStep1 extends Component {
         
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.clearFoto = this.clearFoto.bind(this);
+        
+        var ID = this.props.navigation.state.params.findingCode
 
         var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
@@ -60,7 +62,7 @@ class FormStep1 extends Component {
             longitude: 0.0,
             fetchLocation: false,
             isMounted: false,
-            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
+            TRANS_CODE: ID//'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
         }
     }
 
