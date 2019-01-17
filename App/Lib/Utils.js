@@ -20,6 +20,27 @@ var uuid = require('react-native-uuid');
 // 	);
 // }
 
+export function kirimImage(URL, Formdata){
+	fetch(url, {
+		method: 'POST',
+		headers: {
+		  'Cache-Control': 'no-cache',
+		  Accept: 'application/json',
+		  'Content-Type': 'multipart/form-data',
+		  Authorization : `Bearer ${user[0].ACCESS_TOKEN}`,
+		},
+		body: data
+		
+	  }).then((response) => response.json())
+	  .then((responseJson) => {
+		  console.log(responseJson);
+		  return responseJson;
+	   }).catch((error) => {
+		console.error(error);
+		return error;
+	  });
+}
+
 export function getSticker(score){
 	var arrA = [require('../Images/stiker-A-1.png'), require('../Images/stiker-A-2.png'), require('../Images/stiker-A-3.png')];
 	var arrB = [require('../Images/stiker-B-1.png'), require('../Images/stiker-B-2.png'), require('../Images/stiker-B-3.png')];

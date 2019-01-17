@@ -18,8 +18,12 @@ import { connect } from 'react-redux';
 import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { NavigationActions, StackActions  } from 'react-navigation';
+import Colors from '../Constant/Colors';
 import {isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
+import CategoryAction from '../Redux/CategoryRedux';
+import ContactAction from '../Redux/ContactRedux';
+const IMEI = require('react-native-imei');
 
 class Login extends Component{
 
@@ -27,9 +31,10 @@ class Login extends Component{
         super(props);
         this.state = {
             fetching: false,
-            user_id:'',
-            user_name:'',
-            token:'',
+            user_id: '',
+            user_name: '',
+            token: '',
+            imei: ''
         }
     }
 
@@ -37,14 +42,20 @@ class Login extends Component{
         header: null,        
     }
 
-    insertUser=(user)=>{
+    get_IMEI_Number() {
+        var IMEI_2 = IMEI.getImei();
+        this.setState({ imei: IMEI_2 });
+        return IMEI_2;
+    }
+
+    insertUser(user) {
         var data = {
             NIK: user.NIK,
             ACCESS_TOKEN: user.ACCESS_TOKEN,
             JOB_CODE: user.JOB_CODE,
             LOCATION_CODE: user.LOCATION_CODE,
             REFFERENCE_ROLE: user.REFFERENCE_ROLE,
-            USERNAME: user.REFFERENCE_ROLE,
+            USERNAME: user.USERNAME,
             USER_AUTH_CODE: user.USER_AUTH_CODE,
             USER_ROLE: user.USER_ROLE,
             STATUS: 'LOGIN'
@@ -53,10 +64,10 @@ class Login extends Component{
     }
 
     componentDidMount(){
-        let data = TaskServices.getAllData('TR_LOGIN')[0]
-        if(data.length > 0){
+        // let data = TaskServices.getAllData('TR_LOGIN')[0]
+        // if(data.length > 0){
 
-        }
+        // }
     }
 
     componentWillReceiveProps(newProps) {
@@ -64,7 +75,7 @@ class Login extends Component{
 			this.setState({ fetching: newProps.auth.fetching });
         }
 		if (!isNil(newProps.auth.user)) {
-            this.insertUser;
+            this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
 
 		}
@@ -79,27 +90,27 @@ class Login extends Component{
         navigation.dispatch(resetAction);
     }
     
-    checkUser(username){
-        let data = TaskServices.findBy2('TR_LOGIN', 'USERNAME', username);
-        if(data.length > 0){
+    // checkUser(username){
+    //     let data = TaskServices.findBy2('TR_LOGIN', 'USERNAME', username);
+    //     if(data.length > 0){
 
-        }
-    }
+    //     }
+    // }
 
     onLogin(username, password) {
         Keyboard.dismiss();
-		this.props.authRequest({
+        var Imei = this.get_IMEI_Number();
+
+        this.props.authRequest({
             username: username,
-            password: password
+            password: password,
+            imei: Imei
         });
-        
-        // this.navigateScreen('MainMenu');
-	}
+    }
 
     render(){
-        console.log('sagijbnfokfhnfasklfhbasnf,sa;kfn')
         return(
-            <ImageBackground source={require('../Images/background.png')} style={styles.container}>
+            <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
                 <KeyboardAvoidingView
                     style={styles.container}
                     behavior="padding" >
@@ -113,9 +124,6 @@ class Login extends Component{
 
                     <Form
                         onBtnClick={data=>{this.onLogin(data.strEmail, data.strPassword)}}/>
-                        {/* <Form onBtnClick={data=>{this.navigateScreen('HomeNavigation')}}/> */}
-                        
-                        {/* <Form onBtnClick={data=>{this.navigateScreen('MainTabNavigator')}}/> */}
                     <View style={styles.footerView}>
                         <Text style={styles.footerText}>{'\u00A9'} 2018 Copyrights PT Triputra Agro Persada</Text>
                     </View>
@@ -174,7 +182,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     footerText: {
-        color: '#FFFFFF',
+        color: '#51a977',
         fontSize: 12,
     },
   });

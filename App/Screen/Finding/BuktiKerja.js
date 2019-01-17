@@ -133,7 +133,8 @@ class FormStep1 extends Component {
                 let da = item.split('/')
                 let imgName = da[da.length-1];
                 item = item.substring(7);
-                var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
+                // var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
+                var pname = `P${this.state.user.USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}.jpg`
                 var img = {
                     TR_CODE: this.state.TRANS_CODE,
                     IMAGE_CODE: pname.replace(".jpg", ""),
@@ -141,6 +142,7 @@ class FormStep1 extends Component {
                     IMAGE_PATH_LOCAL: item,
                     IMAGE_URL: '',
                     STATUS_IMAGE: 'SESUDAH',
+                    STATUS_SYNC: 'N',
                     INSERT_USER: this.state.user.USER_AUTH_CODE,
                     INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
                 }               

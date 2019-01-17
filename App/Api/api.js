@@ -88,11 +88,11 @@ const create = () => {
     //insepksi
     const postInspeksiHeader = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
-        api.post('/inspection-header', body);
+        return api.post('/inspection-header', body);
     };
     const postInspeksiDetail = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
-        api.post('/inspection-detail', body);
+        return api.post('/inspection-detail', body);
     }
 
     //GET

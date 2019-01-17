@@ -79,12 +79,12 @@ class FormStep1 extends Component {
     }
 
     clearFoto(){
-        // if(this.state.hasPhoto){
-        //   RNFS.unlink(this.state.path);
-        //   RNFS.unlink(this.state.pathCacheInternal);
-        //   RNFS.unlink(this.state.pathCacheResize);
-        //   this.setState({ pathView: '', hasPhoto: false });
-        // }
+        alert('jkbsad')
+        if(this.state.photos.length > 0){
+            this.state.photos.map(item =>{                
+                RNFS.unlink(item.uri)
+            })
+        }
         this.props.navigation.goBack(null); 
     }
 
@@ -99,18 +99,8 @@ class FormStep1 extends Component {
     }
 
     handleBackButtonClick() { 
-        // if(isMounted){
-            // Alert.alert(
-            //     'Peringatan',
-            //     'Transaksi kamu tidak akan tersimpan, kamu yakin akan melanjutkan?',
-            //     [
-            //         { text: 'NO', style: 'cancel' },
-            //         { text: 'YES', onPress: () => this.props.navigation.goBack(null) }
-            //     ]
-            // );
-        // }
-        this.props.navigation.goBack(null); 
-        return true;
+        this.clearFoto()
+        return false;
     }
 
     getLocation() {
@@ -197,6 +187,7 @@ class FormStep1 extends Component {
         this.setState({
             photos,
         });
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
     takePicture() {

@@ -68,7 +68,7 @@ class FormStep2 extends Component {
     constructor(props) {
         super(props);
 
-        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
         let params = props.navigation.state.params;
         let foto = R.clone(params.image);
@@ -107,10 +107,11 @@ class FormStep2 extends Component {
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
-            TRANS_CODE: 'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
+            TRANS_CODE: `F${user.USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}`,//'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
             colorPriority: '#ddd',
             query: '',
             person: [],
+            disableCalendar: true
         }
     }
 
@@ -145,12 +146,13 @@ class FormStep2 extends Component {
             });
         }
         this.getLocation();
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-        this.handleAndroidBackButton(this.exitAlert);
+        // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        // this.handleAndroidBackButton(this.exitAlert);
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+        // alert(JSON.stringify(this.state.foto))
+        // BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     handleBackButtonClick() {
@@ -246,7 +248,12 @@ class FormStep2 extends Component {
                 'Peringatan',
                 "Prioritas harus diisi"
             );
-        } else if (isSameUser && isEmpty(this.state.batasWaktu)) {
+        } else if (isEmpty(this.state.tugasKepada)) {
+            Alert.alert(
+                'Peringatan',
+                "Ditugaskan kepada harus diisi"
+            );
+        }else if (isSameUser && isEmpty(this.state.batasWaktu)) {
             Alert.alert(
                 'Peringatan',
                 "Batas waktu harus diisi"
@@ -262,7 +269,6 @@ class FormStep2 extends Component {
             WERKS: this.state.werks,
             AFD_CODE: this.state.afdCode,
             BLOCK_CODE: this.state.blockCode,
-            // BLOCK_FULL_NAME: this.state.query,
             FINDING_CATEGORY: this.state.categoryCode,
             FINDING_DESC: this.state.keterangan,
             FINDING_PRIORITY: this.state.priority,
@@ -286,11 +292,12 @@ class FormStep2 extends Component {
                 IMAGE_PATH_LOCAL: dirPhotoTemuan + "/" + image,
                 IMAGE_URL: '',
                 STATUS_IMAGE: 'SEBELUM',
+                STATUS_SYNC: 'N',
                 INSERT_USER: this.state.user.USER_AUTH_CODE,
                 INSERT_TIME: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
             }
 
-            TaskServices.saveData('TR_IMAGE_FINDING', imagetr);
+            TaskServices.saveData('TR_IMAGE', imagetr);
         });
         this.props.navigation.goBack(null);
     }
@@ -333,6 +340,18 @@ class FormStep2 extends Component {
         const { person } = this.state;
         const regex = new RegExp(`${query.trim()}`, 'i');
         return person.filter(person => person.allShow.search(regex) >= 0);
+    }
+
+    changeContact = data => {        
+        let isSameUser = data.userAuth == this.state.user.USER_AUTH_CODE ? true : false;
+        if(isSameUser){
+            this.setState({disableCalendar:false})
+        }
+        this.setState({tugasKepada:data.fullName,assignto:data.userAuth})
+    }
+
+    changeCategory = data => {
+        this.setState({category: data.CATEGORY_NAME,categoryCode: data.CATEGORY_CODE})
     }
 
     render() {
@@ -429,7 +448,7 @@ class FormStep2 extends Component {
                     <View style={style.line} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Kategori <Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.setState({ isCategoryVisible: true })}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKategori', {changeCategory: this.changeCategory})}>
                             {isEmpty(this.state.category) && (<Text style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
                             {!isEmpty(this.state.category) && (<Text style={{ fontSize: 14 }}> {this.state.category} </Text>)}
                         </TouchableOpacity>
@@ -453,16 +472,30 @@ class FormStep2 extends Component {
 
                     <View style={style.line} />
 
+                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <Text style={style.label}> Ditugaskan Kepada </Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak', {changeContact: this.changeContact})}>
+                            {isEmpty(this.state.tugasKepada) && (
+                                <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
+                            {!isEmpty(this.state.tugasKepada) && (
+                                <Text style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={style.line} />
+
                     <View style={{ flex: 1 }}>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
                             <Text style={style.label}>Batas Waktu {isEmpty(this.state.tugasKepada) && (<Text style={style.mandatory}>*</Text>)}</Text>
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
-                                {isEmpty(this.state.batasWaktu) && (
-                                    <Text onPress={this._showDateTimePicker} style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
-                                {!isEmpty(this.state.batasWaktu) && (
-                                    <Text onPress={this._showDateTimePicker} style={{ fontSize: 14 }}> {this.state.batasWaktu} </Text>)}
+                                <TouchableOpacity onPress={this._showDateTimePicker} disabled ={this.state.disableCalendar}>
+                                    {isEmpty(this.state.batasWaktu) && (
+                                        <Text style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
+                                    {!isEmpty(this.state.batasWaktu) && (
+                                        <Text  style={{ fontSize: 14 }}> {this.state.batasWaktu} </Text>)}
+                                </TouchableOpacity>                                
 
                             </View>
                         </View>
@@ -472,19 +505,7 @@ class FormStep2 extends Component {
                             onConfirm={this._handleDatePicked}
                             onCancel={this._hideDateTimePicker}
                         />
-                    </View>
-
-                    <View style={style.line} />
-
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <Text style={style.label}> Ditugaskan Kepada </Text>
-                        <TouchableOpacity onPress={() => this.setState({ isContactVisible: true })}>
-                            {isEmpty(this.state.tugasKepada) && (
-                                <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
-                            {!isEmpty(this.state.tugasKepada) && (
-                                <Text style={{ fontSize: 14 }}> {this.state.tugasKepada} </Text>)}
-                        </TouchableOpacity>
-                    </View>
+                    </View>                   
 
                     <View style={[style.line]} />
 
@@ -628,7 +649,7 @@ class FormStep2 extends Component {
                 </SlidingUpPanel>
 
                 {/* slidingup contacts */}
-                <SlidingUpPanel
+                {/* <SlidingUpPanel
                     visible={this.state.isContactVisible}
                     onRequestClose={() => this.setState({ isContactVisible: false })}>
                     <View style={style.containerSlidingUpPanel}>
@@ -648,12 +669,17 @@ class FormStep2 extends Component {
                                 tugasKepada: user.user.fullName,
                                 assignto: user.user.userAuth
                             })
+                            
+                            let isSameUser = user.user.userAuth == this.state.user.USER_AUTH_CODE ? true : false;
+                            if(isSameUser){
+                                this.setState({disableCalendar: false})
+                            }
                         }} />
                     </View>
-                </SlidingUpPanel>
+                </SlidingUpPanel> */}
 
                 {/* slidingup category */}
-                <SlidingUpPanel
+                {/* <SlidingUpPanel
                     height={340}
                     draggableRange={{ top: 420, bottom: 0 }}
                     visible={this.state.isCategoryVisible}
@@ -687,19 +713,16 @@ class FormStep2 extends Component {
                                         <FastImage style={{ width: 40, height: 40 }}
                                             resizeMode={FastImage.resizeMode.contain}
                                             source={{
-                                                uri: `file://${dirPhotoKategori}/${item.ICON}`,//"https://s.kaskus.id/user/avatar/2014/02/16/avatar6457006_1.gif",
+                                                uri: `file://${dirPhotoKategori}/${item.ICON}`,
                                                 priority: FastImage.priority.normal,
                                             }} />
-                                        {/* <Image 
-                                            source={{ uri: `file:///storage/emulated/0/MobileInspection/${item.ICON}` }}
-                                            style={{ width: 40, height: 40 }} /> */}
                                         <Text style={style.textCategory}>{item.CATEGORY_NAME}</Text>
                                     </TouchableOpacity>
                                 );
                             }}
                         />
                     </View>
-                </SlidingUpPanel>
+                </SlidingUpPanel> */}
             </Container >
         )
     }

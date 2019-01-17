@@ -23,6 +23,7 @@ import ImagePickerCrop from 'react-native-image-crop-picker'
 import moment from 'moment'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import ImageSlider from 'react-native-image-slider';
+import { getTodayDate } from '../../Lib/Utils';
 
 class DetailFindingScreenRedesign extends Component{
 
@@ -36,14 +37,16 @@ class DetailFindingScreenRedesign extends Component{
             user: TaskServices.getAllData('TR_LOGIN')[0],
             id: ID,
             images: [],
-            totalImages: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
-            totalImagesSesudah: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
+            totalImages: TaskServices.query('TR_IMAGE', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
+            totalImagesSesudah: TaskServices.query('TR_IMAGE', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
+            // totalImages: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
+            // totalImagesSesudah: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
             data,
             progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
             updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE,
             imgBukti: [],
-            disabledView: false
+            disabledProgress: true
         }
     }
 
@@ -71,13 +74,17 @@ class DetailFindingScreenRedesign extends Component{
             this.state.images.push(item);
         })
 
-        // alert(JSON.stringify(this.state.totalImagesSesudah))
-
     }
 
     componentDidMount(){
-        if(this.state.progress == 100){
-            this.setState({disabledView:true});
+        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true: false
+        // alert(this.state.user.USER_AUTH_CODE)
+        if(!isSameUser){
+            this.setState({disabledProgress:true});
+        }else if(this.state.progress == 100){
+            this.setState({disabledProgress:true});
+        }else if(this.state.disabledProgress < 100 && isSameUser){
+            this.setState({disabledProgress:false});
         }
     }
 
@@ -93,7 +100,7 @@ class DetailFindingScreenRedesign extends Component{
         switch(param){
           case 'SELESAI':
             return 'rgba(35, 144, 35, 0.7)';
-          case 'SEDANG DALAM PROSES':
+          case 'SEDANG DIPROSES':
             return 'rgba(254, 178, 54, 0.7)';
           case 'BARU':
             return 'rgba(255, 77, 77, 0.7)';
@@ -107,6 +114,7 @@ class DetailFindingScreenRedesign extends Component{
             this.state.images.push(item);
             this.state.imgBukti.push(item);
         })
+        // alert(JSON.stringify(this.state.imgBukti))
     }
 
     _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -132,13 +140,15 @@ class DetailFindingScreenRedesign extends Component{
         }else if(param == 100){
             return 'SELESAI'
         }else{
-            return 'SEDANG DALAM PROSES'
+            return 'SEDANG DIPROSES'
         }
     }
 
     validation(){
-        if(this.state.imgBukti.length > 0 && this.state.progress == 100){
-
+        if(this.state.imgBukti.length < 1 && this.state.progress == 100){
+            alert('Kamu harus foto bukti kerja dulu')
+        }else{
+            this._updateFinding()
         }
     }
 
@@ -181,7 +191,7 @@ class DetailFindingScreenRedesign extends Component{
 
     _saveImageUpdate() {
         this.state.imgBukti.map(item=>{
-            TaskServices.saveData('TR_IMAGE_FINDING', item);
+            TaskServices.saveData('TR_IMAGE', item);
         })
     }
 
@@ -326,7 +336,7 @@ class DetailFindingScreenRedesign extends Component{
                                 style={{ height: 20, flex: 1 }}
                                 trackStyle={{ height: 5 }}
                                 value={this.state.progress}
-                                disabled={this.state.disabledView}
+                                disabled={this.state.disabledProgress}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -373,7 +383,7 @@ class DetailFindingScreenRedesign extends Component{
 
                     {(this.state.data.PROGRESS < 100) &&
                         <TouchableOpacity style={[styles.button, { marginTop: 25, marginBottom: 30 }]}
-                            onPress={() => { this._updateFinding() }}>
+                            onPress={() => { this.validation() }}>
                             <Text style={styles.buttonText}>Simpan</Text>
                         </TouchableOpacity>}
 

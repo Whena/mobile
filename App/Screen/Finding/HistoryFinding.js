@@ -50,7 +50,7 @@ export default class HistoryFinding extends Component {
     switch(param){
       case 'SELESAI':
         return Colors.brand;
-      case 'SEDANG DALAM PROSES':
+      case 'SEDANG DIPROSES':
         return '#feb236';
       case 'BARU':
         return 'red';
@@ -60,7 +60,7 @@ export default class HistoryFinding extends Component {
   }
 
   onClickItem(id){
-    var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${id}' AND STATUS_IMAGE='SEBELUM'`);
+    var images = TaskServices.query('TR_IMAGE', `TR_CODE='${id}' AND STATUS_IMAGE='SEBELUM'`);
     let test = [];
     images.map(item => {            
         var img = {
@@ -77,23 +77,19 @@ export default class HistoryFinding extends Component {
   }
 
   _renderItem = (item, idx) => {
-    const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE);
+    const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE);
     let showImage;
     if(image == undefined){
       showImage = <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')} />
     }else{
       showImage = <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} />
     }
-    // let images = image == 'undefined' ? <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')} /> : <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} />
-    
     return (
       <TouchableOpacity
         style={styles.sectionCardView}
         onPress={() => { this.onClickItem(item.FINDING_CODE) }}
         key={idx}
       >
-        {/* <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} /> */}
-        {/* <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')} />  */}
         {showImage}
         <View style={styles.sectionDesc} >
           <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_FULL_NAME}</Text></Text>

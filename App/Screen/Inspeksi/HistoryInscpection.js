@@ -21,12 +21,14 @@ export default class HistoryInspection extends Component {
   }
   
   renderAll =()=>{
-    let data = Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
+    
+    var dataSorted = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
+    let data = dataSorted.sorted('START_INSPECTION', true); //Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
     if (data !== null){
       let arr = [];
-      for (let i = 0; i < data.length; i++) {
-        arr.push(this.renderList(data[i], i));
-      }
+      data.map((item,index) => {
+        arr.push(this.renderList(item, index));
+      })
       return <View>{arr}</View>;
     }
   }

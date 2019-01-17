@@ -20,8 +20,6 @@ import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
 import CategoryAction from '../Redux/CategoryRedux';
 import ContactAction from '../Redux/ContactRedux';
-import RegionAction from '../Redux/RegionRedux';
-import BlockAction from '../Redux/BlockRedux';
 const IMEI = require('react-native-imei');
 
 
@@ -35,18 +33,17 @@ class LoginScreen extends React.Component {
             user_name: '',
             token: '',
             imei: ''
-            // imei: IMEI.getImei()
         }
+    }
+
+    static navigationOptions = {
+        header: null,
     }
 
     get_IMEI_Number() {
         var IMEI_2 = IMEI.getImei();
         this.setState({ imei: IMEI_2 });
         return IMEI_2;
-    }
-
-    static navigationOptions = {
-        header: null,
     }
 
     insertUser(user) {
@@ -109,11 +106,6 @@ class LoginScreen extends React.Component {
             <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
                 <KeyboardAvoidingView behavior="padding">
                     <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
-                    {/* <FormLogin
-                        onBtnClick={data => {
-                            console.log(data)
-                            this.props.navigation.navigate('MainTabs')
-                        }} /> */}
                     <FormLogin
                         onBtnClick={data => { this.onLogin(data.strEmail, data.strPassword) }} />
                     <View style={styles.footerView}>

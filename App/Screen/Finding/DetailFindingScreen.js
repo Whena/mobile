@@ -22,6 +22,7 @@ import R, { isEmpty, isNil } from 'ramda'
 import ImagePickerCrop from 'react-native-image-crop-picker'
 import moment from 'moment'
 import DateTimePicker from 'react-native-modal-datetime-picker'
+import ImageSlider from 'react-native-image-slider';
 
 export default class DetailFindingScreen extends Component {
 
@@ -33,7 +34,6 @@ export default class DetailFindingScreen extends Component {
         var data = TaskServices.findBy2('TR_FINDING', 'FINDING_CODE', ID)
         var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`);
         var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`);
-
         this.state = {
             user,
             id: ID,
@@ -44,7 +44,8 @@ export default class DetailFindingScreen extends Component {
             progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
             updatedDueDate: R.isEmpty(data.DUE_DATE) ? "Select Calendar" : data.DUE_DATE,
-            imgBukti: []
+            imgBukti: [],
+            imgSwitch: false
         }
     }
 
@@ -80,6 +81,12 @@ export default class DetailFindingScreen extends Component {
             }], { cancelable: false })
     }
 
+    componentWillMount(){
+        this.state.images.map(item=>{
+            this.state.imgBukti.push(item);
+        })
+    }
+
     onLoadImage = data => {
         if(this.state.progress == 100){
             data.map(item => {
@@ -88,11 +95,11 @@ export default class DetailFindingScreen extends Component {
         }
     }
 
-    _getStatus() {
-        if (this.state.data.PROGRESS == 100){ 
-            return "After"
-        } else if (this.state.data.PROGRESS == 0) {
+    getStatusImage(status) {
+        if (status == 'SEBELUM'){ 
             return "Before"
+        } else if ('SESUDAH') {
+            return "After"
         }
     }
 
@@ -107,17 +114,18 @@ export default class DetailFindingScreen extends Component {
           default:
             return '#ff7b25';
         }
-      }
+    }
 
-    _renderCarousel = item => {
+    _renderCarousel = (item, idx) => {
         return (
-            <View style={{ height: 200, flex: 1 }}>
+            <View style={{ height: 200, flex: 1 }}
+                key ={idx}>
                 <View style={{
                     backgroundColor: '#5b5a5a', width: 80,
                     padding: 5, position: 'absolute', top:0 , right:10, zIndex: 1, justifyContent: 'center', alignItems: 'center', 
                     margin:10, borderRadius: 25,
                 }}>
-                    <Text style={{ fontSize: 10, color: 'white' }}>{this._getStatus(item.STATUS_IMAGE)}</Text>
+                    <Text style={{ fontSize: 10, color: 'white' }}>{this.getStatusImage(item.STATUS_IMAGE)}</Text>
                 </View>
 
                 <FastImage style={{ alignItems: 'center', width: '100%', height: '100%' }}
@@ -161,7 +169,9 @@ export default class DetailFindingScreen extends Component {
         this._hideDateTimePicker();
     };
 
-    _saveToDB() {
+    _saveToDB() {   
+        let data = TaskServices.getAllData('TR_FINDING')     
+        let indexData = R.findIndex(R.propEq('FINDING_CODE', this.state.data.FINDING_CODE))(data);
         var save = {
             FINDING_CODE: this.state.data.FINDING_CODE,
             WERKS: this.state.data.WERKS,
@@ -267,7 +277,7 @@ export default class DetailFindingScreen extends Component {
                             indicatorSize={15}
                             indicatorColor={this.getColor(this.state.data.STATUS)}
                         >
-                            {this.state.images.map(this._renderCarousel)}
+                            {this.state.imgBukti.map((item, idx)=>this._renderCarousel(item, idx))}
 
                         </Carousel>
                     </View>
@@ -368,28 +378,6 @@ export default class DetailFindingScreen extends Component {
                             </TouchableOpacity>
                         </Card>
                     </View>
-                    {/* {isEmpty(this.state.image) &&
-                        <Card style={[styles.cardContainer]}>
-
-                            <TouchableOpacity style={{ padding: 70 }}
-                                onPress={() => { this._takePicture() }}
-                            >
-                                <Image style={{
-                                    alignSelf: 'center', alignItems: 'stretch',
-                                    width: 55, height: 55
-                                }}
-                                    source={require('../../Images/icon/ic_camera_big.png')}></Image>
-                            </TouchableOpacity>
-                        </Card>
-                    }
-                    {!isEmpty(this.state.image) &&
-                        <View style={[styles.cardContainer, { height: 250 }]}>
-                            <FastImage resizeMode={FastImage.resizeMode.contain} style={{ flex: 1 }}
-                                source={{
-                                    uri: this.state.image,
-                                    priority: FastImage.priority.normal,
-                                }} />
-                        </View>} */}
 
                     {(this.state.data.PROGRESS < 100) &&
                         <TouchableOpacity style={[styles.button, { marginTop: 25, marginBottom: 30 }]}

@@ -215,7 +215,7 @@ class HistoryInspeksiDetail extends React.Component {
 
         if(tipa.length > 0)  {
             var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
-            var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
+            var avg_tipa = jmlNilaiTipa/tipa.length;
             var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
             data = {
                 idx: 5,
@@ -226,7 +226,7 @@ class HistoryInspeksiDetail extends React.Component {
         }
         if(penabur.length> 0)  {
             var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
-            var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
+            var avg_penabur = jmlNilaiPenabur/penabur.length;
             var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
             data = {
                 idx: 6,
@@ -237,7 +237,7 @@ class HistoryInspeksiDetail extends React.Component {
         }
         if(pupuk.length > 0)  {
             var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
-            var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
+            var avg_pupuk = jmlNilaiPupuk/pupuk.length;
             var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
             data = {
                 idx: 9,
@@ -248,7 +248,7 @@ class HistoryInspeksiDetail extends React.Component {
         }
         if(kastrasi.length > 0)  {
             var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
-            var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
+            var avg_kastrasi = jmlNilaiKastrasi/kastrasi.length;
             var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
             data = {
                 idx: 7,
@@ -259,7 +259,7 @@ class HistoryInspeksiDetail extends React.Component {
         }
         if(sanitasi.length > 0)  {
             var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
-            var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
+            var avg_sanitasi = jmlNilaiSanitasi/sanitasi.length;
             var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
             data = {
                 idx: 8,

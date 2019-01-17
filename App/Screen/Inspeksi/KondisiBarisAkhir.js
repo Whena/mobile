@@ -334,24 +334,28 @@ class KondisiBarisAkhir extends Component{
             TaskService.saveData('TR_BLOCK_INSPECTION_H', modelInspeksiH);
     
             var image = {
-                IMAGE_CODE: this.state.fotoBaris.IMAGE_CODE,
                 TR_CODE: this.state.fotoBaris.TR_CODE,
-                BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
+                IMAGE_CODE: this.state.fotoBaris.IMAGE_CODE,
                 IMAGE_NAME: this.state.fotoBaris.IMAGE_NAME,
-                IMAGE_PATH: this.state.fotoBaris.IMAGE_PATH,
-                STATUS_IMAGE: '', 
-                STATUS_SYNC: 'N'
+                IMAGE_PATH_LOCAL: this.state.fotoBaris.IMAGE_PATH_LOCAL,
+                IMAGE_URL: '',
+                STATUS_IMAGE: 'BARIS',
+                STATUS_SYNC: 'N',
+                INSERT_USER: this.state.dataUsual.USER_AUTH,
+                INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
             }
             TaskService.saveData('TR_IMAGE', image);
     
             var selfie = {
-                IMAGE_CODE: this.state.fotoSelfie.IMAGE_CODE,
-                TR_CODE: this.state.fotoSelfie.TR_CODE,
-                BLOCK_INSPECTION_CODE: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE,
-                IMAGE_NAME: this.state.fotoSelfie.IMAGE_NAME,
-                IMAGE_PATH: this.state.fotoSelfie.IMAGE_PATH,
-                STATUS_IMAGE: '', 
-                STATUS_SYNC: 'N'
+                TR_CODE: this.state.fotoBaris.TR_CODE,
+                IMAGE_CODE: this.state.fotoBaris.IMAGE_CODE,
+                IMAGE_NAME: this.state.fotoBaris.IMAGE_NAME,
+                IMAGE_PATH_LOCAL: this.state.fotoBaris.IMAGE_PATH_LOCAL,
+                IMAGE_URL: '',
+                STATUS_IMAGE: 'SELFIE',
+                STATUS_SYNC: 'N',
+                INSERT_USER: this.state.dataUsual.USER_AUTH,
+                INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
             }        
             TaskService.saveData('TR_IMAGE_SELFIE', selfie);
     
@@ -380,7 +384,7 @@ class KondisiBarisAkhir extends Component{
         }
 
         var params = {
-            NIK: this.state.dataUsual.NIK,
+            USER_AUTH: this.state.dataUsual.USER_AUTH,
             BA: this.state.dataUsual.BA,
             AFD: this.state.dataUsual.AFD,
             BLOK: this.state.dataUsual.BLOK, 

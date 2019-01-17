@@ -229,7 +229,7 @@ class SelesaiInspeksi extends React.Component {
 
         if(tipa.length > 0)  {
             var jmlNilaiTipa = this.getTotalNilaiComponent(tipa);
-            var avg_tipa = jmlNilaiTipa/this.state.barisPembagi;
+            var avg_tipa = jmlNilaiTipa/tipa.length;
             var nilaiTipa =  this.getKonversiNilaiKeHuruf(avg_tipa);
             data = {
                 idx: 5,
@@ -240,7 +240,7 @@ class SelesaiInspeksi extends React.Component {
         }
         if(penabur.length> 0)  {
             var jmlNilaiPenabur = this.getTotalNilaiComponent(penabur);
-            var avg_penabur = jmlNilaiPenabur/this.state.barisPembagi;
+            var avg_penabur = jmlNilaiPenabur/penabur.length;
             var nilaiPenabur =  this.getKonversiNilaiKeHuruf(avg_penabur);
             data = {
                 idx: 6,
@@ -251,7 +251,7 @@ class SelesaiInspeksi extends React.Component {
         }
         if(pupuk.length > 0)  {
             var jmlNilaiPupuk = this.getTotalNilaiComponent(pupuk);
-            var avg_pupuk = jmlNilaiPupuk/this.state.barisPembagi;
+            var avg_pupuk = jmlNilaiPupuk/pupuk.length;
             var nilaiPupuk =  this.getKonversiNilaiKeHuruf(avg_pupuk);
             data = {
                 idx: 9,
@@ -262,7 +262,7 @@ class SelesaiInspeksi extends React.Component {
         }
         if(kastrasi.length > 0)  {
             var jmlNilaiKastrasi = this.getTotalNilaiComponent(kastrasi);
-            var avg_kastrasi = jmlNilaiKastrasi/this.state.barisPembagi;
+            var avg_kastrasi = jmlNilaiKastrasi/kastrasi.length;
             var nilaiKastrasi =  this.getKonversiNilaiKeHuruf(avg_kastrasi);
             data = {
                 idx: 7,
@@ -273,7 +273,7 @@ class SelesaiInspeksi extends React.Component {
         }
         if(sanitasi.length > 0)  {
             var jmlNilaiSanitasi = this.getTotalNilaiComponent(sanitasi);
-            var avg_sanitasi = jmlNilaiSanitasi/this.state.barisPembagi;
+            var avg_sanitasi = jmlNilaiSanitasi/sanitasi.length;
             var nilaiSanitasi =  this.getKonversiNilaiKeHuruf(avg_sanitasi);
             data = {
                 idx: 8,
@@ -429,11 +429,11 @@ class SelesaiInspeksi extends React.Component {
                         <Text style={styles.textLokasi}>{this.state.estateName} - {this.state.inspeksiHeader.AFD_CODE} - {this.state.blockName}/{this.state.blockCode}</Text>
                         {/* <View style={styles.lineDivider} /> */}
                         <View style={styles.sectionRow}>
-                            <View >
+                            <View style={{marginRight:10}} >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.jmlBaris}</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Jumlah Baris</Text>
                             </View>
-                            <View >
+                            <View style={{marginRight:10}} >
                                 <Text style={[styles.textContent, { fontSize: Size.font_size_label_12sp, textAlign: 'center' }]}>{this.state.totalWaktu} menit</Text>
                                 <Text style={[styles.textLabel, { fontSize: Size.font_size_label_12sp, textAlign: 'center', marginTop: 4 }]}>Lama Inspeksi</Text>
                             </View>

@@ -55,13 +55,15 @@ const TR_IMAGE = {
     name: 'TR_IMAGE',
     primaryKey: 'IMAGE_CODE',
     properties: {
-        IMAGE_CODE: 'string',
         TR_CODE: 'string',
-        BLOCK_INSPECTION_CODE: 'string',
+        IMAGE_CODE: 'string',
         IMAGE_NAME: 'string',
-        IMAGE_PATH: 'string',
+        IMAGE_PATH_LOCAL: 'string',
+        IMAGE_URL: 'string',
         STATUS_IMAGE: 'string',
-        STATUS_SYNC: 'string'
+        STATUS_SYNC: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
     }
 }
 
@@ -69,13 +71,33 @@ const TR_IMAGE_SELFIE = {
     name: 'TR_IMAGE_SELFIE',
     primaryKey: 'IMAGE_CODE',
     properties: {
-        IMAGE_CODE: 'string',
         TR_CODE: 'string',
-        BLOCK_INSPECTION_CODE: 'string',
+        IMAGE_CODE: 'string',
         IMAGE_NAME: 'string',
-        IMAGE_PATH: 'string',
+        IMAGE_PATH_LOCAL: 'string',
+        IMAGE_URL: 'string',
         STATUS_IMAGE: 'string',
-        STATUS_SYNC: 'string'
+        STATUS_SYNC: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
+    }
+}
+
+
+
+const TR_IMAGE_FINDING = {
+    name: 'TR_IMAGE_FINDING',
+    primaryKey: 'IMAGE_CODE',
+    properties: {
+        TR_CODE: 'string',
+        IMAGE_CODE: 'string',
+        IMAGE_NAME: 'string',
+        IMAGE_PATH_LOCAL: 'string',
+        IMAGE_URL: 'string',
+        STATUS_IMAGE: 'string',
+        STATUS_SYNC: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
     }
 }
 
@@ -228,21 +250,6 @@ const TR_LOG_FINDING = {
         IMEI: 'string',
         SYNC_TIME: 'string',
         SYNC_USER: 'string'
-    }
-}
-
-const TR_IMAGE_FINDING = {
-    name: 'TR_IMAGE_FINDING',
-    primaryKey: 'IMAGE_CODE',
-    properties: {
-        TR_CODE: 'string',
-        IMAGE_CODE: 'string',
-        IMAGE_NAME: 'string',
-        IMAGE_PATH_LOCAL: 'string',
-        IMAGE_URL: 'string',
-        STATUS_IMAGE: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string'
     }
 }
 

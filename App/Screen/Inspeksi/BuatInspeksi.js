@@ -223,14 +223,14 @@ class BuatInspeksiRedesign extends Component {
 
     insertDB(param) {
         let dataLogin = TaskService.getAllData('TR_LOGIN');
-        var NIK = dataLogin[0].NIK;
+        var USER_AUTH = dataLogin[0].USER_AUTH_CODE;
         var DATE = getTodayDate('YYYYMMDD');
         var WERKS = TaskService.getWerks();
         var AFD = this.state.afdCode;
         var BLOK = this.state.blok;
         var UNIQ_CODE = getUUID();
         UNIQ_CODE = UNIQ_CODE.substring(0,UNIQ_CODE.indexOf('-'));
-        var blok_inspection_code_h = NIK+"-INS-"+DATE+'-'+WERKS+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
+        var blok_inspection_code_h = `I${USER_AUTH}${getTodayDate('YYMMDDHHmmss')}`//USER_AUTH+"-INS-"+DATE+'-'+WERKS+'-'+AFD+'-'+BLOK+'-'+UNIQ_CODE;
 
         let modelInspeksiH = {
             BLOCK_INSPECTION_CODE: blok_inspection_code_h,
@@ -253,7 +253,7 @@ class BuatInspeksiRedesign extends Component {
         }
 
         let params = {
-            NIK: NIK,
+            USER_AUTH: USER_AUTH,
             BA: WERKS,
             AFD: AFD,
             BLOK: this.state.blok,

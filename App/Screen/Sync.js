@@ -22,9 +22,11 @@ import ContactAction from '../Redux/ContactRedux';
 import CategoryAction from '../Redux/CategoryRedux';
 import FindingAction from '../Redux/FindingRedux';
 import FindingImageAction from '../Redux/FindingImageRedux';
+import InspeksiAction from '../Redux/InspeksiRedux'
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
+import {getTodayDate} from '../Lib/Utils'
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
@@ -33,7 +35,6 @@ import RNFetchBlob from 'rn-fetch-blob'
 import TaskServices from '../Database/TaskServices'
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
-
 // import { isNull } from 'util';
 // import { stat } from 'fs';
 
@@ -129,10 +130,6 @@ class SyncScreen extends React.Component {
     }
 
     componentDidMount() {
-        // this.props.navigation.setParams({
-        //     loadData: this.loadData,
-        //     loadDataDetail: this.loadDataDetail
-        // });
     }
 
     loadData() {
@@ -182,6 +179,46 @@ class SyncScreen extends React.Component {
             STATUS_SYNC: 'YES',
             SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
         });
+    }
+
+    kirimIage(){
+        const user = TaskServices.getAllData('TR_LOGIN')
+        const data = new FormData();
+        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`)[0];
+        data.append('IMAGE_CODE', dataImage.IMAGE_CODE)
+        data.append('IMAGE_PATH_LOCAL', dataImage.IMAGE_PATH_LOCAL)
+        data.append('TR_CODE', dataImage.TR_CODE)
+        data.append('STATUS_IMAGE', dataImage.STATUS_IMAGE)
+        data.append('STATUS_SYNC', dataImage.STATUS_SYNC)
+        data.append('SYNC_TIME', getTodayDate('YYYY-MM-DD HH:mm:ss'))
+        data.append('INSERT_TIME', dataImage.INSERT_TIME)
+        data.append('INSERT_USER', dataImage.INSERT_USER)
+        data.append('FILENAME', {
+            uri: `file://${dataImage.IMAGE_PATH_LOCAL}`, 
+            type: 'image/jpeg',
+            name: dataImage.IMAGE_NAME,
+        });
+
+        const url= "http://149.129.245.230:3012/image/upload-file/"
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Cache-Control': 'no-cache',
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data',
+                Authorization : `Bearer ${user[0].ACCESS_TOKEN}`,
+            },
+            body: data
+            
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+            console.log(responseJson) 
+            //   return responseJson    
+            }).catch((error) => {
+                console.error(error);
+            });
+        
     }
 
     // POST MOBILE SYNC
@@ -521,7 +558,6 @@ class SyncScreen extends React.Component {
 
             data.map(item => {
                 TaskServices.saveData('TR_CATEGORY', item);
-
                 let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
                 console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueCategoryDownload: countDataInsert });
@@ -581,16 +617,22 @@ class SyncScreen extends React.Component {
             }
 
             dataSimpan.map(item => {
-                TaskServices.saveData('TR_IMAGE_FINDING', item);
+                // TaskServices.saveData('TR_IMAGE_FINDING', item);
+
+                // this._downloadImageFinding(item);
+
+                // let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
+                // console.log("countDataInsert : " + countDataInsert);
+                // this.setState({ valueFindingImageDownload: countDataInsert });
+
+                // this.setState({ isFinishFindingImage: true });
+
+                TaskServices.saveData('TR_IMAGE', item);
 
                 this._downloadImageFinding(item);
-
-                let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
-                console.log("countDataInsert : " + countDataInsert);
+                let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
                 this.setState({ valueFindingImageDownload: countDataInsert });
-
                 this.setState({ isFinishFindingImage: true });
-                // this.setState({ showButton: true })
             });
 
             // this._postMobileSync("contact");
@@ -610,18 +652,14 @@ class SyncScreen extends React.Component {
 
 
     _downloadImageFinding(data) {
-        console.log(data)
-        var date = new Date();
         var url = data.IMAGE_URL;
         const { config, fs } = RNFetchBlob
-        // let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
-        // alert(PictureDir)
         let options = {
             fileCache: true,
             addAndroidDownloads: {
                 useDownloadManager: true,
                 notification: true,
-                path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+                path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,
                 description: 'Image'
             }
         }
@@ -630,57 +668,65 @@ class SyncScreen extends React.Component {
         });
     }
 
+    kirimImageInspeksi(){
+        
+    }
+
     _onSync() {
 
-        this.setState({
-            downloadRegion: false,
-            downloadAfd: false,
-            downloadBlok: false,
-            downloadEst: false,
-            downloadLandUse: false,
-            downloadComp: false,
-            downloadContent: false,
-            downloadContact: false,
-            downloadContentLabel: false,
-            downloadKriteria: false,
-            downloadFinding: false,
-            downloadFindingImage: false,
-            downloadCategory: false,
-            fetchLocation: false,
-            isBtnEnable: false,
-            progress: 0,
-            progressAfd: 0,
-            progressRegion: 0,
-            progressEst: 0,
-            progressLandUse: 0,
-            progressComp: 0,
-            progressContent: 0,
-            progressContentLabel: 0,
-            progressKriteria: 0,
-            progressCategory: 0,
-            progressContact: 0,
-            progressFinding: 0,
-            progressFindingImage: 0
+        // this.setState({
+        //     downloadRegion: false,
+        //     downloadAfd: false,
+        //     downloadBlok: false,
+        //     downloadEst: false,
+        //     downloadLandUse: false,
+        //     downloadComp: false,
+        //     downloadContent: false,
+        //     downloadContact: false,
+        //     downloadContentLabel: false,
+        //     downloadKriteria: false,
+        //     downloadFinding: false,
+        //     downloadFindingImage: false,
+        //     downloadCategory: false,
+        //     fetchLocation: false,
+        //     isBtnEnable: false,
+        //     progress: 0,
+        //     progressAfd: 0,
+        //     progressRegion: 0,
+        //     progressEst: 0,
+        //     progressLandUse: 0,
+        //     progressComp: 0,
+        //     progressContent: 0,
+        //     progressContentLabel: 0,
+        //     progressKriteria: 0,
+        //     progressCategory: 0,
+        //     progressContact: 0,
+        //     progressFinding: 0,
+        //     progressFindingImage: 0
 
-            // kirimInspeksi: this.kirimInspeksi,
-            // kirimInspeksiDetail: this.kirimInspeksiDetail
+        //     // kirimInspeksi: this.kirimInspeksi,
+        //     // kirimInspeksiDetail: this.kirimInspeksiDetail
 
-        });
+        // });
 
-        // GET DATA MASTER
-        this.props.contentRequest();
-        this.props.blockRequest();
-        this.props.afdRequest();
-        this.props.regionRequest();
-        this.props.estRequest();
-        this.props.landUseRequest();
-        this.props.compRequest();
-        this.props.contentLabelRequest();
-        this.props.kriteriaRequest();
-        this.props.categoryRequest();
-        this.props.contactRequest();
-        this.props.findingRequest();
-        this.props.findingImageRequest();
+        // // GET DATA MASTER
+        // this.props.contentRequest();
+        // this.props.blockRequest();
+        // this.props.afdRequest();
+        // this.props.regionRequest();
+        // this.props.estRequest();
+        // this.props.landUseRequest();
+        // this.props.compRequest();
+        // this.props.contentLabelRequest();
+        // this.props.kriteriaRequest();
+        // this.props.categoryRequest();
+        // this.props.contactRequest();
+        // this.props.findingRequest();
+        // this.props.findingImageRequest();
+
+        this.kirimIage()
+
+        // this.kirimInspeksi()
 
     }
 
@@ -695,7 +741,7 @@ class SyncScreen extends React.Component {
 
     componentWillReceiveProps(newProps) {
 
-        console.log(newProps)
+        // console.log(newProps)
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -813,24 +859,21 @@ class SyncScreen extends React.Component {
     }
 
     download(data) {
-        console.log(data)
-        var date = new Date();
         var url = data.ICON_URL;
         const { config, fs } = RNFetchBlob
-        // let PictureDir = '/storage/emulated/0/MobileInspection'//fs.dirs.PictureDir
-        // alert(PictureDir)
         let options = {
             fileCache: true,
             addAndroidDownloads: {
                 useDownloadManager: true,
                 notification: true,
-                path: `${dirPhotoKategori}/${data.ICON}`,//PictureDir + "/image_"+Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+                path: `${dirPhotoKategori}/${data.ICON}`,
                 description: 'Image'
             }
         }
         config(options).fetch('GET', url).then((res) => {
             //   alert("Success Downloaded " + res);
         });
+
         if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
             this.setState({ showButton: true });
         }

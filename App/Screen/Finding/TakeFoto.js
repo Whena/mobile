@@ -22,6 +22,7 @@ import random from 'random-string'
 const moment = require('moment');
 var RNFS = require('react-native-fs');
 import R from 'ramda';
+import { getTodayDate } from '../../Lib/Utils';
 
 class TakeFoto extends Component{
 
@@ -79,7 +80,6 @@ class TakeFoto extends Component{
   }
 
   componentDidMount(){
-    // alert(JSON.stringify(this.state.baris))
     this.props.navigation.setParams({ clearFoto: this.clearFoto })
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
@@ -104,7 +104,7 @@ class TakeFoto extends Component{
           fixOrientation: true
         };
         const data = await this.camera.takePictureAsync(takeCameraOptions);            
-        var pname = 'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
+        var pname = `P${this.state.user.USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}.jpg`//'F' + this.state.user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase() + ".jpg";
         var imgPath = dirPhotoTemuan + '/' + pname;
 
         RNFS.copyFile(data.uri, imgPath);

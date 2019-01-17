@@ -1,6 +1,7 @@
 import { createStackNavigator } from 'react-navigation';
 import SplashScreen from '../Screen/SplashScreen';
-import Login from '../Screen/LoginScreen';
+import Login from '../Screen/Login';
+// import Login from '../Screen/LoginScreen';
 import MainMenu from '../Screen/Home/MainTabNavigator';
 
 //finding
@@ -12,7 +13,9 @@ import DetailFindingScreen from '../Screen/Finding/DetailFindingScreenRedesign';
 // import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen';
 import BuktiKerja from '../Screen/Finding/BuktiKerja'
 import TakeFotoBukti from '../Screen/Finding/TakeFoto'
-// import PilihKontak from '../Screen/Finding/PilihKontak'
+import PilihKontak from '../Screen/Finding/PilihKontak'
+import PilihKategori from '../Screen/Finding/PilihKategori'
+import PilihBlok from '../Screen/Finding/PilihBlok'
 // import FormInspectionNavigator from '../Screen/Inspeksi/Navigation/FormInspectionNavigator';
 
 //inspeksi
@@ -31,6 +34,8 @@ import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import test from '../Screen/Inspeksi/test';
 import FilterScreen from '../Screen/FilterScreen'
+
+// import TestUpload from '../Screen/TestUpload'
 
 
 const main = createStackNavigator({
@@ -61,7 +66,9 @@ const main = createStackNavigator({
     DetailFinding: { screen: DetailFindingScreen },
     BuktiKerja: { screen: BuktiKerja },
     TakeFotoBukti : {screen: TakeFotoBukti},
-    // PilihKontak : {screen: PilihKontak},
+    PilihKontak : {screen: PilihKontak},
+    PilihKategori : {screen: PilihKategori},
+    PilihBlok : {screen: PilihBlok},
     // FormInspection: {
     //     screen: FormInspectionNavigator,
     //     navigationOptions: {
@@ -83,7 +90,8 @@ const main = createStackNavigator({
     KondisiBarisAkhir: {screen: KondisiBarisAkhir},
     SelesaiInspeksi: {screen: SelesaiInspeksi},
     DetailBaris: { screen: DetailBaris },
-    test: {screen:test}
+    test: {screen:test},
+    // TestUpload: {screen:TestUpload}
 
     }, {
         headerMode: 'screen',

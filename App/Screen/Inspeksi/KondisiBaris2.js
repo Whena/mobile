@@ -34,7 +34,6 @@ class KondisiBaris2 extends Component {
         let params = props.navigation.state.params;
         let fotoBaris = R.clone(params.fotoBaris);
         let inspeksiHeader = R.clone(params.inspeksiHeader);
-        // let trackInspeksi = R.clone(params.trackInspeksi);
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
@@ -335,7 +334,7 @@ class KondisiBaris2 extends Component {
 
         var listBaris2 = [];
         if(this.state.showPiringan){
-            var blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            var blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 7;
             var data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -349,7 +348,7 @@ class KondisiBaris2 extends Component {
         }
         
         if(this.state.showSarkul){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 8;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -363,7 +362,7 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showTph && this.state.switchTPH){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 9;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -377,7 +376,7 @@ class KondisiBaris2 extends Component {
         }        
 
         if(this.state.showGwg){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 10;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -391,7 +390,7 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showPrun){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 11;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -405,7 +404,7 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showTipa && this.state.switchTIPA){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 12;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -420,7 +419,7 @@ class KondisiBaris2 extends Component {
 
         
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 13;
         data = {
             BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -432,7 +431,7 @@ class KondisiBaris2 extends Component {
         }
         listBaris2.push(data);
 
-        blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+        blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 14;
         data = {
             BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -445,7 +444,7 @@ class KondisiBaris2 extends Component {
         listBaris2.push(data);
 
         if(this.state.showKastrasi){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 15;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
@@ -459,7 +458,7 @@ class KondisiBaris2 extends Component {
         }
         
         if(this.state.showSanitasi){
-            blokInspectionCodeD = this.state.dataUsual.NIK + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
+            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
             '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 16;
             data = {
                 BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
