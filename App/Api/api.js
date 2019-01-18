@@ -90,9 +90,15 @@ const create = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
         return api.post('/inspection-header', body);
     };
+
     const postInspeksiDetail = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
         return api.post('/inspection-detail', body);
+    }
+
+    const postFindingData = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
+        return api.post('/finding', body);
     }
 
     //GET
@@ -185,6 +191,7 @@ const create = () => {
         postRegion,
         postInspeksiHeader,
         postInspeksiDetail,
+        postFindingData,
 
         //Add by Aminju
         //Post

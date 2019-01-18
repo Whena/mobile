@@ -78,6 +78,9 @@ export default class HistoryFinding extends Component {
 
   _renderItem = (item, idx) => {
     const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE);
+    const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
+    const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
+    const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
     let showImage;
     if(image == undefined){
       showImage = <Image style={{ alignItems: 'stretch', width: 65, height: 65, borderRadius: 10 }} source={require('../../Images/background.png')} />
@@ -92,7 +95,7 @@ export default class HistoryFinding extends Component {
       >
         {showImage}
         <View style={styles.sectionDesc} >
-          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{item.BLOCK_FULL_NAME}</Text></Text>
+          <Text style={{ fontSize: 12, color: 'black' }}>Lokasi : <Text style={{ color: 'grey' }}>{BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Tanggal dibuat : <Text style={{ color: 'grey' }}>{item.INSERT_TIME}</Text></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Kategori : <Text style={{ color: 'grey' }}>{this.getCategoryName(item.FINDING_CATEGORY)}</Text ></Text>
           <Text style={{ fontSize: 12, color: 'black' }}>Status : <Text style={{ color: this.getColor(item.STATUS) }}>{item.STATUS}</Text ></Text>

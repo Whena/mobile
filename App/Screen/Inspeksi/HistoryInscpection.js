@@ -53,7 +53,7 @@ export default class HistoryInspection extends Component {
       colorStatus = Colors.brand
     }
     let color = this.getColor(data.INSPECTION_RESULT);    
-    let imgBaris = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
+    let imgBaris = Taskservice.findBy('TR_IMAGE', 'TR_CODE', data.BLOCK_INSPECTION_CODE);
     let imgName = imgBaris[0].IMAGE_NAME
     let path = `${FILE_PREFIX}${RNFS.ExternalDirectoryPath}/Photo/Inspeksi/Baris/${imgName}`;   
 

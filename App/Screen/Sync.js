@@ -26,13 +26,13 @@ import InspeksiAction from '../Redux/InspeksiRedux'
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
-import {getTodayDate} from '../Lib/Utils'
 
 import { connect } from 'react-redux';
 import { isNil } from 'ramda';
 import RNFetchBlob from 'rn-fetch-blob'
 
 import TaskServices from '../Database/TaskServices'
+import { getTodayDate } from '../Lib/Utils';
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
 // import { isNull } from 'util';
@@ -56,7 +56,9 @@ class SyncScreen extends React.Component {
 
     constructor() {
         super();
+        var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
+            user,
             progressValue: 0.00,
             tglMobileSync: "",
             tabelUpdate: '',
@@ -74,6 +76,10 @@ class SyncScreen extends React.Component {
             progressContact: 0,
             progressFinding: 0,
             progressFindingImage: 0,
+            progressInspeksiHeader: 0,
+            progressInspeksiDetail: 0,
+            progressUploadImage: 0,
+            progressFindingData: 0,
             indeterminate: false,
             downloadRegion: false,
             downloadAfd: false,
@@ -125,100 +131,237 @@ class SyncScreen extends React.Component {
             totalContactDownload: '0',
             valueFindingImageDownload: '0',
             totalFindingImageDownload: '0',
-            showButton: true
+            valueInspeksiHeaderUpload: '0',
+            totalInspeksiHeaderUpload: '0',
+            valueInspeksiDetailUpload: '0',
+            totalInspeksiDetailUpload: '0',
+            valueFindingDataUpload: '0',
+            totalFindingDataUpload: '0',
+            valueImageUpload: '0',
+            totalImagelUpload: '0',
+            valueImageUpload: '0',
+            totalImagelUpload: '0',
+
+            showButton: true,
+            blockInspectionCodes: []
         }
     }
 
     componentDidMount() {
     }
 
-    loadData() {
-        let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
-        if (dataHeader !== null) {
-            for (var i = 0; i < dataHeader.length; i++) {
-                this.kirimInspeksiHeader(dataHeader[i]);
-            }
+    loadDataFinding() {
+        let countData = TaskServices.getAllData('TR_FINDING');
+        // var query = dataHeader.filtered('STATUS_SYNC = "N"');
+        // let countData = query;
+        console.log("countData : " + countData.length);
+
+
+        this.setState({ progressFindingData: 1 });
+        this.setState({ valueFindingDataUpload: countData.length });
+        this.setState({ totalFindingDataUpload: countData.length });
+
+        if (countData.length > 0) {
+            countData.map(item => {
+                this.kirimFinding(item);
+            })
+        } else {
+            // alert('Tidak ada data yg diupload');
+            this.setState({ progressFindingData: 1 });
+            this.setState({ valueFindingDataUpload: 0 });
+            this.setState({ totalFindingDataUpload: 0 });
         }
     }
 
-    kirimInspeksi(param) {
-        this.props.postInspeksi({
+    loadData() {
+        let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
+        var query = dataHeader.filtered('STATUS_SYNC = "N"');
+        let countData = query;
+        // console.log("dataHeader : " + JSON.stringify(dataHeader));
+        // console.log("countData : " + JSON.stringify(countData));
+        console.log("countData : " + countData.length);
+
+        this.setState({ progressInspeksiHeader: 1 });
+        this.setState({ valueInspeksiHeaderUpload: countData.length });
+        this.setState({ totalInspeksiHeaderUpload: countData.length });
+
+        if (countData.length > 0) {
+            countData.map(item => {
+                this.state.blockInspectionCodes.push(item.BLOCK_INSPECTION_CODE)
+                this.kirimInspeksiHeader(item);
+
+            })
+        } else {
+            // alert('Tidak ada data yg diupload');
+            this.setState({ progressInspeksiHeader: 1 });
+            this.setState({ valueInspeksiHeaderUpload: 0 });
+            this.setState({ totalInspeksiHeaderUpload: 0 });
+
+            this.setState({ progressInspeksiDetail: 1 });
+            this.setState({ valueInspeksiDetailUpload: 0 });
+            this.setState({ totalInspeksiDetailUpload: 0 });
+        }
+
+        if (this.state.blockInspectionCodes.length > 0) {
+            this.state.blockInspectionCodes.map(item => {
+                let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', item);
+                // console.log("Detail Inspeksi : " + JSON.stringify(data))
+
+                this.setState({ progressInspeksiDetail: 1 });
+                this.setState({ valueInspeksiDetailUpload: data.length });
+                this.setState({ totalInspeksiDetailUpload: data.length });
+
+                if (data !== null) {
+                    for (var i = 0; i < data.length; i++) {
+                        this.kirimInspeksiDetail(data[i]);
+                    }
+                }
+            })
+        }
+        // for (let i = 0; i <= 1000; i++) {
+        //     console.log("i : " + i)
+        //     let model = {
+        //         BLOCK_INSPECTION_CODE: "TESTING",
+        //         WERKS: "4121",
+        //         AFD_CODE: "H",
+        //         BLOCK_CODE: "001",
+        //         INSPECTION_DATE: "2018-10-26 01:01:01",
+        //         INSPECTION_RESULT: "A",
+        //         STATUS_SYNC: "SYNC",
+        //         SYNC_TIME: "2018-10-26 01:01:01",
+        //         START_INSPECTION: "2018-10-26 01:01:01",
+        //         END_INSPECTION: "2018-10-26 01:01:01",
+        //         LAT_START_INSPECTION: "-1.3225216667",
+        //         LONG_START_INSPECTION: "116.3819266667",
+        //         LAT_END_INSPECTION: "-1.4225216667",
+        //         LONG_END_INSPECTION: "117.3819266667",
+        //         INSERT_USER: "TAC001028",
+        //         INSERT_TIME: "2018-10-26 01:01:01"
+        //     }
+        // console.log("Model : " + JSON.stringify(model));
+        // console.log("Model BLOCK_INSPECTION_CODE : " + JSON.stringify(model.BLOCK_INSPECTION_CODE));
+        // this.kirimInspeksiHeader(model);
+        // blockInspectionCodes.push(model.BLOCK_INSPECTION_CODE);
+        // }
+    }
+
+    kirimFinding(param) {
+        this.props.findingPostData({
+            FINDING_CODE: param.FINDING_CODE,
+            WERKS: param.WERKS,
+            AFD_CODE: param.AFD_CODE,
+            BLOCK_CODE: param.BLOCK_CODE,
+            FINDING_CATEGORY: param.FINDING_CATEGORY,
+            FINDING_DESC: param.FINDING_DESC,
+            FINDING_PRIORITY: param.FINDING_PRIORITY,
+            DUE_DATE: param.DUE_DATE,
+            ASSIGN_TO: param.ASSIGN_TO,
+            PROGRESS: param.PROGRESS,
+            LAT_FINDING: param.LAT_FINDING,
+            LONG_FINDING: param.LONG_FINDING,
+            REFFERENCE_INS_CODE: param.REFFERENCE_INS_CODE,
+            INSERT_USER: param.INSERT_USER,
+            INSERT_TIME: param.INSERT_TIME
+        });
+    }
+
+    kirimInspeksiHeader(param) {
+        this.props.inspeksiPostHeader({
             BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
             WERKS: param.WERKS,
             AFD_CODE: param.AFD_CODE,
             BLOCK_CODE: param.AFD_CODE,
+            AREAL: '11',
+            INSPECTION_TYPE: "PANEN",
             INSPECTION_DATE: param.INSPECTION_DATE,
             INSPECTION_RESULT: param.INSPECTION_RESULT,
-            STATUS_SYNC: 'YES',
-            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            INSPECTION_SCORE: param.INSPECTION_SCORE,
+            STATUS_SYNC: getTodayDate("YYYY-MM-DD HH:mm:ss"),
+            SYNC_TIME: param.SYNC_TIME,
             START_INSPECTION: param.START_INSPECTION,
             END_INSPECTION: param.END_INSPECTION,
             LAT_START_INSPECTION: param.LAT_START_INSPECTION,
             LONG_START_INSPECTION: param.LONG_START_INSPECTION,
             LAT_END_INSPECTION: param.LAT_END_INSPECTION,
-            LONG_END_INSPECTION: param.LONG_END_INSPECTION
+            LONG_END_INSPECTION: param.LONG_END_INSPECTION,
+            ASSIGN_TO: this.state.user.USER_AUTH_CODE,
+            INSERT_TIME: getTodayDate("YYYY-MM-DD HH:mm:ss"),
+            INSERT_USER: this.state.user.USER_AUTH_CODE
         });
     }
 
-    loadDataDetail(param) {
-        let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', param);
-        if (data !== null) {
-            for (var i = 0; i < data.length; i++) {
-                this.kirimInspeksiDetail(data[i]);
+    kirimInspeksiDetail(result) {
+        console.log("param : " + JSON.stringify(result));
+        // console.log("result : " + result.length);
+
+        this.props.inspeksiPostDetail({
+            BLOCK_INSPECTION_CODE_D: result.BLOCK_INSPECTION_CODE_D,
+            BLOCK_INSPECTION_CODE: result.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE: result.CONTENT_INSPECTION_CODE,
+            // AREAL: result.AREAL,
+            VALUE: result.VALUE,
+            STATUS_SYNC: 'Y',
+            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            INSERT_USER: this.state.user.USER_AUTH_CODE,
+            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
+        });
+
+    }
+
+
+    kirimImage() {
+        const user = TaskServices.getAllData('TR_LOGIN')
+        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+        // alert("Sampai sini")
+        if (dataImage !== undefined) {
+            for (let i = 0; i < dataImage.length; i++) {
+                const data = new FormData();
+                data.append('IMAGE_CODE', dataImage[i].IMAGE_CODE)
+                data.append('IMAGE_PATH_LOCAL', dataImage[i].IMAGE_PATH_LOCAL)
+                data.append('TR_CODE', dataImage[i].TR_CODE)
+                data.append('STATUS_IMAGE', dataImage[i].STATUS_IMAGE)
+                data.append('STATUS_SYNC', dataImage[i].STATUS_SYNC)
+                data.append('SYNC_TIME', getTodayDate('YYYY-MM-DD HH:mm:ss'))
+                data.append('INSERT_TIME', dataImage[i].INSERT_TIME)
+                data.append('INSERT_USER', dataImage[i].INSERT_USER)
+                data.append('FILENAME', {
+                    uri: `file://${dataImage[i].IMAGE_PATH_LOCAL}`,
+                    type: 'image/jpeg',
+                    name: dataImage[i].IMAGE_NAME,
+                });
+
+                const url = "http://149.129.245.230:3012/image/upload-file/"
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        Accept: 'application/json',
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${user[0].ACCESS_TOKEN}`,
+                    },
+                    body: data
+
+                })
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        console.log(responseJson.status)
+                        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+                        console.log(dataImage.length)
+                        if (responseJson.status === true) {
+                            this.setState({ progressUploadImage: 1 });
+                            this.setState({ valueImageUpload: dataImage.length });
+                            this.setState({ totalImagelUpload: dataImage.length });
+                        }
+                        //   return responseJson    
+                    }).catch((error) => {
+                        console.error(error);
+                    });
             }
         }
-    }
+        this.setState({ progressUploadImage: 1 });
+        this.setState({ valueImageUpload: 0 });
+        this.setState({ totalImagelUpload: 0 });
 
-    kirimInspeksiDetail(param) {
-        this.props.postInspeksiDetail({
-            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
-            BLOCK_INSPECTION_CODE_D: param.BLOCK_INSPECTION_CODE_D,
-            CONTENT_CODE: param.CONTENT_CODE,
-            AREAL: param.AREAL,
-            VALUE: param.VALUE,
-            STATUS_SYNC: 'YES',
-            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
-        });
-    }
-
-    kirimIage(){
-        const user = TaskServices.getAllData('TR_LOGIN')
-        const data = new FormData();
-        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`)[0];
-        data.append('IMAGE_CODE', dataImage.IMAGE_CODE)
-        data.append('IMAGE_PATH_LOCAL', dataImage.IMAGE_PATH_LOCAL)
-        data.append('TR_CODE', dataImage.TR_CODE)
-        data.append('STATUS_IMAGE', dataImage.STATUS_IMAGE)
-        data.append('STATUS_SYNC', dataImage.STATUS_SYNC)
-        data.append('SYNC_TIME', getTodayDate('YYYY-MM-DD HH:mm:ss'))
-        data.append('INSERT_TIME', dataImage.INSERT_TIME)
-        data.append('INSERT_USER', dataImage.INSERT_USER)
-        data.append('FILENAME', {
-            uri: `file://${dataImage.IMAGE_PATH_LOCAL}`, 
-            type: 'image/jpeg',
-            name: dataImage.IMAGE_NAME,
-        });
-
-        const url= "http://149.129.245.230:3012/image/upload-file/"
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Cache-Control': 'no-cache',
-                Accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-                Authorization : `Bearer ${user[0].ACCESS_TOKEN}`,
-            },
-            body: data
-            
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-            console.log(responseJson) 
-            //   return responseJson    
-            }).catch((error) => {
-                console.error(error);
-            });
-        
     }
 
     // POST MOBILE SYNC
@@ -278,7 +421,7 @@ class SyncScreen extends React.Component {
                 this.setState({ isFinishAfd: true });
             });
 
-            // this._postMobileSync("afdeling");
+            this._postMobileSync("afdeling");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_AFD');
             this.setState({ progressAfd: 1 })
@@ -379,9 +522,6 @@ class SyncScreen extends React.Component {
                 console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueLandUseDownload: countDataInsert });
             })
-            this.setState({ showButton: true });
-            // this._postMobileSync("landUse");
-            alert('Download data selesai')
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
 
@@ -394,6 +534,11 @@ class SyncScreen extends React.Component {
 
         // this.setState({ isBtnEnable: false });
         // }
+        this.kirimImage();
+        this.setState({ showButton: true });
+        alert('Sync Data Selesai')
+        this.loadData();
+        this.loadDataFinding();
     }
 
     _crudTM_Comp(data) {
@@ -562,6 +707,8 @@ class SyncScreen extends React.Component {
                 console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueCategoryDownload: countDataInsert });
                 this.download(item);
+
+                // this._postMobileSync("category");
             });
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
@@ -593,14 +740,17 @@ class SyncScreen extends React.Component {
                 this.setState({ valueContactDownload: countDataInsert });
 
                 this.setState({ isFinishFinding: true });
+
+                // this._postMobileSync("contact");
             });
 
-            // this._postMobileSync("contact");
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
             this.setState({ progressContact: 1 })
             this.setState({ valueContactDownload: countDataInsert });
             this.setState({ totalContactDownload: 0 });
+
+            // this._postMobileSync("contact");
         }
     }
 
@@ -633,9 +783,9 @@ class SyncScreen extends React.Component {
                 let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
                 this.setState({ valueFindingImageDownload: countDataInsert });
                 this.setState({ isFinishFindingImage: true });
-            });
 
-            // this._postMobileSync("contact");
+                // this._postMobileSync("finding_image");
+            });
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
             this.setState({ progressFindingImage: 1 })
@@ -668,63 +818,63 @@ class SyncScreen extends React.Component {
         });
     }
 
-    kirimImageInspeksi(){
-        
+    kirimImageInspeksi() {
+
     }
 
     _onSync() {
 
-        // this.setState({
-        //     downloadRegion: false,
-        //     downloadAfd: false,
-        //     downloadBlok: false,
-        //     downloadEst: false,
-        //     downloadLandUse: false,
-        //     downloadComp: false,
-        //     downloadContent: false,
-        //     downloadContact: false,
-        //     downloadContentLabel: false,
-        //     downloadKriteria: false,
-        //     downloadFinding: false,
-        //     downloadFindingImage: false,
-        //     downloadCategory: false,
-        //     fetchLocation: false,
-        //     isBtnEnable: false,
-        //     progress: 0,
-        //     progressAfd: 0,
-        //     progressRegion: 0,
-        //     progressEst: 0,
-        //     progressLandUse: 0,
-        //     progressComp: 0,
-        //     progressContent: 0,
-        //     progressContentLabel: 0,
-        //     progressKriteria: 0,
-        //     progressCategory: 0,
-        //     progressContact: 0,
-        //     progressFinding: 0,
-        //     progressFindingImage: 0
+        this.kirimImage();
 
-        //     // kirimInspeksi: this.kirimInspeksi,
-        //     // kirimInspeksiDetail: this.kirimInspeksiDetail
+        this.setState({
+            downloadRegion: false,
+            downloadAfd: false,
+            downloadBlok: false,
+            downloadEst: false,
+            downloadLandUse: false,
+            downloadComp: false,
+            downloadContent: false,
+            downloadContact: false,
+            downloadContentLabel: false,
+            downloadKriteria: false,
+            downloadFinding: false,
+            downloadFindingImage: false,
+            downloadCategory: false,
+            fetchLocation: false,
+            isBtnEnable: false,
+            progress: 0,
+            progressAfd: 0,
+            progressRegion: 0,
+            progressEst: 0,
+            progressLandUse: 0,
+            progressComp: 0,
+            progressContent: 0,
+            progressContentLabel: 0,
+            progressKriteria: 0,
+            progressCategory: 0,
+            progressContact: 0,
+            progressFinding: 0,
+            progressFindingImage: 0
 
-        // });
+            // kirimInspeksi: this.kirimInspeksi,
+            // kirimInspeksiDetail: this.kirimInspeksiDetail
 
-        // // GET DATA MASTER
-        // this.props.contentRequest();
-        // this.props.blockRequest();
-        // this.props.afdRequest();
-        // this.props.regionRequest();
-        // this.props.estRequest();
-        // this.props.landUseRequest();
-        // this.props.compRequest();
-        // this.props.contentLabelRequest();
-        // this.props.kriteriaRequest();
-        // this.props.categoryRequest();
-        // this.props.contactRequest();
-        // this.props.findingRequest();
-        // this.props.findingImageRequest();
+        });
 
-        this.kirimIage()
+        // GET DATA MASTER
+        this.props.contentRequest();
+        this.props.blockRequest();
+        this.props.afdRequest();
+        this.props.regionRequest();
+        this.props.estRequest();
+        this.props.landUseRequest();
+        this.props.compRequest();
+        this.props.contentLabelRequest();
+        this.props.kriteriaRequest();
+        this.props.categoryRequest();
+        this.props.contactRequest();
+        this.props.findingRequest();
+        this.props.findingImageRequest();
 
         // this.kirimInspeksi()
 
@@ -849,7 +999,6 @@ class SyncScreen extends React.Component {
 
         RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
-
         // if (this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst
         //     && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
         //     && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact) {
@@ -927,7 +1076,6 @@ class SyncScreen extends React.Component {
                         <View style={{ flexDirection: 'row' }}>
                             <Text>REGION</Text>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-
                                 <Text>{this.state.valueRegionDownload}</Text>
                                 <Text>/</Text>
                                 <Text>{this.state.totalRegionDownload}</Text>
@@ -1112,6 +1260,76 @@ class SyncScreen extends React.Component {
                             indeterminate={this.state.indeterminate} />
                     </View>
 
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI HEADER</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspeksiHeaderUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspeksiHeaderUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspeksiHeader}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI DETAIL</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspeksiDetailUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspeksiDetailUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspeksiDetail}
+                            indeterminate={this.state.indeterminate} />
+
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD FINDING DATA</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueFindingDataUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalFindingDataUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressFindingData}
+                            indeterminate={this.state.indeterminate} />
+
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD IMAGE</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueImageUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalImagelUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressUploadImage}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
                     {this.state.showButton && <View style={{ flex: 1, marginTop: 48 }}>
                         <TouchableOpacity disabled={this.state.isBtnEnable} style={styles.button} onPress={() => { this.setState({ showButton: false }); this._onSync() }}>
                             <Text style={styles.buttonText}>Sync</Text>
@@ -1174,8 +1392,9 @@ const mapDispatchToProps = dispatch => {
         findingRequest: () => dispatch(FindingAction.findingRequest()),
         findingPost: obj => dispatch(FindingAction.findingPost(obj)),
         findingImageRequest: () => dispatch(FindingImageAction.findingImageRequest()),
-        postInspeksi: obj => dispatch(InspeksiAction.postInspeksi(obj)),
-        postInspeksiDtl: obj => dispatch(InspeksiAction.postInspeksiDtl(obj))
+        inspeksiPostHeader: obj => dispatch(InspeksiAction.inspeksiPostHeader(obj)),
+        inspeksiPostDetail: obj => dispatch(InspeksiAction.inspeksiPostDetail(obj)),
+        findingPostData: obj => dispatch(InspeksiAction.findingPostData(obj))
     };
 };
 

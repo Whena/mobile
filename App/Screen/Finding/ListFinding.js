@@ -15,7 +15,6 @@ import Icon2 from 'react-native-vector-icons/MaterialIcons'
 import { NavigationActions, StackActions  } from 'react-navigation';
 // import layer from '../../Data/skm.json'
 
-
 import MapView from 'react-native-maps';
 import Geojson from 'react-native-geojson';
 
