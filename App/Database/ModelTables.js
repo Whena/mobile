@@ -374,6 +374,31 @@ const TM_CONTENT_LABEL = {
         LABEL_SCORE: { type: 'int', default: 0 }
     }
 }
+
+const TM_INSPECTION_TRACK = {
+    name: 'TM_INSPECTION_TRACK',
+    properties: {
+        TRACK_INSPECTION_CODE: 'string',
+        BLOCK_INSPECTION_CODE: 'string',
+        DATE_TRACK: 'string',
+        LAT_TRACK: 'string',
+        LONG_TRACK: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
+    }
+}
+
+const TM_TIME_TRACK = {
+    name: 'TM_TIME_TRACK',
+    // primaryKey:'',
+    properties: {
+        PARAMATER_GROUP: 'string',
+        PARAMETER_NAME: 'string',
+        DESC: 'string',
+        NO_URUT: { type: 'int', default: 0 }
+    }
+}
+
 export default {
     TR_LOGIN,
     TR_BLOCK_INSPECTION_H,
@@ -400,5 +425,7 @@ export default {
     TM_LAND_USE,
     TM_COMP,
     TM_CONTENT,
-    TM_CONTENT_LABEL
+    TM_CONTENT_LABEL,
+    TM_INSPECTION_TRACK,
+    TM_TIME_TRACK
 }
