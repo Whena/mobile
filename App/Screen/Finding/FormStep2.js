@@ -88,7 +88,7 @@ class FormStep2 extends Component {
             blok: "",
             blockCode: '',
             werks: '',
-            afd_code: '',
+            afdCode: '',
             contacts: TaskServices.getAllData('TR_CONTACT'),
             categories: TaskServices.getAllData('TR_CATEGORY'),
             isDateTimePickerVisible: false,
@@ -129,22 +129,22 @@ class FormStep2 extends Component {
     };
 
     componentDidMount() {
-        let data = TaskServices.getAllData('TM_BLOCK');
-        for (var i = 0; i < data.length; i++) {
-            let statusBlok = this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
-            let estateName = this.getEstateName(data[i].WERKS);
-            this.state.person.push({
-                blokCode: data[i].BLOCK_CODE,
-                blokName: data[i].BLOCK_NAME,
-                afdCode: data[i].AFD_CODE,
-                werks: data[i].WERKS,
-                werksAfdCode: data[i].WERKS_AFD_CODE,
-                werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
-                statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
-                compCode: data[i].COMP_CODE,
-                allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
-            });
-        }
+        // let data = TaskServices.getAllData('TM_BLOCK');
+        // for (var i = 0; i < data.length; i++) {
+        //     let statusBlok = this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
+        //     let estateName = this.getEstateName(data[i].WERKS);
+        //     this.state.person.push({
+        //         blokCode: data[i].BLOCK_CODE,
+        //         blokName: data[i].BLOCK_NAME,
+        //         afdCode: data[i].AFD_CODE,
+        //         werks: data[i].WERKS,
+        //         werksAfdCode: data[i].WERKS_AFD_CODE,
+        //         werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
+        //         statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
+        //         compCode: data[i].COMP_CODE,
+        //         allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
+        //     });
+        // }
         this.getLocation();
         // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         // this.handleAndroidBackButton(this.exitAlert);
@@ -275,13 +275,14 @@ class FormStep2 extends Component {
             DUE_DATE: this.state.batasWaktu,
             STATUS: 'BARU',
             ASSIGN_TO: this.state.assignto,
-            PROGRESS: '0',
+            PROGRESS: 0,
             LAT_FINDING: this.state.latitude.toString(),
             LONG_FINDING: this.state.longitude.toString(),
             REFFERENCE_INS_CODE: "",
             INSERT_USER: this.state.user.USER_AUTH_CODE,
             INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
         }
+
         TaskServices.saveData('TR_FINDING', data);
 
         this.state.foto.map((image, i) => {
@@ -352,6 +353,10 @@ class FormStep2 extends Component {
 
     changeCategory = data => {
         this.setState({category: data.CATEGORY_NAME,categoryCode: data.CATEGORY_CODE})
+    }
+
+    changeBlok = data => {
+        this.setState({blok: data.allShow, blockCode:data.blokCode, werks: data.werks, afdCode:data.afdCode});
     }
 
     render() {
@@ -439,7 +444,7 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Lokasi <Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={this._showLocation}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihBlok', {changeBlok: this.changeBlok})}>
                             {isEmpty(this.state.blok) && (<Text style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                             {!isEmpty(this.state.blok) && (<Text style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
                         </TouchableOpacity>
@@ -473,7 +478,7 @@ class FormStep2 extends Component {
                     <View style={style.line} />
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <Text style={style.label}> Ditugaskan Kepada </Text>
+                        <Text style={style.label}> Ditugaskan Kepada<Text style={style.mandatory}>*</Text></Text>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak', {changeContact: this.changeContact})}>
                             {isEmpty(this.state.tugasKepada) && (
                                 <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}

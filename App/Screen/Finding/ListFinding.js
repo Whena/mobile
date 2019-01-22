@@ -49,7 +49,7 @@ export default class ListFinding extends Component {
   willFocus = this.props.navigation.addListener(
     'willFocus',
     () => {
-      // this._initData()
+      this._initData()
     }
   )
 
@@ -83,7 +83,8 @@ export default class ListFinding extends Component {
   };
 
   _initData() {
-    var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100')
+    // var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100')
+    var data = TaskServices.getAllData('TR_FINDING')
     var dataLewat = []
     var data7Hari = []
     var dataMore7Hari = []
@@ -91,7 +92,7 @@ export default class ListFinding extends Component {
 
     var now = moment(new Date())
 
-    data.map((item, i) => {
+    data.map(item => {
       if (isEmpty(item.DUE_DATE)) {
         dataNoDate.push(item)
       } else {
@@ -111,25 +112,63 @@ export default class ListFinding extends Component {
 
   actionButtonClick() {
     this.props.navigation.navigate('FindingFormNavigator')
+    // this.props.navigation.navigate('FormStep1')
     // this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'BuatInspeksi'}));
   }
 
-  _renderItem = item => {
+  getColor(param){
+    switch(param){
+      case 'SELESAI':
+        return Colors.brand;
+      case 'SEDANG DIPROSES':
+        return '#feb236';
+      case 'BARU':
+        return 'red';
+      default:
+        return '#ff7b25';
+    }
+  }
+
+  getEstateName(werks){
+    try {
+        let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+        return data.EST_NAME;
+    } catch (error) {
+        return '';
+    }    
+  }
+
+  getBlokName(blockCode){
+    try {      
+      let data = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', blockCode);
+      return data.BLOCK_NAME;
+    } catch (error) {
+      return ''
+    }
+  }
+
+  _renderItem = (item, index)=> {
     const nav = this.props.navigation;
-    const image = TaskServices.findBy2('TR_IMAGE_FINDING', 'TR_CODE', item.FINDING_CODE)
+    const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE)
     var label = { backgroundColor: item.PROGRESS == '0' ? 'rgba(255, 0, 0, 0.7)' : 'rgba(255, 255, 0, 0.7)' };
+    let showImage;
+    if(image == undefined){
+      showImage = <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/background.png')} />
+    }else{
+      showImage = <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} />
+    }
+    let showBlockDetail = `${this.getEstateName(item.WERKS)}-${this.getBlokName(item.BLOCK_CODE)}`
     return (
       < TouchableOpacity
-        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }
-        }
+        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE })}}
+        key={index}
       >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
-          <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH }} />
-
+          {showImage}
           <View style={[styles.labelBackground, label]}>
-            <Icon name={'map-marker-alt'} color={'white'} size={14}
+            <Icon name={'map-marker-alt'} color={'white'} size={12}
               style={{ marginRight: 5, marginTop: 1 }} />
-            <Text style={{ fontSize: 12, color: 'white' }}>{item.BLOCK_CODE}</Text>
+            <Text style={{ fontSize: 8, color: 'white', textAlignVertical: 'center' }}>{showBlockDetail}</Text>
           </View>
         </View>
       </TouchableOpacity >
@@ -174,7 +213,7 @@ export default class ListFinding extends Component {
 
           <View style={{ marginTop: 16, height: 120 }}>
             <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {this.state.dataNoDate.map(this._renderItem)}
+              {this.state.dataNoDate.map((item,index)=>this._renderItem(item, index))}
             </ScrollView >
           </View>
 

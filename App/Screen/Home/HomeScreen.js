@@ -10,7 +10,6 @@ import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
 import RegionAction from '../../Redux/RegionRedux'
 import Moment from 'moment';
-// import { log } from 'util';
 var RNFS = require('react-native-fs');
 
 class HomeScreen extends React.Component {
@@ -56,17 +55,6 @@ class HomeScreen extends React.Component {
     }
   }
 
-  // loadAllImages() {
-  //   let images = [];
-  //   this.state.images.map(item => {
-  //     var img = {
-  //       path: item,
-  //       status: before
-  //     }
-  //     images.push(img);
-  //   })
-  // }
-
   _getStatus() {
     if (this.state.data.PROGRESS == 100) {
       return "After"
@@ -94,6 +82,11 @@ class HomeScreen extends React.Component {
   componentWillUnmount() {
     this.willFocus.remove()
   }
+
+  componentWillMount(){
+    this._initData()
+  }
+  
 
   async componentDidMount() {
     RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
@@ -125,42 +118,29 @@ class HomeScreen extends React.Component {
     alert(item.STATUS)
   }
 
-  _renderItem = (item, i) => {
-
-    // const thumnailImage = "";
+  _renderItem = (item,index) => {
 
     const nav = this.props.navigation
-    const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE);
     const name = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
 
     const dt = item.DUE_DATE;
     Moment.locale();
 
-    // if (image.IMAGE_PATH_LOCAL[""]) {
-    //   this.setState({ thumnailImage: require('../../Images/dummy_image.png') });
-    // } else {
-    //   this.setState({ thumnailImage: image.IMAGE_PATH_LOCAL });
-    // }
-
-    // const path = uri: "file://" + image.IMAGE_PATH_LOCAL
-    // var images = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${item.FINDING_CODE}' AND STATUS_IMAGE='SEBELUM'`);
-    // var bukti = TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${item.FINDING_CODE}' AND STATUS_IMAGE='SESUDAH'`);
-
     const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
     const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
     const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
 
-    let showImage;
-    console.log(JSON.image);
-    if (image == undefined) {
-      showImage = require('../../Images/background.png')
-    } else {
-      showImage = { uri: "file://" + image.IMAGE_PATH_LOCAL }
+    const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE);
+    let sources;
+    if(image == undefined){
+      sources = require('../../Images/background.png')
+    }else{
+      sources = { uri: "file://" + image.IMAGE_PATH_LOCAL }
     }
 
     return (
-      <View>
-        <TouchableOpacity style={{ marginTop: 12 }} key={i} onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }}>
+      <View key={index}>
+        <TouchableOpacity style={{ marginTop: 12 }} key={item.id} onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }}>
           <Card >
             <CardItem>
               <Left>
@@ -169,7 +149,7 @@ class HomeScreen extends React.Component {
               </Left>
             </CardItem>
             <CardItem cardBody>
-              <ImageBackground source={showImage} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
+              <ImageBackground source={sources} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
                 <View style={{ alignContent: 'center', paddingTop: 2, paddingLeft: 12, flexDirection: 'row', height: 42, backgroundColor: this.getColor(item.STATUS) }} >
                   <Image style={{ marginTop: 2, height: 28, width: 28 }} source={require('../../Images/icon/ic_new_timeline.png')}></Image>
                   <Text style={{ marginLeft: 12, color: 'white' }}>{item.STATUS}</Text>
@@ -191,9 +171,6 @@ class HomeScreen extends React.Component {
 
   render() {
 
-    // var A = realm.objects('test'); 
-    // var myJSON = JSON.stringify(A); 
-
     return (
       <Container style={{ padding: 16 }}>
         <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
@@ -210,7 +187,7 @@ class HomeScreen extends React.Component {
           <ScrollView
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}>
-            {this.state.data.map(this._renderItem)}
+            {this.state.data.map((item,index)=>this._renderItem(item,index))}
           </ScrollView>
         </Content>
       </Container>

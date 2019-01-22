@@ -61,15 +61,16 @@ class KondisiBarisAkhir extends Component{
         let fotoBaris = R.clone(params.fotoBaris);
         let fotoSelfie = R.clone(params.fotoSelfie);
         let inspeksiHeader = R.clone(params.inspeksiHeader);
-        let trackInspeksi = R.clone(params.trackInspeksi);
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let kondisiBaris2 = R.clone(params.kondisiBaris2);
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
         let barisBlok = R.clone(params.baris);
         let from = R.clone(params.from);
+        let intervalId = R.clone(params.intervalId);
 
         this.state = {
+            intervalId,
             latitude:0.0,
             longitude:0.0,
             error:null,
@@ -87,7 +88,6 @@ class KondisiBarisAkhir extends Component{
             fotoBaris,
             fotoSelfie,
             inspeksiHeader,
-            trackInspeksi,
             kondisiBaris1,
             kondisiBaris2,
             dataUsual,
@@ -264,6 +264,7 @@ class KondisiBarisAkhir extends Component{
                 } 
             })]
         });
+        clearInterval(this.state.intervalId)
         navigation.dispatch(resetAction);
 
     }
@@ -347,17 +348,17 @@ class KondisiBarisAkhir extends Component{
             TaskService.saveData('TR_IMAGE', image);
     
             var selfie = {
-                TR_CODE: this.state.fotoBaris.TR_CODE,
-                IMAGE_CODE: this.state.fotoBaris.IMAGE_CODE,
-                IMAGE_NAME: this.state.fotoBaris.IMAGE_NAME,
-                IMAGE_PATH_LOCAL: this.state.fotoBaris.IMAGE_PATH_LOCAL,
+                TR_CODE: this.state.fotoSelfie.TR_CODE,
+                IMAGE_CODE: this.state.fotoSelfie.IMAGE_CODE,
+                IMAGE_NAME: this.state.fotoSelfie.IMAGE_NAME,
+                IMAGE_PATH_LOCAL: this.state.fotoSelfie.IMAGE_PATH_LOCAL,
                 IMAGE_URL: '',
                 STATUS_IMAGE: 'SELFIE',
                 STATUS_SYNC: 'N',
                 INSERT_USER: this.state.dataUsual.USER_AUTH,
                 INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
             }        
-            TaskService.saveData('TR_IMAGE_SELFIE', selfie);
+            TaskService.saveData('TR_IMAGE', selfie);
     
             if(this.state.kondisiBaris1 !== 'undefined'){
                 for(var i=0; i<this.state.kondisiBaris1.length; i++){
@@ -430,7 +431,8 @@ class KondisiBarisAkhir extends Component{
                 from: 'kondisiBaris', 
                 waktu: getTodayDate('YYYY-MM-DD HH:mm:ss'),
                 statusBlok:this.state.statusBlok,
-                baris: this.state.txtBaris
+                baris: this.state.txtBaris,
+                intervalId: this.state.intervalId 
              } 
             })]
         });

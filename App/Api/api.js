@@ -235,7 +235,6 @@ const create = () => {
         getFindingImage,
         getParamTrackingPath
 
-
     };
 };
 

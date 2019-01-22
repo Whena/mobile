@@ -3,10 +3,7 @@ import InspeksiActions from '../Redux/InspeksiRedux';
 
 export function* postInspeksiHeader(api, action) {
     const { data } = action;
-    console.log("Data Post Inspeksi Header : " + JSON.stringify(data));
-    const response = yield call(api.postInspeksiHeader, data);
-    // console.log("Response : " + response);
-    // console.log("Response OK : " + response.ok);
+	const response = yield call(api.postInspeksiHeader, data);
 
     if (typeof atob !== 'undefined') {
     	console.log(response);

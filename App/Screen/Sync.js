@@ -28,7 +28,7 @@ import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
 
 import { connect } from 'react-redux';
-import { isNil } from 'ramda';
+import R, { isEmpty, isNil } from 'ramda'
 import RNFetchBlob from 'rn-fetch-blob'
 
 import TaskServices from '../Database/TaskServices'
@@ -37,6 +37,9 @@ const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
 // import { isNull } from 'util';
 // import { stat } from 'fs';
+
+
+const user = TaskServices.getAllData('TR_LOGIN')[0];
 
 class SyncScreen extends React.Component {
 
@@ -56,9 +59,7 @@ class SyncScreen extends React.Component {
 
     constructor() {
         super();
-        var user = TaskServices.getAllData('TR_LOGIN')[0];
         this.state = {
-            user,
             progressValue: 0.00,
             tglMobileSync: "",
             tabelUpdate: '',
@@ -164,7 +165,7 @@ class SyncScreen extends React.Component {
         if (countData.length > 0) {
             countData.map(item => {
                 this.kirimFinding(item);
-            })
+            });
         } else {
             // alert('Tidak ada data yg diupload');
             this.setState({ progressFindingData: 1 });
@@ -174,75 +175,50 @@ class SyncScreen extends React.Component {
     }
 
     loadData() {
-        let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
-        var query = dataHeader.filtered('STATUS_SYNC = "N"');
-        let countData = query;
-        // console.log("dataHeader : " + JSON.stringify(dataHeader));
-        // console.log("countData : " + JSON.stringify(countData));
-        console.log("countData : " + countData.length);
+        try {
+            let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
+            var query = dataHeader.filtered('STATUS_SYNC = "N"');
+            let countData = query;
+            console.log("countData : " + countData.length);
 
-        this.setState({ progressInspeksiHeader: 1 });
-        this.setState({ valueInspeksiHeaderUpload: countData.length });
-        this.setState({ totalInspeksiHeaderUpload: countData.length });
-
-        if (countData.length > 0) {
-            countData.map(item => {
-                this.state.blockInspectionCodes.push(item.BLOCK_INSPECTION_CODE)
-                this.kirimInspeksiHeader(item);
-
-            })
-        } else {
-            // alert('Tidak ada data yg diupload');
             this.setState({ progressInspeksiHeader: 1 });
-            this.setState({ valueInspeksiHeaderUpload: 0 });
-            this.setState({ totalInspeksiHeaderUpload: 0 });
+            this.setState({ valueInspeksiHeaderUpload: countData.length });
+            this.setState({ totalInspeksiHeaderUpload: countData.length });
 
-            this.setState({ progressInspeksiDetail: 1 });
-            this.setState({ valueInspeksiDetailUpload: 0 });
-            this.setState({ totalInspeksiDetailUpload: 0 });
-        }
+            if (countData.length > 0) {
+                countData.map(item => {
+                    this.state.blockInspectionCodes.push(item.BLOCK_INSPECTION_CODE)
+                    this.kirimInspeksiHeader(item);
 
-        if (this.state.blockInspectionCodes.length > 0) {
-            this.state.blockInspectionCodes.map(item => {
-                let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', item);
-                // console.log("Detail Inspeksi : " + JSON.stringify(data))
+                });
+            } else {
+                // alert('Tidak ada data yg diupload');
+                this.setState({ progressInspeksiHeader: 1 });
+                this.setState({ valueInspeksiHeaderUpload: 0 });
+                this.setState({ totalInspeksiHeaderUpload: 0 });
 
                 this.setState({ progressInspeksiDetail: 1 });
-                this.setState({ valueInspeksiDetailUpload: data.length });
-                this.setState({ totalInspeksiDetailUpload: data.length });
+                this.setState({ valueInspeksiDetailUpload: 0 });
+                this.setState({ totalInspeksiDetailUpload: 0 });
+            }
 
-                if (data !== null) {
-                    for (var i = 0; i < data.length; i++) {
-                        this.kirimInspeksiDetail(data[i]);
+            if (this.state.blockInspectionCodes.length > 0) {
+                this.state.blockInspectionCodes.map(item => {
+                    let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', item);
+                    this.setState({ progressInspeksiDetail: 1 });
+                    this.setState({ valueInspeksiDetailUpload: data.length });
+                    this.setState({ totalInspeksiDetailUpload: data.length });
+
+                    if (data !== null) {
+                        for (var i = 0; i < data.length; i++) {
+                            this.kirimInspeksiDetail(data[i]);
+                        }
                     }
-                }
-            })
-        }
-        // for (let i = 0; i <= 1000; i++) {
-        //     console.log("i : " + i)
-        //     let model = {
-        //         BLOCK_INSPECTION_CODE: "TESTING",
-        //         WERKS: "4121",
-        //         AFD_CODE: "H",
-        //         BLOCK_CODE: "001",
-        //         INSPECTION_DATE: "2018-10-26 01:01:01",
-        //         INSPECTION_RESULT: "A",
-        //         STATUS_SYNC: "SYNC",
-        //         SYNC_TIME: "2018-10-26 01:01:01",
-        //         START_INSPECTION: "2018-10-26 01:01:01",
-        //         END_INSPECTION: "2018-10-26 01:01:01",
-        //         LAT_START_INSPECTION: "-1.3225216667",
-        //         LONG_START_INSPECTION: "116.3819266667",
-        //         LAT_END_INSPECTION: "-1.4225216667",
-        //         LONG_END_INSPECTION: "117.3819266667",
-        //         INSERT_USER: "TAC001028",
-        //         INSERT_TIME: "2018-10-26 01:01:01"
-        //     }
-        // console.log("Model : " + JSON.stringify(model));
-        // console.log("Model BLOCK_INSPECTION_CODE : " + JSON.stringify(model.BLOCK_INSPECTION_CODE));
-        // this.kirimInspeksiHeader(model);
-        // blockInspectionCodes.push(model.BLOCK_INSPECTION_CODE);
-        // }
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }        
     }
 
     kirimFinding(param) {
@@ -266,17 +242,18 @@ class SyncScreen extends React.Component {
     }
 
     kirimInspeksiHeader(param) {
+        let baris = TaskServices.findBy2('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', param.BLOCK_INSPECTION_CODE )
         this.props.inspeksiPostHeader({
             BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
             WERKS: param.WERKS,
             AFD_CODE: param.AFD_CODE,
-            BLOCK_CODE: param.AFD_CODE,
-            AREAL: '11',
+            BLOCK_CODE: param.BLOCK_CODE,
+            AREAL: baris.VALUE,
             INSPECTION_TYPE: "PANEN",
             INSPECTION_DATE: param.INSPECTION_DATE,
             INSPECTION_RESULT: param.INSPECTION_RESULT,
             INSPECTION_SCORE: param.INSPECTION_SCORE,
-            STATUS_SYNC: getTodayDate("YYYY-MM-DD HH:mm:ss"),
+            STATUS_SYNC: 'Y',
             SYNC_TIME: param.SYNC_TIME,
             START_INSPECTION: param.START_INSPECTION,
             END_INSPECTION: param.END_INSPECTION,
@@ -284,38 +261,34 @@ class SyncScreen extends React.Component {
             LONG_START_INSPECTION: param.LONG_START_INSPECTION,
             LAT_END_INSPECTION: param.LAT_END_INSPECTION,
             LONG_END_INSPECTION: param.LONG_END_INSPECTION,
-            ASSIGN_TO: this.state.user.USER_AUTH_CODE,
+            ASSIGN_TO: user.USER_AUTH_CODE,
             INSERT_TIME: getTodayDate("YYYY-MM-DD HH:mm:ss"),
-            INSERT_USER: this.state.user.USER_AUTH_CODE
+            INSERT_USER: user.USER_AUTH_CODE
         });
     }
 
     kirimInspeksiDetail(result) {
         console.log("param : " + JSON.stringify(result));
-        // console.log("result : " + result.length);
-
         this.props.inspeksiPostDetail({
             BLOCK_INSPECTION_CODE_D: result.BLOCK_INSPECTION_CODE_D,
             BLOCK_INSPECTION_CODE: result.BLOCK_INSPECTION_CODE,
             CONTENT_INSPECTION_CODE: result.CONTENT_INSPECTION_CODE,
-            // AREAL: result.AREAL,
             VALUE: result.VALUE,
             STATUS_SYNC: 'Y',
             SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
-            INSERT_USER: this.state.user.USER_AUTH_CODE,
+            INSERT_USER: user.USER_AUTH_CODE,
             INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
         });
-
     }
 
-
-    kirimImage() {
-        const user = TaskServices.getAllData('TR_LOGIN')
+    kirimImage(){
+        const user = TaskServices.getAllData('TR_LOGIN')[0];
+        let all = TaskServices.getAllData('TR_IMAGE') 
         var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-        // alert("Sampai sini")
-        if (dataImage !== undefined) {
-            for (let i = 0; i < dataImage.length; i++) {
-                const data = new FormData();
+        if(all !== undefined && dataImage !== undefined){
+            for(var i=0; i<dataImage.length; i++){            
+                var data = new FormData();
+                let idxOrder = null;
                 data.append('IMAGE_CODE', dataImage[i].IMAGE_CODE)
                 data.append('IMAGE_PATH_LOCAL', dataImage[i].IMAGE_PATH_LOCAL)
                 data.append('TR_CODE', dataImage[i].TR_CODE)
@@ -329,33 +302,34 @@ class SyncScreen extends React.Component {
                     type: 'image/jpeg',
                     name: dataImage[i].IMAGE_NAME,
                 });
-
-                const url = "http://149.129.245.230:3012/image/upload-file/"
+                let indexData = R.findIndex(R.propEq('IMAGE_CODE', dataImage[i].IMAGE_CODE))(all);
+                idxOrder = indexData
+                // alert(JSON.stringify(data))
+                const url= "http://149.129.245.230:3012/image/upload-file/"
                 fetch(url, {
                     method: 'POST',
                     headers: {
                         'Cache-Control': 'no-cache',
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${user[0].ACCESS_TOKEN}`,
+                        Authorization : `Bearer ${user.ACCESS_TOKEN}`,
                     },
                     body: data
 
                 })
-                    .then((response) => response.json())
-                    .then((responseJson) => {
-                        console.log(responseJson.status)
-                        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-                        console.log(dataImage.length)
-                        if (responseJson.status === true) {
-                            this.setState({ progressUploadImage: 1 });
-                            this.setState({ valueImageUpload: dataImage.length });
-                            this.setState({ totalImagelUpload: dataImage.length });
-                        }
-                        //   return responseJson    
-                    }).catch((error) => {
-                        console.error(error);
-                    });
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+                    if(responseJson.status){
+                        this.setState({ progressUploadImage: 1 });
+                        this.setState({ valueImageUpload: dataImage.length });
+                        this.setState({ totalImagelUpload: dataImage.length });
+                        TaskServices.updateStatusImage('TR_IMAGE', 'SYNC', idxOrder);
+                    }   
+                    console.log(responseJson)
+                }).catch((error) => {
+                    console.error(error);
+                });
             }
         }
         this.setState({ progressUploadImage: 1 });
@@ -421,7 +395,7 @@ class SyncScreen extends React.Component {
                 this.setState({ isFinishAfd: true });
             });
 
-            this._postMobileSync("afdeling");
+            // this._postMobileSync("afdeling");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_AFD');
             this.setState({ progressAfd: 1 })
@@ -529,16 +503,13 @@ class SyncScreen extends React.Component {
             this.setState({ valueLandUseDownload: countDataInsert });
             this.setState({ totalLandUseDownload: 0 });
 
-            // this.setState({ fetchLocation: false });
         }
 
-        // this.setState({ isBtnEnable: false });
-        // }
-        this.kirimImage();
         this.setState({ showButton: true });
         alert('Sync Data Selesai')
-        this.loadData();
-        this.loadDataFinding();
+        // this.kirimImage();
+        // this.loadData();
+        // this.loadDataFinding();
     }
 
     _crudTM_Comp(data) {
@@ -767,15 +738,6 @@ class SyncScreen extends React.Component {
             }
 
             dataSimpan.map(item => {
-                // TaskServices.saveData('TR_IMAGE_FINDING', item);
-
-                // this._downloadImageFinding(item);
-
-                // let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
-                // console.log("countDataInsert : " + countDataInsert);
-                // this.setState({ valueFindingImageDownload: countDataInsert });
-
-                // this.setState({ isFinishFindingImage: true });
 
                 TaskServices.saveData('TR_IMAGE', item);
 
@@ -783,8 +745,6 @@ class SyncScreen extends React.Component {
                 let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
                 this.setState({ valueFindingImageDownload: countDataInsert });
                 this.setState({ isFinishFindingImage: true });
-
-                // this._postMobileSync("finding_image");
             });
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
@@ -818,13 +778,11 @@ class SyncScreen extends React.Component {
         });
     }
 
-    kirimImageInspeksi() {
-
-    }
-
     _onSync() {
 
         this.kirimImage();
+        this.loadData();
+        this.loadDataFinding()
 
         this.setState({
             downloadRegion: false,
@@ -876,8 +834,6 @@ class SyncScreen extends React.Component {
         this.props.findingRequest();
         this.props.findingImageRequest();
 
-        // this.kirimInspeksi()
-
     }
 
     animate() {
@@ -890,8 +846,6 @@ class SyncScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-
-        // console.log(newProps)
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -1050,6 +1004,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progress}
                             indeterminate={this.state.indeterminate} />
@@ -1067,6 +1022,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressAfd}
                             indeterminate={this.state.indeterminate} />
@@ -1084,6 +1040,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressRegion}
                             indeterminate={this.state.indeterminate} />
@@ -1101,6 +1058,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressEst}
                             indeterminate={this.state.indeterminate} />
@@ -1119,6 +1077,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressLandUse}
                             indeterminate={this.state.indeterminate} />
@@ -1136,6 +1095,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressComp}
                             indeterminate={this.state.indeterminate} />
@@ -1153,6 +1113,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressContent}
                             indeterminate={this.state.indeterminate} />
@@ -1170,6 +1131,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressContentLabel}
                             indeterminate={this.state.indeterminate} />
@@ -1187,6 +1149,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressKriteria}
                             indeterminate={this.state.indeterminate} />
@@ -1204,6 +1167,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressCategory}
                             indeterminate={this.state.indeterminate} />
@@ -1221,6 +1185,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressContact}
                             indeterminate={this.state.indeterminate} />
@@ -1238,6 +1203,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressFinding}
                             indeterminate={this.state.indeterminate} />
@@ -1255,6 +1221,7 @@ class SyncScreen extends React.Component {
                         <Progress.Bar
                             height={20}
                             width={null}
+                            color={Colors.brand}
                             style={{ marginTop: 2 }}
                             progress={this.state.progressFindingImage}
                             indeterminate={this.state.indeterminate} />

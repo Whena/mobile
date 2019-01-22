@@ -161,18 +161,6 @@ const TaskServices = {
 
   updateData2: function (table, whereClause, valueClause, param, value) {
     let list = RealmSchemas.objects(table);
-    // list = list.filtered(whereClause+' == \"'+ valueClause +'\" ')[0];
-
-    // RealmSchemas.write(() => { 
-    //   var ID = this.state.Student_Id - 1;
-
-    //   var data = realm.objects('Student_Info');
-
-    //   data[ID].student_name = this.state.Student_Name;
-    //   data[ID].student_class = this.state.Student_Class;
-    //   data[ID].student_subject = this.state.Student_Subject;
-
-    //  });
 
     RealmSchemas.write(() => {
       for (var i = 0; i < list.length; i++) {
@@ -186,6 +174,13 @@ const TaskServices = {
     RealmSchemas.write(() => {
       data.STATUS = param[0];
       data.PROGRESS = param[1];
+    });
+  },
+
+  updateStatusImage: function (table, param, index){
+    let data = RealmSchemas.objects(table)[index];
+    RealmSchemas.write(() => {
+      data.STATUS_SYNC = param;
     });
   },
 

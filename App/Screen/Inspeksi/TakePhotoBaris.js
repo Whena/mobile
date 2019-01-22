@@ -35,29 +35,6 @@ class TakePhotoBaris extends Component {
     },
   };
 
-  // static navigationOptions = ({ navigation }) => {
-  //   const { params = {} } = navigation.state;
-  //   return {
-  //     headerStyle: {
-  //       backgroundColor: Colors.tintColor
-  //     },
-  //     title: 'Ambil Foto',
-  //     headerTintColor: '#fff',
-  //     headerTitleStyle: {
-  //       flex: 1,
-  //       fontSize: 18,
-  //       fontWeight: '400',
-  //       color: 'white'
-  //     },
-  //     headerLeft: (
-  //         <HeaderBackButton color={'white'} onPress={()=>{}}></HeaderBackButton>
-  //         // <TouchableOpacity onPress={() => {params.clearFoto()}}>
-  //         //     <Icon style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={45} color={'white'} />
-  //         // </TouchableOpacity>
-  //     )
-  //   };
-  // }
-
   constructor(props) {
     super(props);
 
@@ -68,10 +45,12 @@ class TakePhotoBaris extends Component {
     let statusBlok = R.clone(params.statusBlok);
     let waktu = R.clone(params.waktu);
     let baris = R.clone(params.baris);
+    let intervalId = R.clone(params.intervalId);
 
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
     this.state = {
+      intervalId,
       hasPhoto: false,
       path: null,
       pathImg: null,
@@ -100,7 +79,6 @@ class TakePhotoBaris extends Component {
         this.deleteFoto()
     }
     this.props.navigation.goBack(null);
-
     return true;
   }
 
@@ -121,7 +99,7 @@ class TakePhotoBaris extends Component {
       TR_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
       IMAGE_CODE: imgCode,
       IMAGE_NAME: imageName,
-      IMAGE_PATH_LOCAL: dirPhotoInspeksiBaris,
+      IMAGE_PATH_LOCAL: dirPhotoInspeksiBaris + '/' + imageName,
       IMAGE_URL: '',
       STATUS_IMAGE: 'BARIS',
       STATUS_SYNC: 'N',
@@ -135,6 +113,7 @@ class TakePhotoBaris extends Component {
   takePicture = async () => {
     try {
       if(this.state.hasPhoto){  
+        // clearInterval(this.state.intervalId)
         this.insertDB();     
       }else{
         const takeCameraOptions = {
@@ -192,7 +171,8 @@ class TakePhotoBaris extends Component {
         inspeksiHeader: this.state.inspeksiHeader, 
         dataUsual: this.state.dataUsual, 
         statusBlok: this.state.statusBlok,
-        baris:this.state.baris, 
+        baris:this.state.baris,
+        intervalId: this.state.intervalId 
     });    
   }
 

@@ -83,8 +83,6 @@ const TR_IMAGE_SELFIE = {
     }
 }
 
-
-
 const TR_IMAGE_FINDING = {
     name: 'TR_IMAGE_FINDING',
     primaryKey: 'IMAGE_CODE',
@@ -231,7 +229,7 @@ const TR_FINDING = {
         DUE_DATE: 'string',
         STATUS: 'string',
         ASSIGN_TO: 'string',
-        PROGRESS: 'string',
+        PROGRESS: { type: 'int', default: 0 },//'string',
         LAT_FINDING: 'string',
         LONG_FINDING: 'string',
         REFFERENCE_INS_CODE: 'string',

@@ -147,6 +147,8 @@ class DetailFindingScreenRedesign extends Component{
     validation(){
         if(this.state.imgBukti.length < 1 && this.state.progress == 100){
             alert('Kamu harus foto bukti kerja dulu')
+        }else if(this.state.disabledProgress){
+            alert('Kamu tidak bisa memproses temuan ini')
         }else{
             this._updateFinding()
         }
@@ -169,7 +171,7 @@ class DetailFindingScreenRedesign extends Component{
             DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,        
             STATUS: status,
             ASSIGN_TO: this.state.data.ASSIGN_TO,
-            PROGRESS: this.state.progress.toString(),
+            PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
             LONG_FINDING: this.state.data.LONG_FINDING,
             REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,    

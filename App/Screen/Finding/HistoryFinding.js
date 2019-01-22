@@ -70,8 +70,6 @@ export default class HistoryFinding extends Component {
             STATUS_IMAGE: item.STATUS_IMAGE,
         }
         test.push(img);
-        
-        // test.push('file://'+item.IMAGE_PATH);
     })
     this.props.navigation.navigate('DetailFinding', { ID: id, images: test })
   }

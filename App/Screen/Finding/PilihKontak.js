@@ -30,18 +30,22 @@ class PilihKontak extends Component {
     };
   };
 
+  // static navigationOptions = {
+  //   headerStyle: {
+  //       backgroundColor: Colors.tintColor
+  //   },
+  //   title: 'Pilih Kontak',
+  //   headerTintColor: '#fff',
+  //   headerTitleStyle: {
+  //       flex: 1,
+  //       fontSize: 18,
+  //       fontWeight: '400'
+  //   },
+  // };
+
   static navigationOptions = {
-    headerStyle: {
-        backgroundColor: Colors.tintColor
-    },
-    title: 'Pilih Kontak',
-    headerTintColor: '#fff',
-    headerTitleStyle: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '400'
-    },
-};
+    header: null
+  };
 
   onSelect(user){
     this.props.navigation.state.params.changeContact(user);

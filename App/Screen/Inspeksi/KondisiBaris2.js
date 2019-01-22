@@ -39,8 +39,11 @@ class KondisiBaris2 extends Component {
         let statusBlok = R.clone(params.statusBlok);
         let waktu = R.clone(params.waktu);
         let baris = R.clone(params.baris);
+        let intervalId = R.clone(params.intervalId);
 
         this.state = {
+
+            intervalId,
 
             //piringan  
             piringan: '',
@@ -334,10 +337,8 @@ class KondisiBaris2 extends Component {
 
         var listBaris2 = [];
         if(this.state.showPiringan){
-            var blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 7;
             var data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}7`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0007',
                 AREAL: this.state.dataUsual.BARIS,
@@ -348,10 +349,8 @@ class KondisiBaris2 extends Component {
         }
         
         if(this.state.showSarkul){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 8;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}8`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0008',
                 AREAL: this.state.dataUsual.BARIS,
@@ -362,10 +361,8 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showTph && this.state.switchTPH){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 9;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}9`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0009',
                 AREAL: this.state.dataUsual.BARIS,
@@ -376,10 +373,8 @@ class KondisiBaris2 extends Component {
         }        
 
         if(this.state.showGwg){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 10;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}10`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0010',
                 AREAL: this.state.dataUsual.BARIS,
@@ -390,10 +385,8 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showPrun){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 11;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}11`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0011',
                 AREAL: this.state.dataUsual.BARIS,
@@ -404,10 +397,8 @@ class KondisiBaris2 extends Component {
         }
 
         if(this.state.showTipa && this.state.switchTIPA){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 12;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}12`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0012',
                 AREAL: this.state.dataUsual.BARIS,
@@ -417,12 +408,8 @@ class KondisiBaris2 extends Component {
             listBaris2.push(data);
         }
 
-        
-
-        blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 13;
         data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}13`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
             CONTENT_INSPECTION_CODE: 'CC0013',
             AREAL: this.state.dataUsual.BARIS,
@@ -431,10 +418,8 @@ class KondisiBaris2 extends Component {
         }
         listBaris2.push(data);
 
-        blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 14;
         data = {
-            BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+            BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}14`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
             CONTENT_INSPECTION_CODE: 'CC0014',
             AREAL: this.state.dataUsual.BARIS,
@@ -444,10 +429,8 @@ class KondisiBaris2 extends Component {
         listBaris2.push(data);
 
         if(this.state.showKastrasi){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 15;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}15`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0015',
                 AREAL: this.state.dataUsual.BARIS,
@@ -458,10 +441,8 @@ class KondisiBaris2 extends Component {
         }
         
         if(this.state.showSanitasi){
-            blokInspectionCodeD = this.state.dataUsual.USER_AUTH + '-' + getTodayDate('YYYYMMDD') + '-' + this.state.dataUsual.BA +
-            '-' + this.state.dataUsual.AFD + '-D-' + TaskServices.getTotalData('TR_BLOCK_INSPECTION_D') + 16;
             data = {
-                BLOCK_INSPECTION_CODE_D: blokInspectionCodeD,
+                BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}16`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
                 CONTENT_INSPECTION_CODE: 'CC0016',
                 AREAL: this.state.dataUsual.BARIS,
@@ -479,6 +460,7 @@ class KondisiBaris2 extends Component {
             dataUsual: this.state.dataUsual,
             statusBlok: this.state.statusBlok,
             baris:this.state.baris,
+            intervalId: this.state.intervalId 
         });
     }
 

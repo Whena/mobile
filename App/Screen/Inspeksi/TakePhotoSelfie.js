@@ -44,11 +44,13 @@ class TakePhotoSelfie extends Component{
         let statusBlok = R.clone(params.statusBlok);   
         let waktu = R.clone(params.waktu);
         let baris = R.clone(params.baris);
+        let intervalId = R.clone(params.intervalId);
 
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
         this.state={
+          intervalId,
           hasPhoto: false,
           path: null,          
           pathImg: null,
@@ -83,21 +85,7 @@ class TakePhotoSelfie extends Component{
         TR_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
         IMAGE_CODE: imgCode,
         IMAGE_NAME: imageName,
-        IMAGE_PATH_LOCAL: dirPhotoInspeksiSelfie,
-        IMAGE_URL: '',
-        STATUS_IMAGE: 'BARIS',
-        STATUS_SYNC: 'N',
-        INSERT_USER: this.state.dataUsual.USER_AUTH,
-        INSERT_TIME: ''
-      }
-
-      this.setState({ dataModel: image });
-
-      var image = {
-        TR_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
-        IMAGE_CODE: imgCode,
-        IMAGE_NAME: imageName,
-        IMAGE_PATH_LOCAL: dirPhotoInspeksiSelfie,
+        IMAGE_PATH_LOCAL: dirPhotoInspeksiSelfie + '/' + imageName,
         IMAGE_URL: '',
         STATUS_IMAGE: 'SELFIE',
         STATUS_SYNC: 'N',
@@ -172,7 +160,8 @@ class TakePhotoSelfie extends Component{
         kondisiBaris2: this.state.kondisiBaris2, 
         dataUsual: this.state.dataUsual,
         statusBlok:this.state.statusBlok,
-        baris:this.state.baris
+        baris:this.state.baris,
+        intervalId: this.state.intervalId 
       });    
 
     }

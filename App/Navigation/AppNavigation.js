@@ -1,16 +1,13 @@
 import { createStackNavigator } from 'react-navigation';
 import SplashScreen from '../Screen/SplashScreen';
 import Login from '../Screen/Login';
-// import Login from '../Screen/LoginScreen';
 import MainMenu from '../Screen/Home/MainTabNavigator';
 
 //finding
 import FindingFormNavigator from '../Screen/Finding/FindingFormNavigator';
-
 import FormStep1 from '../Screen/Finding/FormStep1';
 import FormStep2 from '../Screen/Finding/FormStep2';
 import DetailFindingScreen from '../Screen/Finding/DetailFindingScreenRedesign';
-// import DetailFindingScreen from '../Screen/Finding/DetailFindingScreen';
 import BuktiKerja from '../Screen/Finding/BuktiKerja'
 import TakeFotoBukti from '../Screen/Finding/TakeFoto'
 import PilihKontak from '../Screen/Finding/PilihKontak'
