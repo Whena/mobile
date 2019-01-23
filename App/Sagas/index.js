@@ -29,7 +29,7 @@ import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
 import { getRegion, postRegion } from './RegionSagas';
-import { postInspeksiHeader, postInspeksiDetail, postFindingData } from './InspeksiSagas';
+import { postInspeksiHeader, postInspeksiDetail, postInspeksiTrackingPath, postFindingData, getInspeksiParamTrackingPath } from './InspeksiSagas';
 import { getAfd, postAfd } from './AfdSagas';
 import { getEst, postEst } from './EstSagas';
 import { getKriteria, postKriteria } from './KriteriaSagas';
@@ -66,6 +66,8 @@ export default function* root() {
 		takeLatest(RegionTypes.REGION_POST, postRegion, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_HEADER, postInspeksiHeader, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_DETAIL, postInspeksiDetail, miApi),
+		takeLatest(InspeksiTypes.INSPEKSI_POST_TRACKING_PATH, postInspeksiTrackingPath, miApi),
+		takeLatest(InspeksiTypes.INSPEKSI_GET_PARAM_TRACKING_PATH, getInspeksiParamTrackingPath, miApi),
 		takeLatest(InspeksiTypes.FINDING_POST_DATA, postFindingData, miApi),
 		takeLatest(BlockTypes.BLOCK_REQUEST, getBlock, miApi),
 		takeLatest(BlockTypes.BLOCK_POST, postBlock, miApi),

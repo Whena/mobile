@@ -5,9 +5,9 @@ import Colors from '../Constant/Colors';
 import { Container, Content, Icon, Picker, Form, View } from 'native-base';
 import { getTodayDate } from '../Lib/Utils';
 import { Calendar } from 'react-native-calendars'
+import TaskServices from '../Database/TaskServices';
 
-
-var dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
 class FilterScreen extends React.Component {
 
@@ -28,17 +28,53 @@ class FilterScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
-            valBisnisArea: '',
-            language: '',
+            valBisnisArea: 'Cari BA',
+            valTanggal: 'Pilih Tanggal',
+            valBatasWaktu: 'Pilih Batas Waktu',
+            valStBatasWaktu: '',
+            valEndBatasWaktu: '',
             selected: "key0",
             selectedTanggal: "key0",
-            searchedBisnisArea: [],
-            bisnisArea: []
+            arrDataFilter: []
         }
     }
 
+    changeBa = data => {
+        console.log("Data BA : " + data.fullName);
+        this.setState({
+            valBisnisArea: data.fullName
+        })
+    }
+
+    changeBatasWaktu = data => {
+        console.log("Data Batas Waktu : " + data);
+        console.log("Data Batas Waktu : " + data.endBatasWaktu);
+        let resultParsed = JSON.parse(data)
+        
+        this.setState({
+            valStBatasWaktu: resultParsed.startDate.substring(0, 10),
+            valEndBatasWaktu: resultParsed.endDate.substring(0, 10),
+            valBatasWaktu: resultParsed.startDate.substring(0, 10) + " s/d " + resultParsed.endDate.substring(0, 10)
+        })
+    }
+
+    _changeFilterList() {
+        let arrData = [];
+        arrData.push({
+            ba: this.state.valBisnisArea,
+            status: this.getStatus(this.state.selected),
+            stBatasWaktu: this.state.valStBatasWaktu,
+            endBatasWaktu: this.state.valEndBatasWaktu
+        })
+        // console.log(JSON.stringify(arrData));
+        this.props.navigation.state.params._changeFilterList(arrData);
+        this.props.navigation.goBack();
+    };
+
     onValueChange(value) {
+        console.log("Data Status : " + this.getStatus(value));
         this.setState({
             selected: value
         });
@@ -50,26 +86,18 @@ class FilterScreen extends React.Component {
         });
     }
 
-    onSelect(data) {
-        this.setState({ valBisnisArea: data.AFDELING_CODE })
-    };
-
-    searchedBisnisArea = (searchedText) => {
-        var searchedBisnisArea = this.state.bisnisArea.filter(function (afd) {
-            return afd.fullName.toLowerCase().indexOf(searchedText.toLowerCase()) > -1;
-        });
-        this.setState({ searchedBisnisArea: searchedBisnisArea });
-    };
-
-    renderBisnisArea = (afd) => {
-        return (
-            <View style={{ flex: 1, padding: 5 }}>
-                <TouchableOpacity onPress={() => { this.onSelect(afd) }}>
-                    <Text style={{ fontSize: 15, color: 'black' }}>{afd.AFDELING}</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    };
+    getStatus(param) {
+        switch (param) {
+            case 'key0':
+                return 'BARU';
+            case 'key1':
+                return 'SEDANG DIPROSES';
+            case 'key2':
+                return 'SELESAI';
+            default:
+                return 'BARU';
+        }
+    }
 
     render() {
         return (
@@ -79,51 +107,37 @@ class FilterScreen extends React.Component {
                     barStyle="light-content" />
                 <Content style={{ padding: 16 }}>
                     <Form>
-                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 24 }}>BISNIS AREA</Text>
-                        <View style={styles.containerBisnisArea}>
-                            <TextInput
-                                style={styles.textinput}
-                                onChangeText={this.searchedBisnisArea}
-                                value={this.state.valBisnisArea}
-                                placeholder="Cari Bisnis Area" />
-
-                            <View style={{ marginTop: 5 }}>
-                                <ListView
-                                    dataSource={dataSource.cloneWithRows(this.state.searchedBisnisArea)}
-                                    renderRow={this.renderAdress}
-                                    renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />}
-                                />
-                            </View>
-                        </View>
-
-                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16 }}>TANGGAL</Text>
-                        <TouchableOpacity onPress={() => alert('Testing')}>
-                            <Calendar
-                                // Collection of dates that have to be colored in a special way. Default = {}
-                                markedDates={
-                                    {
-                                        '2012-05-20': { textColor: 'green' },
-                                        '2012-05-22': { startingDay: true, color: 'green' },
-                                        '2012-05-23': { selected: true, endingDay: true, color: 'green', textColor: 'gray' },
-                                        '2012-05-04 ': { disabled: true, startingDay: true, color: 'green', endingDay: true }
-                                    }}
-                                // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
-                                markingType={'period'}
-                            />
-                            {/* <Picker
-                                enabled={false}
-                                mode="dropdown"
-                                iosHeader="Select your SIM"
-                                iosIcon={<Icon name="arrow-dropdown-circle" style={{ color: "#007aff", fontSize: 25 }} />}
-                                style={{ width: undefined }}
-                                selectedValue={this.state.selectedTanggal}
-                                onValueChange={this.onValueChangeTanggal.bind(this)}>
-                                <Picker.Item label={getTodayDate('LL')} value="key0" />
-                            </Picker> */}
+                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16 }}>BISNIS AREA</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('BisnisArea', { changeBa: this.changeBa })} >
+                            <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valBisnisArea}</Text>
+                            <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
                         </TouchableOpacity>
-                        <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey' }}></View>
 
-                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 24 }}>STATUS TEMUAN</Text>
+                        {/* <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>TANGGAL PEMBUATAN</Text>
+
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar')} >
+                                    <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valTanggal}</Text>
+                                    <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
+                                </TouchableOpacity>
+                            </View>
+                            <View>
+
+                            </View>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar')} >
+                                <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valTanggal}</Text>
+                                <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
+                            </TouchableOpacity>
+                        </View> */}
+
+                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>TANGGAL PEMBUATAN</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar', { changeBatasWaktu: this.changeBatasWaktu })}  >
+                            <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valBatasWaktu}</Text>
+                            <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
+                        </TouchableOpacity>
+
+                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>STATUS TEMUAN</Text>
                         <Picker
                             mode="dropdown"
                             iosHeader="Select your SIM"
@@ -136,9 +150,17 @@ class FilterScreen extends React.Component {
                             <Picker.Item label="SELESAI" value="key2" />
                         </Picker>
                         <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey' }}></View>
+
+                        <View style={{ justifyContent: 'center', flex: 1, flexDirection: 'row' }}>
+                            <TouchableOpacity onPress={() => {
+                                this._changeFilterList();
+                            }} style={[styles.button, { marginTop: 16 }]}>
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
+                        </View>
                     </Form>
                 </Content>
-            </Container>
+            </Container >
         )
     }
 }
@@ -160,7 +182,22 @@ const styles = StyleSheet.create({
         marginRight: 5,
         height: 45,
         backgroundColor: 'white'
+    },
+    button: {
+        height: 45,
+        width: 300,
+        backgroundColor: Colors.tintColor,
+        borderRadius: 25,
+        marginVertical: 10,
+        paddingVertical: 10
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'white',
+        textAlign: 'center'
     }
 });
+
 
 export default FilterScreen;

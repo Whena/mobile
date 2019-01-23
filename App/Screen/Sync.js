@@ -81,6 +81,8 @@ class SyncScreen extends React.Component {
             progressInspeksiDetail: 0,
             progressUploadImage: 0,
             progressFindingData: 0,
+            progressInspectionTrack: 0,
+            progressParamInspection: 0,
             indeterminate: false,
             downloadRegion: false,
             downloadAfd: false,
@@ -95,6 +97,7 @@ class SyncScreen extends React.Component {
             downloadCategory: false,
             downloadFinding: false,
             downloadFindingImage: false,
+            downloadInspeksiParam: false,
             fetchLocation: false,
             isBtnEnable: false,
             isFinishBlock: false,
@@ -142,6 +145,10 @@ class SyncScreen extends React.Component {
             totalImagelUpload: '0',
             valueImageUpload: '0',
             totalImagelUpload: '0',
+            valueInspectionTrack: '0',
+            totalInspectionTrack: '0',
+            valueParamInspection: '0',
+            totalParamInspection: '0',
 
             showButton: true,
             blockInspectionCodes: []
@@ -218,7 +225,41 @@ class SyncScreen extends React.Component {
             }
         } catch (error) {
             console.log(error)
-        }        
+        }
+    }
+
+    loadDataInspectionTrack() {
+        let countData = TaskServices.getAllData('TM_INSPECTION_TRACK');
+        // var query = dataHeader.filtered('STATUS_SYNC = "N"');
+        // let countData = query;
+        console.log("countData : " + countData.length);
+
+        this.setState({ progressInspectionTrack: 1 });
+        this.setState({ valueInspectionTrack: countData.length });
+        this.setState({ totalInspectionTrack: countData.length });
+
+        if (countData.length > 0) {
+            countData.map(item => {
+                this.kirimInspectionTrack(item);
+            })
+        } else {
+            // alert('Tidak ada data yg diupload');
+            this.setState({ progressInspectionTrack: 1 });
+            this.setState({ valueInspectionTrack: 0 });
+            this.setState({ totalInspectionTrack: 0 });
+        }
+    }
+
+    kirimInspectionTrack(param) {
+        this.props.inspeksiPostTrackingPath({
+            TRACK_INSPECTION_CODE: param.TRACK_INSPECTION_CODE,
+            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
+            DATE_TRACK: param.DATE_TRACK,
+            LAT_TRACK: param.LAT_TRACK,
+            LONG_TRACK: param.LONG_TRACK,
+            INSERT_USER: param.INSERT_USER,
+            INSERT_TIME: param.INSERT_TIME
+        });
     }
 
     kirimFinding(param) {
@@ -242,7 +283,7 @@ class SyncScreen extends React.Component {
     }
 
     kirimInspeksiHeader(param) {
-        let baris = TaskServices.findBy2('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', param.BLOCK_INSPECTION_CODE )
+        let baris = TaskServices.findBy2('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', param.BLOCK_INSPECTION_CODE)
         this.props.inspeksiPostHeader({
             BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
             WERKS: param.WERKS,
@@ -281,12 +322,12 @@ class SyncScreen extends React.Component {
         });
     }
 
-    kirimImage(){
+    kirimImage() {
         const user = TaskServices.getAllData('TR_LOGIN')[0];
-        let all = TaskServices.getAllData('TR_IMAGE') 
+        let all = TaskServices.getAllData('TR_IMAGE')
         var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-        if(all !== undefined && dataImage !== undefined){
-            for(var i=0; i<dataImage.length; i++){            
+        if (all !== undefined && dataImage !== undefined) {
+            for (var i = 0; i < dataImage.length; i++) {
                 var data = new FormData();
                 let idxOrder = null;
                 data.append('IMAGE_CODE', dataImage[i].IMAGE_CODE)
@@ -305,31 +346,31 @@ class SyncScreen extends React.Component {
                 let indexData = R.findIndex(R.propEq('IMAGE_CODE', dataImage[i].IMAGE_CODE))(all);
                 idxOrder = indexData
                 // alert(JSON.stringify(data))
-                const url= "http://149.129.245.230:3012/image/upload-file/"
+                const url = "http://149.129.245.230:3012/image/upload-file/"
                 fetch(url, {
                     method: 'POST',
                     headers: {
                         'Cache-Control': 'no-cache',
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
-                        Authorization : `Bearer ${user.ACCESS_TOKEN}`,
+                        Authorization: `Bearer ${user.ACCESS_TOKEN}`,
                     },
                     body: data
 
                 })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-                    if(responseJson.status){
-                        this.setState({ progressUploadImage: 1 });
-                        this.setState({ valueImageUpload: dataImage.length });
-                        this.setState({ totalImagelUpload: dataImage.length });
-                        TaskServices.updateStatusImage('TR_IMAGE', 'SYNC', idxOrder);
-                    }   
-                    console.log(responseJson)
-                }).catch((error) => {
-                    console.error(error);
-                });
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+                        if (responseJson.status) {
+                            this.setState({ progressUploadImage: 1 });
+                            this.setState({ valueImageUpload: dataImage.length });
+                            this.setState({ totalImagelUpload: dataImage.length });
+                            TaskServices.updateStatusImage('TR_IMAGE', 'SYNC', idxOrder);
+                        }
+                        console.log(responseJson)
+                    }).catch((error) => {
+                        console.error(error);
+                    });
             }
         }
         this.setState({ progressUploadImage: 1 });
@@ -754,6 +795,31 @@ class SyncScreen extends React.Component {
         }
     }
 
+    _crudTM_Inspeksi_Param(data) {
+
+        var dataSimpan = data;
+        console.log("Simpan Inspeksi Param : " + dataSimpan.length);
+
+        if (dataSimpan.length > 0) {
+
+            for (i = 1; i <= dataSimpan.length; i++) {
+                this.setState({ progressParamInspection: i / dataSimpan.length });
+                this.setState({ totalParamInspection: dataSimpan.length });
+            }
+
+            dataSimpan.map(item => {
+                TaskServices.saveData('TM_TIME_TRACK', item);
+                let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+                this.setState({ valueFindingImageDownload: countDataInsert });
+            });
+        } else {
+            let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+            this.setState({ progressParamInspection: 1 })
+            this.setState({ valueParamInspection: countDataInsert });
+            this.setState({ totalParamInspection: 0 });
+        }
+    }
+
     _get_IMEI_Number() {
         var IMEI_2 = IMEI.getImei();
         this.setState({ imei: IMEI_2 });
@@ -782,7 +848,8 @@ class SyncScreen extends React.Component {
 
         this.kirimImage();
         this.loadData();
-        this.loadDataFinding()
+        this.loadDataFinding();
+        this.loadDataInspectionTrack();
 
         this.setState({
             downloadRegion: false,
@@ -798,6 +865,7 @@ class SyncScreen extends React.Component {
             downloadFinding: false,
             downloadFindingImage: false,
             downloadCategory: false,
+            downloadInspeksiParam: false,
             fetchLocation: false,
             isBtnEnable: false,
             progress: 0,
@@ -833,6 +901,7 @@ class SyncScreen extends React.Component {
         this.props.contactRequest();
         this.props.findingRequest();
         this.props.findingImageRequest();
+        this.props.inspeksiGetParamTrackingPath();
 
     }
 
@@ -951,14 +1020,16 @@ class SyncScreen extends React.Component {
             }
         }
 
+        if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.downloadInspeksiParam) {
+            let dataJSON = newProps.inspeksi.fetchingInspeksi;
+            this.setState({ downloadInspeksiParam: true });
+            if (dataJSON !== null) {
+                this._crudTM_Inspeksi_Param(dataJSON);
+            }
+        }
+
         RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
-        // if (this.state.downloadBlok && this.state.downloadAfd && this.state.downloadRegion && this.state.downloadEst
-        //     && this.state.downloadLandUse && this.state.downloadComp && this.state.downloadContent && this.state.downloadContentLabel
-        //     && this.state.downloadKriteria && this.state.downloadCategory && this.state.downloadContact) {
-
-
-        // }
     }
 
     download(data) {
@@ -980,12 +1051,6 @@ class SyncScreen extends React.Component {
         if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
             this.setState({ showButton: true });
         }
-
-        // if (this.setState.downloadBlok && this.setState.downloadAfd && this.setState.downloadRegion && this.setState.downloadEst
-        //     && this.setState.downloadLandUse && this.setState.downloadComp && this.setState.downloadContent && this.setState.downloadContentLabel
-        //     && this.setState.downloadKriteria && this.setState.downloadCategory && this.setState.downloadContact) {
-        //     RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
-        // }
     }
 
     render() {
@@ -1227,6 +1292,43 @@ class SyncScreen extends React.Component {
                             indeterminate={this.state.indeterminate} />
                     </View>
 
+
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>PARAMATER TRACK INSPECTION</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueParamInspection}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalParamInspection}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            color={Colors.brand}
+                            progress={this.state.progressParamInspection}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI TRACK</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspectionTrack}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspectionTrack}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspectionTrack}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
                     <View style={{ flex: 1, marginTop: 12 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text>UPLOAD INSPEKSI HEADER</Text>
@@ -1361,6 +1463,8 @@ const mapDispatchToProps = dispatch => {
         findingImageRequest: () => dispatch(FindingImageAction.findingImageRequest()),
         inspeksiPostHeader: obj => dispatch(InspeksiAction.inspeksiPostHeader(obj)),
         inspeksiPostDetail: obj => dispatch(InspeksiAction.inspeksiPostDetail(obj)),
+        inspeksiPostTrackingPath: obj => dispatch(InspeksiAction.inspeksiPostTrackingPath(obj)),
+        inspeksiGetParamTrackingPath: obj => dispatch(InspeksiAction.inspeksiGetParamTrackingPath(obj)),
         findingPostData: obj => dispatch(InspeksiAction.findingPostData(obj))
     };
 };

@@ -1,13 +1,40 @@
 import { call, put } from 'redux-saga/effects';
 import InspeksiActions from '../Redux/InspeksiRedux';
 
-export function* postInspeksiHeader(api, action) {
+export function* getInspeksiParamTrackingPath(api, action) {
     const { data } = action;
-	const response = yield call(api.postInspeksiHeader, data);
+    const response = yield call(api.getInspeksiParamTrackingPath, data);
 
     if (typeof atob !== 'undefined') {
-    	console.log(response);
-    	console.log('^^^ POST INSPEKSI ^^^');
+        console.log(response);
+        console.log('^^^ GET ALL PARAM TRACKING PATH ^^^');
+    }
+    if (response.ok) {
+        switch (response.data.status) {
+            case false:
+                yield put(InspeksiActions.inspeksiFailed('Paramater Salah'));
+                break;
+            case true:
+                console.log('^^^ SUCCESS PARAM TRACKING PATH ^^^');
+                yield put(InspeksiActions.inspeksiSuccess(response.data.data));
+                break;
+            default:
+                yield put(InspeksiActions.inspeksiFailed('Unknown responseType'));
+                break;
+        }
+    } else {
+        yield put(RegionActions.inspeksiFailed(response.problem));
+    }
+
+}
+
+export function* postInspeksiHeader(api, action) {
+    const { data } = action;
+    const response = yield call(api.postInspeksiHeader, data);
+
+    if (typeof atob !== 'undefined') {
+        console.log(response);
+        console.log('^^^ POST INSPEKSI ^^^');
     }
 
     if (response.ok) {
@@ -15,8 +42,8 @@ export function* postInspeksiHeader(api, action) {
     } else {
         yield put(InspeksiActions.inspeksiFailed({
             path: 'Complete Post Inspeksi Header',
-        message: response.data.message ? response.data.message : '',
-        response
+            message: response.data.message ? response.data.message : '',
+            response
         }));
     }
 }
@@ -41,7 +68,39 @@ export function* postInspeksiDetail(api, action) {
                 yield put(InspeksiActions.inspeksiSuccess({ payload: response.data, change: true }));
                 break;
             default:
-                yield put(FindingActions.inspeksiFailed('Unknown responseType'));
+                yield put(InspeksiActions.inspeksiFailed('Unknown responseType'));
+                break;
+        }
+    } else {
+        yield put(InspeksiActions.inspeksiFailed({
+            path: 'Complete Post Inspeksi Detail',
+            message: response.data.message ? response.data.message : '',
+            response
+        }));
+    }
+}
+
+export function* postInspeksiTrackingPath(api, action) {
+    const { data } = action;
+    // console.log("Data Post Inspeksi Detail : " + JSON.stringify(data));
+    const response = yield call(api.postInspeksiTrackingPath, data);
+
+    if (typeof atob !== 'undefined') {
+        console.log(response);
+        console.log('^^^ POST INSPEKSI TRACKING PATH^^^');
+    }
+
+    if (response.ok) {
+        switch (response.data.status) {
+            case false:
+                yield put(InspeksiActions.inspeksiFailed('Paramater Salah'));
+                break;
+            case true:
+                console.log('^^^ SUCCESS INSPEKSI TRACKING PATH ^^^');
+                yield put(InspeksiActions.inspeksiSuccess({ payload: response.data, change: true }));
+                break;
+            default:
+                yield put(InspeksiActions.inspeksiFailed('Unknown responseType'));
                 break;
         }
     } else {

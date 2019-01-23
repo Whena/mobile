@@ -31,6 +31,8 @@ import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import test from '../Screen/Inspeksi/test';
 import FilterScreen from '../Screen/FilterScreen'
+import BisnisAreaScreen from '../Screen/BisnisArea'
+import CalendarsScreen from '../Screen/Calendar';
 
 // import TestUpload from '../Screen/TestUpload'
 
@@ -62,35 +64,37 @@ const main = createStackNavigator({
     // FormStep2: {screen: FormStep2},
     DetailFinding: { screen: DetailFindingScreen },
     BuktiKerja: { screen: BuktiKerja },
-    TakeFotoBukti : {screen: TakeFotoBukti},
-    PilihKontak : {screen: PilihKontak},
-    PilihKategori : {screen: PilihKategori},
-    PilihBlok : {screen: PilihBlok},
+    TakeFotoBukti: { screen: TakeFotoBukti },
+    PilihKontak: { screen: PilihKontak },
+    PilihKategori: { screen: PilihKategori },
+    PilihBlok: { screen: PilihBlok },
     // FormInspection: {
     //     screen: FormInspectionNavigator,
     //     navigationOptions: {
     //         header: null
     //     },
     // },
-    
+
     Sync: { screen: SyncScreen },
     Inbox: { screen: InboxScreen },
     Filter: { screen: FilterScreen },
+    BisnisArea: { screen: BisnisAreaScreen },
+    Calendar: { screen: CalendarsScreen },
 
     //inspeksi
-    BuatInspeksi : {screen: BuatInspeksi},
+    BuatInspeksi: { screen: BuatInspeksi },
     DetailHistoryInspeksi: { screen: DetailHistoryInspeksi },
-    TakeFotoBaris: {screen: TakeFotoBaris},
-    KondisiBaris1: {screen: KondisiBaris1},
-    KondisiBaris2: {screen: KondisiBaris2},
-    TakeFotoSelfie: {screen: TakeFotoSelfie},
-    KondisiBarisAkhir: {screen: KondisiBarisAkhir},
-    SelesaiInspeksi: {screen: SelesaiInspeksi},
+    TakeFotoBaris: { screen: TakeFotoBaris },
+    KondisiBaris1: { screen: KondisiBaris1 },
+    KondisiBaris2: { screen: KondisiBaris2 },
+    TakeFotoSelfie: { screen: TakeFotoSelfie },
+    KondisiBarisAkhir: { screen: KondisiBarisAkhir },
+    SelesaiInspeksi: { screen: SelesaiInspeksi },
     DetailBaris: { screen: DetailBaris },
-    test: {screen:test},
+    test: { screen: test },
     // TestUpload: {screen:TestUpload}
 
-    }, {
+}, {
         headerMode: 'screen',
         initialRouteName: 'SplashScreen',
         navigationOptions: {

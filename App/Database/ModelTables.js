@@ -226,7 +226,7 @@ const TR_FINDING = {
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
         FINDING_PRIORITY: 'string',
-        DUE_DATE: 'string',
+        DUE_DATE: { type: 'int', default: 0 },
         STATUS: 'string',
         ASSIGN_TO: 'string',
         PROGRESS: { type: 'int', default: 0 },//'string',
@@ -234,7 +234,8 @@ const TR_FINDING = {
         LONG_FINDING: 'string',
         REFFERENCE_INS_CODE: 'string',
         INSERT_USER: 'string',
-        INSERT_TIME: 'string'
+        INSERT_TIME: { type: 'int', default: 0 },
+        STATUS_SYNC: 'string'
     }
 }
 

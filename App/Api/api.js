@@ -101,7 +101,7 @@ const create = () => {
         return api.post('/finding', body);
     }
 
-    const postInspectionTrack = body => {
+    const postInspeksiTrackingPath = body => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
         return api.post('/inspection-tracking', body);
     }
@@ -187,7 +187,7 @@ const create = () => {
         return api.get('/mobile-sync/finding-images')
     }
 
-    const getParamTrackingPath = () => {
+    const getInspeksiParamTrackingPath = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
         return api.get('./parameter/track')
     }
@@ -217,7 +217,7 @@ const create = () => {
         postContent,
         postContentLabel,
         postFinding,
-        postInspectionTrack,
+        postInspeksiTrackingPath,
 
         //Get
         getBlock,
@@ -233,7 +233,7 @@ const create = () => {
         getContentLabel,
         getFinding,
         getFindingImage,
-        getParamTrackingPath
+        getInspeksiParamTrackingPath
 
     };
 };
