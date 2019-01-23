@@ -846,10 +846,10 @@ class SyncScreen extends React.Component {
 
     _onSync() {
 
-        this.kirimImage();
-        this.loadData();
-        this.loadDataFinding();
-        this.loadDataInspectionTrack();
+        // this.kirimImage();
+        // this.loadData();
+        // this.loadDataFinding();
+        // this.loadDataInspectionTrack();
 
         this.setState({
             downloadRegion: false,

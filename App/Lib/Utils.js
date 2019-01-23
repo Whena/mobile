@@ -3,6 +3,8 @@ import { isNil, isEmpty } from 'ramda';
 import DeviceInfo from 'react-native-device-info';
 import { Platform, PixelRatio, Dimensions, PermissionsAndroid, Alert } from 'react-native';
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
+
 var uuid = require('react-native-uuid');
 
 // export function formatRp(num, fixed = 0) {
@@ -20,48 +22,48 @@ var uuid = require('react-native-uuid');
 // 	);
 // }
 
-export function kirimImage(URL, Formdata){
+export function kirimImage(URL, Formdata) {
 	fetch(url, {
 		method: 'POST',
 		headers: {
-		  'Cache-Control': 'no-cache',
-		  Accept: 'application/json',
-		  'Content-Type': 'multipart/form-data',
-		  Authorization : `Bearer ${user[0].ACCESS_TOKEN}`,
+			'Cache-Control': 'no-cache',
+			Accept: 'application/json',
+			'Content-Type': 'multipart/form-data',
+			Authorization: `Bearer ${user[0].ACCESS_TOKEN}`,
 		},
 		body: data
-		
-	  }).then((response) => response.json())
-	  .then((responseJson) => {
-		  console.log(responseJson);
-		  return responseJson;
-	   }).catch((error) => {
-		console.error(error);
-		return error;
-	  });
+
+	}).then((response) => response.json())
+		.then((responseJson) => {
+			console.log(responseJson);
+			return responseJson;
+		}).catch((error) => {
+			console.error(error);
+			return error;
+		});
 }
 
-export function getSticker(score){
+export function getSticker(score) {
 	var arrA = [require('../Images/stiker-A-1.png'), require('../Images/stiker-A-2.png'), require('../Images/stiker-A-3.png')];
 	var arrB = [require('../Images/stiker-B-1.png'), require('../Images/stiker-B-2.png'), require('../Images/stiker-B-3.png')];
 	var arrC = [require('../Images/stiker-C-1.png'), require('../Images/stiker-C-2.png'), require('../Images/stiker-C-3.png')];
 	var arrF = [require('../Images/stiker-F-1.png'), require('../Images/stiker-F-2.png'), require('../Images/stiker-F-3.png')];
 	var randomItem;
-	switch(score){
+	switch (score) {
 		case 'A':
-			return randomItem = arrA[Math.floor(Math.random()*arrA.length)];
+			return randomItem = arrA[Math.floor(Math.random() * arrA.length)];
 		case 'B':
-			return randomItem = arrB[Math.floor(Math.random()*arrB.length)];
+			return randomItem = arrB[Math.floor(Math.random() * arrB.length)];
 		case 'C':
-			return randomItem = arrC[Math.floor(Math.random()*arrC.length)];
+			return randomItem = arrC[Math.floor(Math.random() * arrC.length)];
 		case 'F':
-			return randomItem = arrF[Math.floor(Math.random()*arrF.length)];
+			return randomItem = arrF[Math.floor(Math.random() * arrF.length)];
 		default:
 			break;
 	}
 }
 
-export function getCalculateTime(date1, date2){
+export function getCalculateTime(date1, date2) {
 	//date1 is today
 	// var today = new Date();
 	// var Christmas = new Date("12-25-2012");
@@ -71,43 +73,43 @@ export function getCalculateTime(date1, date2){
 	// var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 	// alert(diffDays + " days, " + diffHrs + " hours, " + diffMins + " minutes until Christmas 2009 =)");
 
-	var diffMs = (date1-date2); //millisecond between now and last
+	var diffMs = (date1 - date2); //millisecond between now and last
 	var diffDays = Math.floor(diffMs / 86400000); // days
 	var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
 	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-	diffMins = Math.round(60-diffMins);
+	diffMins = Math.round(60 - diffMins);
 
 	return diffMins
 }
 
-export async function getPermission(){
-	try{
-		const phone =  await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE ,
+export async function getPermission() {
+	try {
+		const phone = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
 			{
-			  'title': 'ReactNativeCode wants to READ_PHONE_STATE',
-			  'message': 'ReactNativeCode App needs access to your personal data. '
+				'title': 'ReactNativeCode wants to READ_PHONE_STATE',
+				'message': 'ReactNativeCode App needs access to your personal data. '
 			}
 		);
-		const camera =  await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.CAMERA ,
+		const camera = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.CAMERA,
 			{
-			  'title': 'ReactNativeCode wants to CAMERA',
-			  'message': 'ReactNativeCode App needs access to your personal data. '
+				'title': 'ReactNativeCode wants to CAMERA',
+				'message': 'ReactNativeCode App needs access to your personal data. '
 			}
 		);
-		const storage =  await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE ,
+		const storage = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
 			{
-			  'title': 'ReactNativeCode wants to READ_EXTERNAL_STORAGE',
-			  'message': 'ReactNativeCode App needs access to your personal data. '
+				'title': 'ReactNativeCode wants to READ_EXTERNAL_STORAGE',
+				'message': 'ReactNativeCode App needs access to your personal data. '
 			}
 		);
 		const location = await PermissionsAndroid.request(
-			PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION ,
+			PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
 			{
-			  'title': 'ReactNativeCode wants to ACCESS_FINE_LOCATION',
-			  'message': 'ReactNativeCode App needs access to your personal data. '
+				'title': 'ReactNativeCode wants to ACCESS_FINE_LOCATION',
+				'message': 'ReactNativeCode App needs access to your personal data. '
 			}
 		);
 		// const storageWrite =  await PermissionsAndroid.request(
@@ -117,72 +119,123 @@ export async function getPermission(){
 		// 	  'message': 'ReactNativeCode App needs access to your personal data. '
 		// 	}
 		// );
-		if(phone === PermissionsAndroid.RESULTS.GRANTED && camera === PermissionsAndroid.RESULTS.GRANTED && 
-			storage === PermissionsAndroid.RESULTS.GRANTED && location === PermissionsAndroid.RESULTS.GRANTED){
+		if (phone === PermissionsAndroid.RESULTS.GRANTED && camera === PermissionsAndroid.RESULTS.GRANTED &&
+			storage === PermissionsAndroid.RESULTS.GRANTED && location === PermissionsAndroid.RESULTS.GRANTED) {
 			return true;
 		}
-	}catch(e){
+	} catch (e) {
 		console.warn(e)
 		return false;
 	}
 }
 
-export function getFileFromDirectory(path){
+export function getFileFromDirectory(path) {
 	RNFS.readDir(path) // /storage/emulated/0/Sulley
-        .then((result) => {
-        console.log('GOT RESULT', result);
-        return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-	}).then((statResult) => {
-        if (statResult[0].isFile()) {
-        return RNFS.readFile(statResult[1], 'utf8');
-        }
-        return 'no file';
-	}).then((contents) => {
-        console.log(contents);
-        })
-        .catch((err) => {
-        console.log(err.message, err.code);
-	});
+		.then((result) => {
+			console.log('GOT RESULT', result);
+			return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+		}).then((statResult) => {
+			if (statResult[0].isFile()) {
+				return RNFS.readFile(statResult[1], 'utf8');
+			}
+			return 'no file';
+		}).then((contents) => {
+			console.log(contents);
+		})
+		.catch((err) => {
+			console.log(err.message, err.code);
+		});
 }
 
-export function getUUID(){
+export function getUUID() {
 	return uuid.v4();
 }
 
-export function getTodayDate(format){
+export function getTodayDate(format) {
 	var tgl = moment().format(format)
 	return tgl;
 }
 
-export function convertTimestampToDate(timestamp, format){
+export function changeFormatDate(value, format) {
+
+	var result = '';
+	value = value.replace(/-/g, "");
+	value = value.replace(/:/g, "");
+	value = value.replace(/ /g, "");
+
+	if (value == 'now') {
+		value = momentTimezone(new Date()).tz("Asia/Jakarta").format("YYYYMMDDHHmmss");
+	}
+
+	switch (format) {
+		case 'YYYYMMDD':
+			if (value.length == 14 || value.length == 8) {
+				result = value.substr(0, 4) + value.substr(4, 2) + value.substr(6, 2);
+				result = value;
+			}
+			else {
+				result = '';
+			}
+			break;
+		case 'YYYY-MM-DD':
+			if (value.length == 14 || value.length == 8) {
+				result = value.substr(0, 4) + '-' + value.substr(4, 2) + '-' + value.substr(6, 2);
+			}
+			else {
+				result = '';
+			}
+			break;
+		case 'YYYYMMDDhhmmss':
+			if (value.length == 14) {
+				result = value.substr(0, 4) + value.substr(4, 2) + value.substr(6, 2) + value.substr(8, 2) + value.substr(10, 2) + value.substr(12, 2);
+			}
+			else {
+				result = '';
+			}
+			break;
+		case 'YYYY-MM-DD hh-mm-ss':
+			if (value.length == 14) {
+				result = value.substr(0, 4) + '-' + value.substr(4, 2) + '-' + value.substr(6, 2) + ' ' + value.substr(8, 2) + ':' + value.substr(10, 2) + ':' + value.substr(12, 2);
+			}
+			else {
+				result = '';
+			}
+			break;
+	}
+	return result;
+};
+
+
+
+export function convertTimestampToDate(timestamp, format) {
 	var dateString = moment(timestamp).format(format);
 	// const formatted = moment(timestamp).format('L'); //MM/DD/YYYY
 	return dateString;
 }
 
 export async function request_READ_PHONE_STATE() {
- 
+
 	try {
-	  const granted = await PermissionsAndroid.request(
-		PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE ,
-		{
-		  'title': 'ReactNativeCode wants to READ_PHONE_STATE',
-		  'message': 'ReactNativeCode App needs access to your personal data. '
+		const granted = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+			{
+				'title': 'ReactNativeCode wants to READ_PHONE_STATE',
+				'message': 'ReactNativeCode App needs access to your personal data. '
+			}
+		)
+		if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+			Alert.alert("Permission Granted.");
 		}
-	  )
-	  if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-   
-		Alert.alert("Permission Granted.");
-	  }
-	  else {
-   
-		Alert.alert("Permission Not Granted");
-   
-	  }
+		else {
+
+			Alert.alert("Permission Not Granted");
+
+		}
 	} catch (err) {
-	  console.warn(err)
+		console.warn(err)
 	}
-  }
+}
 
 export function formatRp(num, fixed = 0) {
 	num = parseFloat(num);

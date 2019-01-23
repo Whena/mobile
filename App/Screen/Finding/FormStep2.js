@@ -253,17 +253,25 @@ class FormStep2 extends Component {
                 'Peringatan',
                 "Ditugaskan kepada harus diisi"
             );
-        }else if (isSameUser && isEmpty(this.state.batasWaktu)) {
+        } else if (isSameUser && isEmpty(this.state.batasWaktu)) {
             Alert.alert(
                 'Peringatan',
                 "Batas waktu harus diisi"
             );
         } else {
-            this.saveData()
+            let param;
+            if (this.state.batasWaktu == "") {
+                param = 0
+            }
+            this.saveData(param)
         }
     }
 
-    saveData() {
+    saveData(param) {
+
+        const today = getTodayDate("YYYYMMDDHHmmss");
+        console.log("Today : " + parseInt(today));
+
         var data = {
             FINDING_CODE: this.state.TRANS_CODE,
             WERKS: this.state.werks,
@@ -272,7 +280,7 @@ class FormStep2 extends Component {
             FINDING_CATEGORY: this.state.categoryCode,
             FINDING_DESC: this.state.keterangan,
             FINDING_PRIORITY: this.state.priority,
-            DUE_DATE: this.state.batasWaktu,
+            DUE_DATE: param,
             STATUS: 'BARU',
             ASSIGN_TO: this.state.assignto,
             PROGRESS: 0,
@@ -280,7 +288,8 @@ class FormStep2 extends Component {
             LONG_FINDING: this.state.longitude.toString(),
             REFFERENCE_INS_CODE: "",
             INSERT_USER: this.state.user.USER_AUTH_CODE,
-            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
+            INSERT_TIME: parseInt(today),
+            STATUS_SYNC: "N"
         }
 
         TaskServices.saveData('TR_FINDING', data);
@@ -308,8 +317,8 @@ class FormStep2 extends Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
-        this.setState({ batasWaktu: moment(date).format("YYYY-MM-DD") })
-        this._hideDateTimePicker();
+        this.setState({ batasWaktu: parseInt.moment(date).format("YYMMDDHHmmss") })
+        // this._hideDateTimePicker();
     };
 
     _showLocation = () => {
@@ -343,20 +352,20 @@ class FormStep2 extends Component {
         return person.filter(person => person.allShow.search(regex) >= 0);
     }
 
-    changeContact = data => {        
+    changeContact = data => {
         let isSameUser = data.userAuth == this.state.user.USER_AUTH_CODE ? true : false;
-        if(isSameUser){
-            this.setState({disableCalendar:false})
+        if (isSameUser) {
+            this.setState({ disableCalendar: false })
         }
-        this.setState({tugasKepada:data.fullName,assignto:data.userAuth})
+        this.setState({ tugasKepada: data.fullName, assignto: data.userAuth })
     }
 
     changeCategory = data => {
-        this.setState({category: data.CATEGORY_NAME,categoryCode: data.CATEGORY_CODE})
+        this.setState({ category: data.CATEGORY_NAME, categoryCode: data.CATEGORY_CODE })
     }
 
     changeBlok = data => {
-        this.setState({blok: data.allShow, blockCode:data.blokCode, werks: data.werks, afdCode:data.afdCode});
+        this.setState({ blok: data.allShow, blockCode: data.blokCode, werks: data.werks, afdCode: data.afdCode });
     }
 
     render() {
@@ -444,7 +453,7 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Lokasi <Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihBlok', {changeBlok: this.changeBlok})}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihBlok', { changeBlok: this.changeBlok })}>
                             {isEmpty(this.state.blok) && (<Text style={{ fontSize: 14, color: '#999' }}> Set Location </Text>)}
                             {!isEmpty(this.state.blok) && (<Text style={{ fontSize: 14 }}> {this.state.blok} </Text>)}
                         </TouchableOpacity>
@@ -453,7 +462,7 @@ class FormStep2 extends Component {
                     <View style={style.line} />
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}>Kategori <Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKategori', {changeCategory: this.changeCategory})}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKategori', { changeCategory: this.changeCategory })}>
                             {isEmpty(this.state.category) && (<Text style={{ fontSize: 14, color: '#999' }}> Pilih Kategori </Text>)}
                             {!isEmpty(this.state.category) && (<Text style={{ fontSize: 14 }}> {this.state.category} </Text>)}
                         </TouchableOpacity>
@@ -479,7 +488,7 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}> Ditugaskan Kepada<Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak', {changeContact: this.changeContact})}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak', { changeContact: this.changeContact })}>
                             {isEmpty(this.state.tugasKepada) && (
                                 <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
                             {!isEmpty(this.state.tugasKepada) && (
@@ -495,12 +504,12 @@ class FormStep2 extends Component {
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
-                                <TouchableOpacity onPress={this._showDateTimePicker} disabled ={this.state.disableCalendar}>
+                                <TouchableOpacity onPress={this._showDateTimePicker} disabled={this.state.disableCalendar}>
                                     {isEmpty(this.state.batasWaktu) && (
                                         <Text style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
                                     {!isEmpty(this.state.batasWaktu) && (
-                                        <Text  style={{ fontSize: 14 }}> {this.state.batasWaktu} </Text>)}
-                                </TouchableOpacity>                                
+                                        <Text style={{ fontSize: 14 }}> {this.state.batasWaktu} </Text>)}
+                                </TouchableOpacity>
 
                             </View>
                         </View>
@@ -510,7 +519,7 @@ class FormStep2 extends Component {
                             onConfirm={this._handleDatePicked}
                             onCancel={this._hideDateTimePicker}
                         />
-                    </View>                   
+                    </View>
 
                     <View style={[style.line]} />
 

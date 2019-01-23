@@ -3,9 +3,10 @@ import React from 'react';
 import { StatusBar, Text, TouchableOpacity, StyleSheet, TextInput, ListView } from 'react-native';
 import Colors from '../Constant/Colors';
 import { Container, Content, Icon, Picker, Form, View } from 'native-base';
-import { getTodayDate } from '../Lib/Utils';
+import { getTodayDate, changeFormatDate } from '../Lib/Utils';
 import { Calendar } from 'react-native-calendars'
 import TaskServices from '../Database/TaskServices';
+import Moment from 'moment'
 
 var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
@@ -49,14 +50,24 @@ class FilterScreen extends React.Component {
     }
 
     changeBatasWaktu = data => {
-        console.log("Data Batas Waktu : " + data);
-        console.log("Data Batas Waktu : " + data.endBatasWaktu);
+        console.log("Data : " + data);
         let resultParsed = JSON.parse(data)
-        
+
+        let stDate = Moment(resultParsed.startDate).format('YYYYMMDDHHmmss');
+        let endDate = Moment(resultParsed.endDate).format('YYYYMMDDHHmmss');
+
+        let setData;
+        if (endDate == 'Invalid date') {
+            setData = Moment(changeFormatDate(stDate, "YYYY-MM-DD hh-mm-ss")).format('LL')
+        } else {
+            setData = Moment(changeFormatDate(stDate, "YYYY-MM-DD hh-mm-ss")).format('LL') + " s/d " +
+                Moment(changeFormatDate(endDate, "YYYY-MM-DD hh-mm-ss")).format('LL')
+        }
+
         this.setState({
-            valStBatasWaktu: resultParsed.startDate.substring(0, 10),
-            valEndBatasWaktu: resultParsed.endDate.substring(0, 10),
-            valBatasWaktu: resultParsed.startDate.substring(0, 10) + " s/d " + resultParsed.endDate.substring(0, 10)
+            valStBatasWaktu: stDate,
+            valEndBatasWaktu: endDate,
+            valBatasWaktu: setData
         })
     }
 
