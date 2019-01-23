@@ -73,9 +73,7 @@ class HomeScreen extends React.Component {
   _initData() {
     // var 
     var dataSorted = TaskServices.getAllData('TR_FINDING');
-    // alert(data);
     var data = dataSorted.sorted('INSERT_TIME', true);
-    // alert(JSON.stringify(dataSorted));
     this.setState({ data })
   }
 

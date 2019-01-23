@@ -22,6 +22,7 @@ import { ContentTypes } from '../Redux/ContentRedux';
 import { ContentLabelTypes } from '../Redux/ContentLabelRedux';
 import { FindingTypes } from '../Redux/FindingRedux';
 import { FindingImageTypes } from '../Redux/FindingImageRedux';
+import { FindingUploadTypes } from '../Redux/FindingUploadRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
@@ -29,7 +30,8 @@ import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
 import { getRegion, postRegion } from './RegionSagas';
-import { postInspeksiHeader, postInspeksiDetail, postInspeksiTrackingPath, postFindingData, getInspeksiParamTrackingPath } from './InspeksiSagas';
+// import { postInspeksiHeader, postInspeksiDetail, postFindingData } from './InspeksiSagas';
+import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas';
 import { getAfd, postAfd } from './AfdSagas';
 import { getEst, postEst } from './EstSagas';
 import { getKriteria, postKriteria } from './KriteriaSagas';
@@ -40,7 +42,7 @@ import { getContent, postContent } from './ContentSagas';
 import { getContentLabel, postContentLabel } from './ContentLabelSagas';
 import { getFinding } from './FindingSagas';
 import { getFindingImage } from './FindingImageSagas';
-import TaskServices from '../Database/TaskServices'
+import { postFindingData } from './FindingUploadSagas';
 
 //Add by Aminju
 import { getBlock, postBlock } from './BlockSagas'
@@ -68,7 +70,7 @@ export default function* root() {
 		takeLatest(InspeksiTypes.INSPEKSI_POST_DETAIL, postInspeksiDetail, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_TRACKING_PATH, postInspeksiTrackingPath, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_GET_PARAM_TRACKING_PATH, getInspeksiParamTrackingPath, miApi),
-		takeLatest(InspeksiTypes.FINDING_POST_DATA, postFindingData, miApi),
+		//takeLatest(InspeksiTypes.FINDING_POST_DATA, postFindingData, miApi),
 		takeLatest(BlockTypes.BLOCK_REQUEST, getBlock, miApi),
 		takeLatest(BlockTypes.BLOCK_POST, postBlock, miApi),
 		takeLatest(AfdTypes.AFD_REQUEST, getAfd, miApi),
@@ -88,8 +90,8 @@ export default function* root() {
 		takeLatest(ContentLabelTypes.CONTENT_LABEL_REQUEST, getContentLabel, miApi),
 		takeLatest(ContentLabelTypes.CONTENT_LABEL_POST, postContentLabel, miApi),
 		takeLatest(FindingTypes.FINDING_REQUEST, getFinding, miApi),
-		// takeLatest(FindingTypes.FINDING_POST, miApi),
 		takeLatest(FindingImageTypes.FINDING_IMAGE_REQUEST, getFindingImage, miApi),
+		takeLatest(FindingUploadTypes.FINDING_POST_DATA, postFindingData, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

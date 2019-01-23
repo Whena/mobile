@@ -83,8 +83,7 @@ export default class ListFinding extends Component {
   };
 
   _initData() {
-    // var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100')
-    var data = TaskServices.getAllData('TR_FINDING')
+    var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100');
     var dataLewat = []
     var data7Hari = []
     var dataMore7Hari = []

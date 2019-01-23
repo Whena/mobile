@@ -23,6 +23,7 @@ import CategoryAction from '../Redux/CategoryRedux';
 import FindingAction from '../Redux/FindingRedux';
 import FindingImageAction from '../Redux/FindingImageRedux';
 import InspeksiAction from '../Redux/InspeksiRedux'
+import FindingUploadAction from '../Redux/FindingUploadRedux'
 
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
@@ -97,6 +98,8 @@ class SyncScreen extends React.Component {
             downloadCategory: false,
             downloadFinding: false,
             downloadFindingImage: false,
+            uploadFinding: false,
+            uploadInspeksi: false,
             downloadInspeksiParam: false,
             fetchLocation: false,
             isBtnEnable: false,
@@ -150,34 +153,25 @@ class SyncScreen extends React.Component {
             valueParamInspection: '0',
             totalParamInspection: '0',
 
+            dataFinding: [],
+            dataInspeksi: [],
+            dataInspeksiDetail: [],
+
             showButton: true,
             blockInspectionCodes: []
         }
     }
 
-    componentDidMount() {
-    }
-
     loadDataFinding() {
-        let countData = TaskServices.getAllData('TR_FINDING');
-        // var query = dataHeader.filtered('STATUS_SYNC = "N"');
-        // let countData = query;
-        console.log("countData : " + countData.length);
-
-
-        this.setState({ progressFindingData: 1 });
-        this.setState({ valueFindingDataUpload: countData.length });
-        this.setState({ totalFindingDataUpload: countData.length });
+        let countData = TaskServices.getAllData('TR_FINDING'); //TaskServices.query('TR_FINDING', 'PROGRESS < 100');
+        this.setState({ progressFindingData: 1, valueFindingDataUpload: countData.length, totalFindingDataUpload: countData.length, dataFinding: countData});
 
         if (countData.length > 0) {
             countData.map(item => {
                 this.kirimFinding(item);
             });
         } else {
-            // alert('Tidak ada data yg diupload');
-            this.setState({ progressFindingData: 1 });
-            this.setState({ valueFindingDataUpload: 0 });
-            this.setState({ totalFindingDataUpload: 0 });
+            this.setState({ progressFindingData: 1, valueFindingDataUpload: 0, totalFindingDataUpload: 0  });
         }
     }
 
@@ -188,10 +182,13 @@ class SyncScreen extends React.Component {
             let countData = query;
             console.log("countData : " + countData.length);
 
-            this.setState({ progressInspeksiHeader: 1 });
-            this.setState({ valueInspeksiHeaderUpload: countData.length });
-            this.setState({ totalInspeksiHeaderUpload: countData.length });
-
+            this.setState({ 
+                progressInspeksiHeader: 1, 
+                valueInspeksiHeaderUpload: countData.length, 
+                totalInspeksiHeaderUpload: countData.length,
+                dataInspeksi: countData
+            });
+            
             if (countData.length > 0) {
                 countData.map(item => {
                     this.state.blockInspectionCodes.push(item.BLOCK_INSPECTION_CODE)
@@ -199,22 +196,23 @@ class SyncScreen extends React.Component {
 
                 });
             } else {
-                // alert('Tidak ada data yg diupload');
-                this.setState({ progressInspeksiHeader: 1 });
-                this.setState({ valueInspeksiHeaderUpload: 0 });
-                this.setState({ totalInspeksiHeaderUpload: 0 });
-
-                this.setState({ progressInspeksiDetail: 1 });
-                this.setState({ valueInspeksiDetailUpload: 0 });
-                this.setState({ totalInspeksiDetailUpload: 0 });
+                this.setState({ 
+                    progressInspeksiHeader: 1,
+                    valueInspeksiHeaderUpload: 0,
+                    totalInspeksiHeaderUpload: 0,
+                    progressInspeksiDetail: 1,
+                    valueInspeksiDetailUpload: 0,
+                    totalInspeksiDetailUpload: 0
+                });
             }
 
+            let detailInspeksi = [];
             if (this.state.blockInspectionCodes.length > 0) {
+                this.setState({dataInspeksiDetail: this.state.blockInspectionCodes})
+
                 this.state.blockInspectionCodes.map(item => {
                     let data = TaskServices.findBy('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', item);
-                    this.setState({ progressInspeksiDetail: 1 });
-                    this.setState({ valueInspeksiDetailUpload: data.length });
-                    this.setState({ totalInspeksiDetailUpload: data.length });
+                    this.setState({ progressInspeksiDetail: 1, valueInspeksiDetailUpload: data.length, totalInspeksiDetailUpload: data.length});
 
                     if (data !== null) {
                         for (var i = 0; i < data.length; i++) {
@@ -548,9 +546,6 @@ class SyncScreen extends React.Component {
 
         this.setState({ showButton: true });
         alert('Sync Data Selesai')
-        // this.kirimImage();
-        // this.loadData();
-        // this.loadDataFinding();
     }
 
     _crudTM_Comp(data) {
@@ -865,6 +860,8 @@ class SyncScreen extends React.Component {
             downloadFinding: false,
             downloadFindingImage: false,
             downloadCategory: false,
+            uploadFinding: false,
+            uploadInspeksi: false,
             downloadInspeksiParam: false,
             fetchLocation: false,
             isBtnEnable: false,
@@ -1020,16 +1017,52 @@ class SyncScreen extends React.Component {
             }
         }
 
-        if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.downloadInspeksiParam) {
-            let dataJSON = newProps.inspeksi.fetchingInspeksi;
-            this.setState({ downloadInspeksiParam: true });
+        if (newProps.findingUpload.fetchingFindingPost !== null && !newProps.findingUpload.fetchingFindingPost && !this.state.uploadFinding) {
+            let dataJSON = newProps.findingUpload.data;
+            this.setState({ uploadFinding: true });
             if (dataJSON !== null) {
-                this._crudTM_Inspeksi_Param(dataJSON);
+                this.updateFinding()
+            }
+        }
+
+        if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.uploadInspeksi) {
+            let dataJSON = newProps.inspeksi.data;
+            this.setState({ uploadInspeksi: true });
+            if (dataJSON !== null) {
+                this.updateInspeksi()
+                this.updateInspeksiDetail()
             }
         }
 
         RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
+    }
+
+    updateFinding(){        
+        if(this.state.dataFinding !== null){
+            this.state.dataFinding.map(item =>{
+                let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(this.state.dataFinding);
+                TaskServices.updateFinding('TR_FINDING', ['Y', item.PROGRESS], indexData);
+            })
+        }
+    }
+
+    updateInspeksi(){      
+        if(this.state.dataInspeksi !== null){
+            this.state.dataInspeksi.map(item =>{
+                let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE', item.BLOCK_INSPECTION_CODE))(this.state.dataInspeksi);
+                TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_H', 'Y', indexData);
+            })
+        }
+    }
+
+    updateInspeksiDetail(){        
+        if(this.state.dataInspeksiDetail !== null){
+            this.state.dataInspeksiDetail.map(item =>{
+                let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE_D', item.BLOCK_INSPECTION_CODE))(this.state.dataInspeksiDetail);
+                TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_D', 'Y', indexData);
+            })
+        }
     }
 
     download(data) {
@@ -1430,7 +1463,8 @@ const mapStateToProps = state => {
         finding: state.finding,
         category: state.category,
         findingImage: state.findingImage,
-        inspeksi: state.inspeksi
+        inspeksi: state.inspeksi,
+        findingUpload: state.findingUpload
     };
 };
 
@@ -1465,7 +1499,7 @@ const mapDispatchToProps = dispatch => {
         inspeksiPostDetail: obj => dispatch(InspeksiAction.inspeksiPostDetail(obj)),
         inspeksiPostTrackingPath: obj => dispatch(InspeksiAction.inspeksiPostTrackingPath(obj)),
         inspeksiGetParamTrackingPath: obj => dispatch(InspeksiAction.inspeksiGetParamTrackingPath(obj)),
-        findingPostData: obj => dispatch(InspeksiAction.findingPostData(obj))
+        findingPostData: obj => dispatch(FindingUploadAction.findingPostData(obj))
     };
 };
 

@@ -177,6 +177,21 @@ const TaskServices = {
     });
   },
 
+  updateFindingSync: function (table, param, index){
+    let data = RealmSchemas.objects(table)[index];
+    RealmSchemas.write(() => {
+      data.STATUS_SYNC = param[0];
+      data.PROGRESS = param[1];
+    });
+  },
+
+  updateInspeksiSync: function (table, param, index){
+    let data = RealmSchemas.objects(table)[index];
+    RealmSchemas.write(() => {
+      data.STATUS_SYNC = param;
+    });
+  },
+
   updateStatusImage: function (table, param, index){
     let data = RealmSchemas.objects(table)[index];
     RealmSchemas.write(() => {
