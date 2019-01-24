@@ -95,7 +95,7 @@ export default class HistoryFinding extends Component {
       <TouchableOpacity
         style={styles.sectionCardView}
         onPress={() => { this.onClickItem(item.FINDING_CODE) }}
-        key={idx}a
+        key={idx}
       >
         {showImage}
         <View style={styles.sectionDesc} >

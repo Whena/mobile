@@ -41,10 +41,9 @@ class TakePhotoSelfie extends Component{
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let kondisiBaris2 = R.clone(params.kondisiBaris2);
         let dataUsual = R.clone(params.dataUsual);
-        let statusBlok = R.clone(params.statusBlok);   
-        let waktu = R.clone(params.waktu);
-        let baris = R.clone(params.baris);
+        let statusBlok = R.clone(params.statusBlok); 
         let intervalId = R.clone(params.intervalId);
+        let dataInspeksi = R.clone(params.dataInspeksi);
 
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -62,8 +61,7 @@ class TakePhotoSelfie extends Component{
           dataUsual,
           pathCache:'',
           statusBlok,
-          waktu,
-          baris
+          dataInspeksi
         }
     }
 
@@ -160,8 +158,8 @@ class TakePhotoSelfie extends Component{
         kondisiBaris2: this.state.kondisiBaris2, 
         dataUsual: this.state.dataUsual,
         statusBlok:this.state.statusBlok,
-        baris:this.state.baris,
-        intervalId: this.state.intervalId 
+        intervalId: this.state.intervalId,
+        dataInspeksi: this.state.dataInspeksi
       });    
 
     }

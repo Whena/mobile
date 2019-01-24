@@ -43,9 +43,8 @@ class TakePhotoBaris extends Component {
     let dataUsual = R.clone(params.dataUsual);
     let from = R.clone(params.from);
     let statusBlok = R.clone(params.statusBlok);
-    let waktu = R.clone(params.waktu);
-    let baris = R.clone(params.baris);
     let intervalId = R.clone(params.intervalId);
+    let dataInspeksi = R.clone(params.dataInspeksi);
 
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -60,8 +59,7 @@ class TakePhotoBaris extends Component {
       from,
       pathCache: '',
       statusBlok,
-      waktu,
-      baris
+      dataInspeksi
     };
   }
 
@@ -171,8 +169,8 @@ class TakePhotoBaris extends Component {
         inspeksiHeader: this.state.inspeksiHeader, 
         dataUsual: this.state.dataUsual, 
         statusBlok: this.state.statusBlok,
-        baris:this.state.baris,
-        intervalId: this.state.intervalId 
+        intervalId: this.state.intervalId,
+        dataInspeksi: this.state.dataInspeksi
     });    
   }
 

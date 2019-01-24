@@ -37,9 +37,8 @@ class KondisiBaris2 extends Component {
         let kondisiBaris1 = R.clone(params.kondisiBaris1);
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
-        let waktu = R.clone(params.waktu);
-        let baris = R.clone(params.baris);
         let intervalId = R.clone(params.intervalId);
+        let dataInspeksi = R.clone(params.dataInspeksi);
 
         this.state = {
 
@@ -120,13 +119,10 @@ class KondisiBaris2 extends Component {
 
             fotoBaris,
             inspeksiHeader,
-            // trackInspeksi,
             kondisiBaris1,
             dataUsual,
-            // kondisiBaris2:[]
             statusBlok,
-            waktu,
-            baris,
+            dataInspeksi,
 
             showPiringan: false,
             showSarkul: false,
@@ -340,9 +336,10 @@ class KondisiBaris2 extends Component {
             var data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}7`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0007',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.piringan,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -352,9 +349,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}8`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0008',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.sarKul,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data)
@@ -364,9 +362,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}9`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0009',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.TPH,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data)
@@ -376,9 +375,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}10`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0010',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.GWG,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -388,9 +388,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}11`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0011',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.PRUN,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -400,9 +401,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}12`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0012',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.TIPA,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -411,9 +413,10 @@ class KondisiBaris2 extends Component {
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}13`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0013',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.PENABUR,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         listBaris2.push(data);
@@ -421,9 +424,10 @@ class KondisiBaris2 extends Component {
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}14`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0014',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.PUPUK,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         listBaris2.push(data);
@@ -432,9 +436,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}15`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0015',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.KASTRASI,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -444,9 +449,10 @@ class KondisiBaris2 extends Component {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}16`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+                ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 CONTENT_INSPECTION_CODE: 'CC0016',
-                AREAL: this.state.dataUsual.BARIS,
                 VALUE: this.state.SANITASI,
+                AREAL: this.state.dataUsual.BARIS,
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data);
@@ -459,8 +465,8 @@ class KondisiBaris2 extends Component {
             kondisiBaris2: listBaris2,
             dataUsual: this.state.dataUsual,
             statusBlok: this.state.statusBlok,
-            baris:this.state.baris,
-            intervalId: this.state.intervalId 
+            intervalId: this.state.intervalId,
+            dataInspeksi: this.state.dataInspeksi
         });
     }
 

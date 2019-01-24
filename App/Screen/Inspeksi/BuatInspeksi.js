@@ -139,8 +139,6 @@ class BuatInspeksiRedesign extends Component {
         let time = TaskService.getAllData('TM_TIME_TRACK')[0]
 
         //for track
-        // let id = setInterval(()=> alert('ok'), 10000);
-        // let id = setInterval(()=> this.getLocation(this.state.blokInspeksiCode), parseFloat(time.DESC));
         let id = setInterval(()=> this.getLocation2(this.state.blokInspeksiCode), 10000);
         this.setState({intervalId:id})
     }
@@ -158,6 +156,7 @@ class BuatInspeksiRedesign extends Component {
             INSERT_TIME: today
         }
         TaskService.saveData('TM_INSPECTION_TRACK', data)
+        alert('ok')
     }
 
     hideAndShowBaris(param){
@@ -212,15 +211,13 @@ class BuatInspeksiRedesign extends Component {
     validation() {
         let statusBlok = this.getStatusBlok(this.state.werksAfdBlokCode);
         if(statusBlok === ''){
-            alert('Blok yang dipilih tidak valid !');
+            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site');
         } else if(this.state.werks === ''){
-            alert('Blok yang dipilih tidak valid !');
+            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site');
         } else if (this.state.blok === '') {
             alert('Blok Belum diisi !');
         } else if (this.state.baris === '') {
             alert('Baris Belum diisi !');
-        } else if(statusBlok === ''){
-            alert('Anda tidak bisa Inspeksi di Blok ini, silahkan hubungi IT Site');
         } else if(!this.state.clickLOV){
             alert('Blok harus dipilih dari LOV');
         } else {
@@ -251,13 +248,19 @@ class BuatInspeksiRedesign extends Component {
         // var USER_AUTH = this.state.dataLogin[0].USER_AUTH_CODE;
         // var blok_inspection_code_h = `I${USER_AUTH}${getTodayDate('YYMMDDHHmmss')}`
 
+        let inspectionDate = getTodayDate('YYYY-MM-DD HH:mm:ss');
+        let idInspection = `B${this.state.dataLogin[0].USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}`
+        
         let modelInspeksiH = {
             BLOCK_INSPECTION_CODE: this.state.blokInspeksiCode,
+            ID_INSPECTION: idInspection,
             WERKS: this.state.werks,
             AFD_CODE: this.state.afdCode,
             BLOCK_CODE: this.state.blok,
+            AREAL: this.state.baris,
+            INSPECTION_TYPE: "PANEN",
             STATUS_BLOCK: param,
-            INSPECTION_DATE: getTodayDate('YYYY-MM-DD HH:mm:ss'), //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
+            INSPECTION_DATE: inspectionDate, //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
             INSPECTION_SCORE: '',
             INSPECTION_RESULT: '',
             STATUS_SYNC: 'N',
@@ -268,7 +271,6 @@ class BuatInspeksiRedesign extends Component {
             LONG_START_INSPECTION: this.state.longitude.toString(),
             LAT_END_INSPECTION: '',
             LONG_END_INSPECTION: '',
-            ASSIGN_TO: ''
         }
 
         let params = {
@@ -277,17 +279,29 @@ class BuatInspeksiRedesign extends Component {
             AFD: this.state.afdCode,
             BLOK: this.state.blok,
             BARIS: this.state.baris,
+            ID_INSPECTION: idInspection,
             BLOCK_INSPECTION_CODE: this.state.blokInspeksiCode
         }
 
-        // clearInterval(this.state.intervalId)
+        let model =  {
+            ID_INSPECTION: idInspection,
+            BLOCK_INSPECTION_CODE: this.state.blokInspeksiCode,
+            EST_NAME: this.getEstateName(this.state.werks),
+            BLOCK_CODE: this.state.blok,
+            AFD_CODE: this.state.afdCode,
+            INSPECTION_DATE: inspectionDate,
+            STATUS_SYNC: 'N',
+            INSPECTION_RESULT: '',
+            INSPECTION_SCORE: ''
+        }
+
         this.props.navigation.navigate('TakeFotoBaris', {
             inspeksiHeader: modelInspeksiH,
             dataUsual: params,
             statusBlok: param,//this.getStatusBlok(this.state.werksAfdBlokCode),
-            baris:this.state.baris,
             waktu: getTodayDate('YYYY-MM-DD  HH:mm:ss'),
-            intervalId: this.state.intervalId
+            intervalId: this.state.intervalId,
+            dataInspeksi: model
         });
     }
 

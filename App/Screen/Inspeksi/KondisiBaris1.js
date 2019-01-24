@@ -32,9 +32,8 @@ class KondisiBaris1 extends Component {
         let inspeksiHeader = R.clone(params.inspeksiHeader);
         let dataUsual = R.clone(params.dataUsual);
         let statusBlok = R.clone(params.statusBlok);
-        let waktu = R.clone(params.waktu);
-        let baris = R.clone(params.baris);
         let intervalId = R.clone(params.intervalId);
+        let dataInspeksi = R.clone(params.dataInspeksi);
 
         this.state = {
             intervalId,
@@ -48,8 +47,8 @@ class KondisiBaris1 extends Component {
             inspeksiHeader,
             dataUsual,
             statusBlok,
-            waktu,
-            baris
+            dataInspeksi
+
         }
     }
 
@@ -58,19 +57,21 @@ class KondisiBaris1 extends Component {
         var data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}2`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0002',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.pokokPanen,
-            STATUS_SYNC: 'N'
+            AREAL: this.state.dataUsual.BARIS,
+            STATUS_SYNC: 'N',
         }
         kondisiBaris1.push(data);
 
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}3`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0003',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.buahTinggal,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         kondisiBaris1.push(data);
@@ -78,9 +79,10 @@ class KondisiBaris1 extends Component {
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}4`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0004',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.brondolPinggir,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         kondisiBaris1.push(data);
@@ -88,9 +90,10 @@ class KondisiBaris1 extends Component {
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}5`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0005',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.brondolTPH,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         kondisiBaris1.push(data);
@@ -98,9 +101,10 @@ class KondisiBaris1 extends Component {
         data = {
             BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}6`,
             BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
+            ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
             CONTENT_INSPECTION_CODE: 'CC0006',
-            AREAL: this.state.dataUsual.BARIS,
             VALUE: this.state.pokokTdkPupuk,
+            AREAL: this.state.dataUsual.BARIS,
             STATUS_SYNC: 'N'
         }
         kondisiBaris1.push(data);
@@ -111,11 +115,9 @@ class KondisiBaris1 extends Component {
             kondisiBaris1: kondisiBaris1,
             dataUsual: this.state.dataUsual,
             statusBlok: this.state.statusBlok,
-            baris:this.state.baris,
-            intervalId: this.state.intervalId 
+            intervalId: this.state.intervalId,
+            dataInspeksi: this.state.dataInspeksi
         });
-
-        // alert(JSON.stringify(kondisiBaris1))
     }
 
     increaseNumber(param) {

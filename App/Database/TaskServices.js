@@ -204,9 +204,17 @@ const TaskServices = {
     RealmSchemas.write(() => {
       data.INSPECTION_SCORE = param[0];
       data.INSPECTION_RESULT = param[1];
-      data.END_INSPECTION = param[2];
-      data.LAT_END_INSPECTION = param[3];
-      data.LONG_END_INSPECTION = param[4];
+      // data.END_INSPECTION = param[2];
+      // data.LAT_END_INSPECTION = param[3];
+      // data.LONG_END_INSPECTION = param[4];
+    });
+  },
+
+  updateScoreInspeksi: function (param, index){
+    let data = RealmSchemas.objects('TR_BARIS_INSPECTION')[index];
+    RealmSchemas.write(() => {
+      data.INSPECTION_SCORE = param[0];
+      data.INSPECTION_RESULT = param[1];
     });
   },
 

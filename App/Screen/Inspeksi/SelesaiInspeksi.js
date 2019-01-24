@@ -24,8 +24,11 @@ class SelesaiInspeksi extends React.Component {
         let params = props.navigation.state.params;
         let inspeksiHeader = R.clone(params.inspeksiHeader);
         let statusBlok = R.clone(params.statusBlok);
+        let dataInspeksi = R.clone(params.dataInspeksi);
+        //alert(JSON.stringify(dataInspeksi))
 
         this.state = {
+            dataInspeksi,
             inspeksiHeader,
             jmlBaris : '',
             nilaiPiringan: '',
@@ -42,7 +45,7 @@ class SelesaiInspeksi extends React.Component {
             nilaiScore: '',
             blockCode: '',
             blockName: '',
-            estateName: Taskservices.getEstateName(),
+            estateName: '',
             statusBlok,
             showPiringan: false,
             showSarkul: false,
@@ -71,51 +74,56 @@ class SelesaiInspeksi extends React.Component {
         this.loadData()
     }
 
+    getEstateName(werks){
+        try {
+            let data = Taskservices.findBy2('TM_EST', 'WERKS', werks);
+            return data.EST_NAME;
+        } catch (error) {
+            return '';
+        }    
+    }
+
     loadData(){
-        let dataBaris = Taskservices.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE);
+        let dataBaris = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.dataInspeksi.ID_INSPECTION);
+        // let dataBaris = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.data.ID_INSPECTION);
         let barisPembagi = dataBaris.length;
-        let str = '';
         let time = 0;
         let distance = 0
         for(var i=0; i<barisPembagi; i++){ 
             if(i == 0){
-                str = `${barisPembagi}(${dataBaris[i].VALUE}`;
-                this.state.arrBaris.push(this.renderBaris(dataBaris[i].VALUE, i));
+                this.state.arrBaris.push(this.renderBaris(dataBaris[i].AREAL, i));
                 time = parseInt(dataBaris[i].TIME);
                 distance = parseInt(dataBaris[i].DISTANCE);
 
             }else if(i > 0){
-                str = `${str},${dataBaris[i].VALUE}`;
-                this.state.arrBaris.push(this.renderBaris(dataBaris[i].VALUE, i));
+                this.state.arrBaris.push(this.renderBaris(dataBaris[i].AREAL, i));
                 time = time + parseInt(dataBaris[i].TIME);
                 distance = distance + parseInt(dataBaris[i].DISTANCE);
             }       
         }
-        if(str !== ''){
-            str = `${str})`;
-        }
         
-        let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE);
-        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataHeader[0].BLOCK_CODE);
-        // let dataEst = Taskservices.getEstateName()
+        // let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.inspeksiHeader.ID_INSPECTION);
+        // let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataBaris[0].BLOCK_CODE);
+        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', this.state.dataInspeksi.BLOCK_CODE);
 
-        let score = dataHeader[0].INSPECTION_SCORE;
-        score = score.includes('.') ? parseFloat(score).toFixed(1).toString() : score;
+        // let score = dataHeader[0].INSPECTION_SCORE;
+        // score = score.includes('.') ? parseFloat(score).toFixed(1).toString() : score;
 
+        // let estName = this.getEstateName(this.state.inspeksiHeader.WERKS)
         this.setState({
-            jmlBaris: str, 
+            jmlBaris: barisPembagi, 
             totalWaktu: time.toString(), 
             totalJarak: distance.toString(), 
-            nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
-            nilaiScore: score,
+            nilaiInspeksi: this.state.dataInspeksi.INSPECTION_RESULT,//dataHeader[0].INSPECTION_RESULT, 
+            nilaiScore: parseFloat(this.state.dataInspeksi.INSPECTION_SCORE).toFixed(1).toString(),//score,
             distance: distance,
             blockCode: dataBlock.BLOCK_CODE,
             blockName: dataBlock.BLOCK_NAME,
-            barisPembagi: dataBaris.length
+            barisPembagi: dataBaris.length,
+            estateName: this.state.dataInspeksi.EST_NAME//estName
         });
-        // this.setState({jmlBaris: str, totalWaktu: time.toString(), totalJarak: distance.toString()});
 
-        var piringan = this.getTotalComponentBy('CC0007');        
+        var piringan = this.getTotalComponentBy('CC0007'); 
         var sarkul = this.getTotalComponentBy('CC0008');
         var tph = this.getTotalComponentBy('CC0009');
         var gawangan = this.getTotalComponentBy('CC0010');
@@ -299,7 +307,7 @@ class SelesaiInspeksi extends React.Component {
     }
 
     getTotalComponentBy(compCode){
-        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]); 
+        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'ID_INSPECTION'], [compCode, this.state.dataInspeksi.ID_INSPECTION]); 
         return data;
     }
 
@@ -373,7 +381,7 @@ class SelesaiInspeksi extends React.Component {
     renderBaris = (data, index) => {
         return (
             <TouchableOpacity 
-                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, blokInsCode: this.state.inspeksiHeader.BLOCK_INSPECTION_CODE})}
+                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, idInspection: this.state.dataInspeksi.ID_INSPECTION})}
                 key={index}>
                 <View style={styles.sectionRow}>
                     <Text style={styles.textLabel}>Baris Ke - {data}</Text>

@@ -33,11 +33,9 @@ import R, { isEmpty, isNil } from 'ramda'
 import RNFetchBlob from 'rn-fetch-blob'
 
 import TaskServices from '../Database/TaskServices'
-import { getTodayDate } from '../Lib/Utils';
+import { getTodayDate, convertTimestampToDate } from '../Lib/Utils';
 const IMEI = require('react-native-imei');
 var RNFS = require('react-native-fs');
-// import { isNull } from 'util';
-// import { stat } from 'fs';
 
 
 const user = TaskServices.getAllData('TR_LOGIN')[0];
@@ -289,19 +287,18 @@ class SyncScreen extends React.Component {
             BLOCK_CODE: param.BLOCK_CODE,
             AREAL: baris.VALUE,
             INSPECTION_TYPE: "PANEN",
-            INSPECTION_DATE: param.INSPECTION_DATE,
+            INSPECTION_DATE: convertTimestampToDate(param.INSPECTION_DATE, 'YYYYMMDDHHmmss'),
             INSPECTION_RESULT: param.INSPECTION_RESULT,
             INSPECTION_SCORE: param.INSPECTION_SCORE,
             STATUS_SYNC: 'Y',
-            SYNC_TIME: param.SYNC_TIME,
-            START_INSPECTION: param.START_INSPECTION,
+            SYNC_TIME: convertTimestampToDate(param.SYNC_TIME, 'YYYYMMDDHHmmss'),
+            START_INSPECTION: convertTimestampToDate(param.START_INSPECTION, 'YYYYMMDDHHmmss'),
             END_INSPECTION: param.END_INSPECTION,
             LAT_START_INSPECTION: param.LAT_START_INSPECTION,
             LONG_START_INSPECTION: param.LONG_START_INSPECTION,
             LAT_END_INSPECTION: param.LAT_END_INSPECTION,
             LONG_END_INSPECTION: param.LONG_END_INSPECTION,
-            ASSIGN_TO: user.USER_AUTH_CODE,
-            INSERT_TIME: getTodayDate("YYYY-MM-DD HH:mm:ss"),
+            INSERT_TIME: convertTimestampToDate(param.INSERT_TIME, 'YYYYMMDDHHmmss'),
             INSERT_USER: user.USER_AUTH_CODE
         });
     }
@@ -314,9 +311,9 @@ class SyncScreen extends React.Component {
             CONTENT_INSPECTION_CODE: result.CONTENT_INSPECTION_CODE,
             VALUE: result.VALUE,
             STATUS_SYNC: 'Y',
-            SYNC_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            SYNC_TIME: getTodayDate('YYYYMMDDHHmmss'),
             INSERT_USER: user.USER_AUTH_CODE,
-            INSERT_TIME: getTodayDate('YYYY-MM-DD HH:mm:ss')
+            INSERT_TIME: convertTimestampToDate(result, 'YYYYMMDDHHmmss')
         });
     }
 
@@ -333,8 +330,8 @@ class SyncScreen extends React.Component {
                 data.append('TR_CODE', dataImage[i].TR_CODE)
                 data.append('STATUS_IMAGE', dataImage[i].STATUS_IMAGE)
                 data.append('STATUS_SYNC', dataImage[i].STATUS_SYNC)
-                data.append('SYNC_TIME', getTodayDate('YYYY-MM-DD HH:mm:ss'))
-                data.append('INSERT_TIME', dataImage[i].INSERT_TIME)
+                data.append('SYNC_TIME', getTodayDate('YYYYMMDDHHmmss'))
+                data.append('INSERT_TIME', convertTimestampToDate(dataImage[i].INSERT_TIME, 'YYYYMMDDHHmmss'))
                 data.append('INSERT_USER', dataImage[i].INSERT_USER)
                 data.append('FILENAME', {
                     uri: `file://${dataImage[i].IMAGE_PATH_LOCAL}`,
@@ -783,7 +780,7 @@ class SyncScreen extends React.Component {
                 this.setState({ isFinishFindingImage: true });
             });
         } else {
-            let countDataInsert = TaskServices.getTotalData('TR_IMAGE_FINDING');
+            let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
             this.setState({ progressFindingImage: 1 })
             this.setState({ valueFindingImageDownload: countDataInsert });
             this.setState({ totalFindingImageDownload: 0 });
@@ -839,12 +836,37 @@ class SyncScreen extends React.Component {
         });
     }
 
+    _crudTM_Inspeksi_Param(data) {
+
+        var dataSimpan = data;
+        console.log("Simpan Inspeksi Param : " + dataSimpan.length);
+
+        if (dataSimpan.length > 0) {
+
+            for (i = 1; i <= dataSimpan.length; i++) {
+                this.setState({ progressParamInspection: i / dataSimpan.length });
+                this.setState({ totalParamInspection: dataSimpan.length });
+            }
+
+            dataSimpan.map(item => {
+                TaskServices.saveData('TM_TIME_TRACK', item);
+                let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+                this.setState({ valueFindingImageDownload: countDataInsert });
+            });
+        } else {
+            let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+            this.setState({ progressParamInspection: 1 })
+            this.setState({ valueParamInspection: countDataInsert });
+            this.setState({ totalParamInspection: 0 });
+        }
+    }
+
     _onSync() {
 
-        // this.kirimImage();
-        // this.loadData();
-        // this.loadDataFinding();
-        // this.loadDataInspectionTrack();
+        this.kirimImage();
+        this.loadData();
+        this.loadDataFinding();
+        this.loadDataInspectionTrack();
 
         this.setState({
             downloadRegion: false,
@@ -879,9 +901,6 @@ class SyncScreen extends React.Component {
             progressFinding: 0,
             progressFindingImage: 0
 
-            // kirimInspeksi: this.kirimInspeksi,
-            // kirimInspeksiDetail: this.kirimInspeksiDetail
-
         });
 
         // GET DATA MASTER
@@ -912,6 +931,8 @@ class SyncScreen extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
+
+        console.log(newProps)
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -1031,6 +1052,14 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this.updateInspeksi()
                 this.updateInspeksiDetail()
+            }
+        }        
+
+        if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.downloadInspeksiParam) {
+            let dataJSON = newProps.inspeksi.fetchingInspeksi;
+            this.setState({ downloadInspeksiParam: true });
+            if (dataJSON !== null) {
+                this._crudTM_Inspeksi_Param(dataJSON);
             }
         }
 

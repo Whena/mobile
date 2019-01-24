@@ -19,7 +19,7 @@ class DetailBaris extends React.Component {
         super(props);
         let params = props.navigation.state.params;
         let baris = R.clone(params.baris);
-        let blokInsCode = R.clone(params.blokInsCode);
+        let idInspection = R.clone(params.idInspection);
 
         this.state = {
             nilaiJmlPokok: '',
@@ -39,7 +39,7 @@ class DetailBaris extends React.Component {
             hideKriteria: false,
             barisPembagi:0,
             baris,
-            blokInsCode
+            idInspection
         };
     }
 
@@ -63,7 +63,7 @@ class DetailBaris extends React.Component {
     }
 
     loadData(){        
-        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['BLOCK_INSPECTION_CODE', 'AREAL'], [this.state.blokInsCode, this.state.baris]); 
+        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['ID_INSPECTION', 'AREAL'], [this.state.idInspection, this.state.baris]); 
         for(var i=0; i < data.length; i++){
             this.getValuComponent({compCode: data[i].CONTENT_INSPECTION_CODE, value: data[i].VALUE})
         }

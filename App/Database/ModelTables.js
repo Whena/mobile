@@ -19,13 +19,16 @@ const TR_BLOCK_INSPECTION_H = {
     primaryKey: 'BLOCK_INSPECTION_CODE',
     properties: {
         BLOCK_INSPECTION_CODE: 'string',
+        ID_INSPECTION: 'string',
         WERKS: 'string',
         AFD_CODE: 'string',
         BLOCK_CODE: 'string',
+        AREAL: 'string',
+        INSPECTION_TYPE: "string",
         STATUS_BLOCK: 'string',
         INSPECTION_DATE: 'string',
-        INSPECTION_SCORE: 'string',
         INSPECTION_RESULT: 'string',
+        INSPECTION_SCORE: 'string',
         STATUS_SYNC: 'string',
         SYNC_TIME: 'string',
         START_INSPECTION: 'string',
@@ -34,7 +37,10 @@ const TR_BLOCK_INSPECTION_H = {
         LONG_START_INSPECTION: 'string',
         LAT_END_INSPECTION: 'string',
         LONG_END_INSPECTION: 'string',
-        ASSIGN_TO: 'string'
+        INSERT_TIME: 'string', 
+        INSERT_USER: 'string',
+        TIME: 'string',
+        DISTANCE: 'string'
     }
 }
 
@@ -44,10 +50,29 @@ const TR_BLOCK_INSPECTION_D = {
     properties: {
         BLOCK_INSPECTION_CODE_D: 'string',
         BLOCK_INSPECTION_CODE: 'string',
+        ID_INSPECTION: 'string',
         CONTENT_INSPECTION_CODE: 'string',
-        AREAL: 'string',
         VALUE: 'string',
-        STATUS_SYNC: 'string'
+        AREAL: 'string',
+        STATUS_SYNC: 'string',
+        INSERT_USER: 'string',
+        INSERT_TIME: 'string'
+    }
+}
+
+const TR_BARIS_INSPECTION = {
+    name: 'TR_BARIS_INSPECTION',
+    primaryKey: 'ID_INSPECTION',
+    properties: {
+        ID_INSPECTION: 'string',
+        BLOCK_INSPECTION_CODE: 'string',
+        EST_NAME: 'string',
+        BLOCK_CODE: 'string',
+        AFD_CODE: 'string',
+        INSPECTION_DATE: 'string',
+        STATUS_SYNC: 'string',
+        INSPECTION_RESULT: 'string',
+        INSPECTION_SCORE: 'string'
     }
 }
 
@@ -64,62 +89,6 @@ const TR_IMAGE = {
         STATUS_SYNC: 'string',
         INSERT_USER: 'string',
         INSERT_TIME: 'string'
-    }
-}
-
-const TR_IMAGE_SELFIE = {
-    name: 'TR_IMAGE_SELFIE',
-    primaryKey: 'IMAGE_CODE',
-    properties: {
-        TR_CODE: 'string',
-        IMAGE_CODE: 'string',
-        IMAGE_NAME: 'string',
-        IMAGE_PATH_LOCAL: 'string',
-        IMAGE_URL: 'string',
-        STATUS_IMAGE: 'string',
-        STATUS_SYNC: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string'
-    }
-}
-
-const TR_IMAGE_FINDING = {
-    name: 'TR_IMAGE_FINDING',
-    primaryKey: 'IMAGE_CODE',
-    properties: {
-        TR_CODE: 'string',
-        IMAGE_CODE: 'string',
-        IMAGE_NAME: 'string',
-        IMAGE_PATH_LOCAL: 'string',
-        IMAGE_URL: 'string',
-        STATUS_IMAGE: 'string',
-        STATUS_SYNC: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string'
-    }
-}
-
-const TR_TRACK_INSPECTION = {
-    name: 'TR_TRACK_INSPECTION',
-    primaryKey: 'TRACK_INSPECTION_CODE',
-    properties: {
-        TRACK_INSPECTION_CODE: 'string',
-        BLOCK_INSPECTION_CODE: 'string',
-        DATE_TRACK: 'string',
-        LAT_TRACK: 'string',
-        LONG_TRACK: 'string'
-    }
-}
-
-const TR_BARIS_INSPECTION = {
-    name: 'TR_BARIS_INSPECTION',
-    primaryKey: 'ID',
-    properties: {
-        ID: 'string',
-        BLOCK_INSPECTION_CODE: 'string',
-        VALUE: 'string',
-        TIME: 'string',
-        DISTANCE: 'string'
     }
 }
 
@@ -236,31 +205,6 @@ const TR_FINDING = {
         INSERT_USER: 'string',
         INSERT_TIME: { type: 'int', default: 0 },
         STATUS_SYNC: 'string'
-    }
-}
-
-const TR_LOG_FINDING = {
-    name: 'TR_LOG_FINDING',
-    // primaryKey: 'ID',
-    properties: {
-        FINDING_CODE: 'string',
-        PROSES: 'string',
-        PROGRESS: 'string',
-        IMEI: 'string',
-        SYNC_TIME: 'string',
-        SYNC_USER: 'string'
-    }
-}
-
-const T_LOG_IMAGE = {
-    name: 'T_LOG_IMAGE',
-    // primaryKey: 'ID',
-    properties: {
-        IMAGE_CODE: 'string',
-        IMEI: 'string',
-        STATUS_SYNC: 'string',
-        SYNC_TIME: 'string',
-        INSERT_USER: 'string'
     }
 }
 
@@ -403,14 +347,9 @@ export default {
     TR_BLOCK_INSPECTION_H,
     TR_BLOCK_INSPECTION_D,
     TR_IMAGE,
-    TR_IMAGE_SELFIE,
-    TR_TRACK_INSPECTION,
     TR_BARIS_INSPECTION,
     TM_AFD,
     TR_FINDING,
-    TR_LOG_FINDING,
-    TR_IMAGE_FINDING,
-    T_LOG_IMAGE,
     TR_CATEGORY,
     TR_CONTACT,
 

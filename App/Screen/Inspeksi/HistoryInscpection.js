@@ -14,16 +14,18 @@ export default class HistoryInspection extends Component {
 
   constructor(props){
     super(props);
+    this.state = {      
+      dataLogin: TaskServices.getAllData('TR_LOGIN'),
+    }
   }
 
   componentDidMount(){   
     this.renderAll();
   }
   
-  renderAll =()=>{
-    
-    var dataSorted = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
-    let data = dataSorted.sorted('START_INSPECTION', true); //Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
+  renderAll =()=>{    
+    var dataSorted = TaskServices.getAllData('TR_BARIS_INSPECTION');
+    let data = dataSorted.sorted('INSPECTION_DATE', true); //Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
     if (data !== null){
       let arr = [];
       data.map((item,index) => {
@@ -39,9 +41,8 @@ export default class HistoryInspection extends Component {
         return data.EST_NAME;
     } catch (error) {
         return '';
-    }
-    
-}
+    }    
+  }
 
   renderList = (data, index) => {
     let status = '', colorStatus = '';
@@ -132,69 +133,102 @@ export default class HistoryInspection extends Component {
   }
 
   actionButtonClick(data) {  
-    if(data.INSPECTION_RESULT === 'string'){
-      let imgBaris = Taskservice.findBy('TR_IMAGE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
-      let imgSelfie = Taskservice.findBy('TR_IMAGE_SELFIE', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
-      let arrBaris = Taskservice.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', data.BLOCK_INSPECTION_CODE);
-
-      let strInspecCode = data.BLOCK_INSPECTION_CODE;
-      let arrCode = strInspecCode.split('-');
-
-      let fotoBaris = imgBaris[imgBaris.length-1];
-      let fotoSelfie = imgSelfie[imgSelfie.length-1];
-      let dataBaris = arrBaris[arrBaris.length-1];
-
-      let kondisiBaris1 = this.getBaris1(data.BLOCK_INSPECTION_CODE);
-      let kondisiBaris2 = this.getBaris2(data.BLOCK_INSPECTION_CODE);
-      let statusBlok = data.STATUS_BLOCK;
-      let barisBlok = dataBaris.VALUE;
-
-      let dataUsual = {
-        NIK: arrCode[0],
-        BA: arrCode[3],
-        AFD: arrCode[4],
-        BLOK: arrCode[5], 
-        BARIS: barisBlok,
-        BLOCK_INSPECTION_CODE: strInspecCode
+    if(data.INSPECTION_RESULT === ''){
+      
+      let dataBaris = Taskservice.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', data.ID_INSPECTION);
+      if(dataBaris > 1){
+        dataBaris = dataBaris[dataBaris.length-1]
+      }else{
+        dataBaris = dataBaris[0]
       }
 
-      var modelInspeksiH = {
-        BLOCK_INSPECTION_CODE: data.BLOCK_INSPECTION_CODE,
-        WERKS: data.WERKS,
-        AFD_CODE: data.AFD_CODE,
-        BLOCK_CODE: data.BLOCK_CODE,
-        STATUS_BLOCK: data.STATUS_BLOCK,
-        INSPECTION_DATE: data.INSPECTION_DATE, //getTodayDate('DD MMM YYYY HH:mm:ss'), //12 oct 2018 01:01:01
-        INSPECTION_SCORE:'string',
-        INSPECTION_RESULT:'string',
-        STATUS_SYNC:'N',
-        SYNC_TIME:'',
-        START_INSPECTION: getTodayDate('YYYY-MM-DD HH:mm:ss'),
-        END_INSPECTION: data.END_INSPECTION,
-        LAT_START_INSPECTION: data.LAT_START_INSPECTION, //this.state.latitude.toString(),
-        LONG_START_INSPECTION: data.LONG_START_INSPECTION,//this.state.longitude.toString(),
-        LAT_END_INSPECTION: data.LAT_END_INSPECTION,
-        LONG_END_INSPECTION: data.LONG_END_INSPECTION,
-        ASSIGN_TO:''
-    }
+      let modelInspeksiH = {
+        BLOCK_INSPECTION_CODE: dataBaris.BLOCK_INSPECTION_CODE,
+        ID_INSPECTION: dataBaris.ID_INSPECTION,
+        WERKS: dataBaris.WERKS,
+        AFD_CODE: dataBaris.AFD_CODE,
+        BLOCK_CODE: dataBaris.BLOCK_CODE,
+        AREAL: '',
+        INSPECTION_TYPE: "PANEN",
+        STATUS_BLOCK: dataBaris.STATUS_BLOCK,
+        INSPECTION_DATE: data.INSPECTION_DATE,
+        INSPECTION_SCORE: '',
+        INSPECTION_RESULT: '',
+        STATUS_SYNC: 'N',
+        SYNC_TIME: '',
+        START_INSPECTION: '',
+        END_INSPECTION: '',
+        LAT_START_INSPECTION: dataBaris.LAT_START_INSPECTION,
+        LONG_START_INSPECTION: dataBaris.LONG_START_INSPECTION,
+        LAT_END_INSPECTION: '',
+        LONG_END_INSPECTION: '',
+        INSERT_TIME: '', 
+        INSERT_USER: '',
+        TIME: dataBaris.TIME,
+        DISTANCE: dataBaris.DISTANCE
+      }
 
-    // alert(JSON.stringify(modelInspeksiH))
+      var dataUsual = {
+        USER_AUTH: this.state.dataLogin[0].USER_AUTH_CODE,
+        BA: dataBaris.WERKS,
+        AFD: dataBaris.AFD_CODE,
+        BLOK: dataBaris.BLOCK_CODE, 
+        BARIS: dataBaris.AREAL,
+        ID_INSPECTION: dataBaris.ID_INSPECTION,
+        BLOCK_INSPECTION_CODE: dataBaris.BLOCK_INSPECTION_CODE
+        
+      }
 
-    this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'KondisiBarisAkhir', params: { 
-        fotoSelfie: fotoSelfie,
+      let id = setInterval(()=> this.getLocation2(dataBaris.BLOCK_INSPECTION_CODE), 10000);
+      this.setState({intervalId:id})
+
+      this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'KondisiBarisAkhir', params: { 
         inspeksiHeader: modelInspeksiH, 
-        fotoBaris: fotoBaris,
-        kondisiBaris1: kondisiBaris1, 
-        kondisiBaris2: kondisiBaris2, 
+        statusBlok:dataBaris.STATUS_BLOCK,
+        dataInspeksi: data,
         dataUsual: dataUsual,
-        statusBlok:statusBlok,
-        baris:barisBlok,
+        intervalId: id,
         from: 'history' }}));
 
     }else{
       this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'DetailHistoryInspeksi', params: { data: data }}));
     }
     
+  }
+
+  getLocation2(blokInsCode) {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            var lat = parseFloat(position.coords.latitude);
+            var lon = parseFloat(position.coords.longitude);
+            this.insertTrackLokasi(blokInsCode, lat, lon)               
+        },
+        (error) => {
+            // this.setState({ error: error.message, fetchingLocation: false })
+            let message = error && error.message ? error.message : 'Terjadi kesalahan ketika mencari lokasi anda !';
+            if (error && error.message == "No location provider available.") {
+                message = "Mohon nyalakan GPS anda terlebih dahulu.";
+            }
+            // console.log(message);
+        }, // go here if error while fetch location
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
+    );
+  }
+
+  insertTrackLokasi(blokInsCode, lat, lon){
+    var trInsCode = `T${this.state.dataLogin[0].USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}`;
+    var today = getTodayDate('YYYY-MM-DD HH:mm:ss');
+    data = {
+        TRACK_INSPECTION_CODE: trInsCode,
+        BLOCK_INSPECTION_CODE: blokInsCode,
+        DATE_TRACK: today,
+        LAT_TRACK: lat.toString(),
+        LONG_TRACK: lon.toString(),
+        INSERT_USER: this.state.dataLogin[0].USER_AUTH_CODE,
+        INSERT_TIME: today
+    }
+    TaskService.saveData('TM_INSPECTION_TRACK', data)
+    alert('ok')
   }
 
   render() {

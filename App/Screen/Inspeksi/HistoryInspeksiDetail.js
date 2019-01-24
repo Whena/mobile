@@ -41,7 +41,7 @@ class HistoryInspeksiDetail extends React.Component {
             nilaiScore: '',
             blockCode: '',
             blockName: '',
-            estateName: Taskservices.getEstateName()
+            estateName: '', // Taskservices.getEstateName()
         };
     }
 
@@ -64,35 +64,41 @@ class HistoryInspeksiDetail extends React.Component {
         this.loadData()
     }
 
+    getEstateName(werks){
+        try {
+            let data = Taskservices.findBy2('TM_EST', 'WERKS', werks);
+            return data.EST_NAME;
+        } catch (error) {
+            return '';
+        }    
+    }
+
     loadData(){
-        let dataBaris = Taskservices.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
+        let dataBaris = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.data.ID_INSPECTION);
         let barisPembagi = dataBaris.length;
-        let str = '';
         let time = 0;
         let distance = 0
         for(var i=0; i<barisPembagi; i++){ 
             if(i == 0){
-                str = `${barisPembagi}(${dataBaris[i].VALUE}`;
-                this.state.arrBaris.push(this.renderBaris(dataBaris[i].VALUE, i));
+                this.state.arrBaris.push(this.renderBaris(dataBaris[i].AREAL, i));
                 time = parseInt(dataBaris[i].TIME);
                 distance = parseInt(dataBaris[i].DISTANCE);
 
             }else if(i > 0){
-                str = `${str},${dataBaris[i].VALUE}`;
-                this.state.arrBaris.push(this.renderBaris(dataBaris[i].VALUE, i));
+                this.state.arrBaris.push(this.renderBaris(dataBaris[i].AREAL, i));
                 time = time + parseInt(dataBaris[i].TIME);
                 distance = distance + parseInt(dataBaris[i].DISTANCE);
             }       
         }
-        if(str !== ''){
-            str = `${str})`;
-        }
-        let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
-        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataHeader[0].BLOCK_CODE);
+        // let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'BLOCK_INSPECTION_CODE', this.state.data.BLOCK_INSPECTION_CODE);
+        // let dataHeader = Taskservices.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.data.ID_INSPECTION);
+        let dataBlock = Taskservices.findBy2('TM_BLOCK', 'BLOCK_CODE', dataBaris[0].BLOCK_CODE);
         // let dataEst = Taskservices.getEstateName()
 
-        let score = dataHeader[0].INSPECTION_SCORE;
-        score = score.includes('.') ? parseFloat(score).toFixed(1).toString() : score;
+        // let score = dataBaris[0].INSPECTION_SCORE;
+        // score = score.includes('.') ? parseFloat(score).toFixed(1).toString() : score;
+
+        // let estName = this.getEstateName(dataHeader[0].WERKS)
 
         var piringan = this.getTotalComponentBy('CC0007');        
         var sarkul = this.getTotalComponentBy('CC0008');
@@ -118,7 +124,7 @@ class HistoryInspeksiDetail extends React.Component {
         var nilaiGwg =  this.getKonversiNilaiKeHuruf(avg_gwg);
         var nilaiPrun =  this.getKonversiNilaiKeHuruf(avg_prun);
 
-        if(dataHeader[0].STATUS_BLOCK === 'TM'){
+        if(dataBaris[0].STATUS_BLOCK === 'TM'){
             this.setState({
                 nilaiPiringan: `${nilaiPiringan}/${avg_piringan.toFixed(2)}`,
                 nilaiSarkul: `${nilaiSarkul}/${avg_sarkul.toFixed(2)}`,
@@ -126,7 +132,7 @@ class HistoryInspeksiDetail extends React.Component {
                 nilaiGwg: `${nilaiGwg}/${avg_gwg.toFixed(2)}`,
                 nilaiPrun: `${nilaiPrun}/${avg_prun.toFixed(2)}`
             })
-        }else if(dataHeader[0].STATUS_BLOCK === 'TBM 3'){
+        }else if(dataBaris[0].STATUS_BLOCK === 'TBM 3'){
             this.setState({
                 nilaiPiringan: `${nilaiPiringan}/${avg_piringan.toFixed(2)}`,
                 nilaiSarkul: `${nilaiSarkul}/${avg_sarkul.toFixed(2)}`,
@@ -144,15 +150,16 @@ class HistoryInspeksiDetail extends React.Component {
             });
         }
         this.setState({            
-            jmlBaris: str, 
+            jmlBaris: barisPembagi, 
             totalWaktu: time.toString(), 
             totalJarak: distance.toString(), 
-            nilaiInspeksi: dataHeader[0].INSPECTION_RESULT, 
-            nilaiScore: score,
+            nilaiInspeksi: this.state.data.INSPECTION_RESULT, 
+            nilaiScore: parseFloat(this.state.data.INSPECTION_SCORE).toFixed(1).toString(), //score,
             distance: distance,
             blockCode: dataBlock.BLOCK_CODE,
             blockName: dataBlock.BLOCK_NAME,
-            barisPembagi: dataBaris.length
+            barisPembagi: dataBaris.length,
+            estateName:this.state.data.EST_NAME
         })
     }
 
@@ -273,7 +280,8 @@ class HistoryInspeksiDetail extends React.Component {
     }
 
     getTotalComponentBy(compCode){
-        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.data.BLOCK_INSPECTION_CODE]); 
+        var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'ID_INSPECTION'], [compCode, this.state.data.ID_INSPECTION]); 
+        // var data = Taskservices.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], [compCode, this.state.data.BLOCK_INSPECTION_CODE]); 
         return data;
     }
 
@@ -363,7 +371,7 @@ class HistoryInspeksiDetail extends React.Component {
     renderBaris = (data, index) => {
         return (
             <TouchableOpacity 
-                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, blokInsCode: this.state.data.BLOCK_INSPECTION_CODE})}
+                onPress={()=> this.props.navigation.navigate('DetailBaris',{baris: data, idInspection: this.state.data.ID_INSPECTION})}
                 key={index}>
                 <View style={styles.sectionRow}>
                     <Text style={styles.textLabel}>Baris Ke - {data}</Text>
@@ -547,8 +555,8 @@ const styles = StyleSheet.create({
         justifyContent:'center'
     },
     textNilai: {
-        fontSize: 25,
-        fontWeight: '300',
+        fontSize: 35,
+        fontWeight: '400',
         alignContent: 'center',
         textAlign: 'center',
     },
