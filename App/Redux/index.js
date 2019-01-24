@@ -24,6 +24,7 @@ export const reducers = combineReducers({
 	contentLabel: require('./ContentLabelRedux').reducer,
 	finding: require('./FindingRedux').reducer,
 	findingImage: require('./FindingImageRedux').reducer,
+	findingUpload: require('./FindingUploadRedux').reducer,
 
 	network
 });
