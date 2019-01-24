@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-    View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Text,
+    View, Image, TouchableOpacity, TouchableHighlight,StyleSheet, Text,
     Alert
 } from 'react-native'
 import Colors from '../../Constant/Colors'
@@ -25,12 +25,12 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import ImageSlider from 'react-native-image-slider';
 import { getTodayDate, changeFormatDate } from '../../Lib/Utils';
 
-class DetailFindingScreenRedesign extends Component {
+class DetailFindingScreenRedesign extends Component{
 
-
-    constructor(props) {
+    
+    constructor(props){
         super(props)
-
+        
         var ID = this.props.navigation.state.params.ID
         var data = TaskServices.findBy2('TR_FINDING', 'FINDING_CODE', ID);
         this.state = {
@@ -64,53 +64,53 @@ class DetailFindingScreenRedesign extends Component {
         headerTintColor: '#fff'
     };
 
-    componentWillMount() {
+    componentWillMount(){
 
-        this.state.totalImages.map(item => {
+        this.state.totalImages.map(item=>{
             this.state.images.push(item);
         });
 
-        this.state.totalImagesSesudah.map(item => {
+        this.state.totalImagesSesudah.map(item=>{
             this.state.images.push(item);
         })
 
     }
 
-    componentDidMount() {
-        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true : false
+    componentDidMount(){
+        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true: false
         // alert(this.state.user.USER_AUTH_CODE)
-        if (!isSameUser) {
-            this.setState({ disabledProgress: true });
-        } else if (this.state.progress == 100) {
-            this.setState({ disabledProgress: true });
-        } else if (this.state.disabledProgress < 100 && isSameUser) {
-            this.setState({ disabledProgress: false });
+        if(!isSameUser){
+            this.setState({disabledProgress:true});
+        }else if(this.state.progress == 100){
+            this.setState({disabledProgress:true});
+        }else if(this.state.disabledProgress < 100 && isSameUser){
+            this.setState({disabledProgress:false});
         }
     }
 
     getStatusImage(status) {
-        if (status == 'SEBELUM') {
+        if (status == 'SEBELUM'){ 
             return "Before"
         } else if ('SESUDAH') {
             return "After"
         }
     }
 
-    getColor(param) {
-        switch (param) {
-            case 'SELESAI':
-                return 'rgba(35, 144, 35, 0.7)';
-            case 'SEDANG DIPROSES':
-                return 'rgba(254, 178, 54, 0.7)';
-            case 'BARU':
-                return 'rgba(255, 77, 77, 0.7)';
-            default:
-                return '#ff7b25';
+    getColor(param){
+        switch(param){
+          case 'SELESAI':
+            return 'rgba(35, 144, 35, 0.7)';
+          case 'SEDANG DIPROSES':
+            return 'rgba(254, 178, 54, 0.7)';
+          case 'BARU':
+            return 'rgba(255, 77, 77, 0.7)';
+          default:
+            return '#ff7b25';
         }
     }
 
     onLoadImage = data => {
-        data.map(item => {
+        data.map(item=>{
             this.state.images.push(item);
             this.state.imgBukti.push(item);
         })
@@ -126,39 +126,39 @@ class DetailFindingScreenRedesign extends Component {
         this._hideDateTimePicker();
     };
 
-    _takePicture() {
-        if (this.state.progress == 100) {
-            this.props.navigation.navigate('BuktiKerja', { onLoadImage: this.onLoadImage, findingCode: this.state.id });
-        } else {
+    _takePicture() { 
+        if(this.state.progress == 100){
+            this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage, findingCode : this.state.id});
+        }else{
             alert('Selesaikan Progress temuan kamu dulu')
         }
     }
 
-    getStatusTemuan(param) {
-        if (param == 0) {
+    getStatusTemuan(param){
+        if(param == 0){
             return 'BARU'
-        } else if (param == 100) {
+        }else if(param == 100){
             return 'SELESAI'
-        } else {
+        }else{
             return 'SEDANG DIPROSES'
         }
     }
 
-    validation() {
-        if (this.state.imgBukti.length < 1 && this.state.progress == 100) {
+    validation(){
+        if(this.state.imgBukti.length < 1 && this.state.progress == 100){
             alert('Kamu harus foto bukti kerja dulu')
-        } else if (this.state.disabledProgress) {
+        }else if(this.state.disabledProgress){
             alert('Kamu tidak bisa memproses temuan ini')
-        } else {
+        }else{
             this._updateFinding()
         }
     }
 
-    _updateFinding() {
-        let data = TaskServices.getAllData('TR_FINDING')
+    _updateFinding() { 
+        let data = TaskServices.getAllData('TR_FINDING')     
         let indexData = R.findIndex(R.propEq('FINDING_CODE', this.state.data.FINDING_CODE))(data);
         let status = this.getStatusTemuan(this.state.progress);
-
+        
         var save = {
             FINDING_CODE: this.state.data.FINDING_CODE,
             WERKS: this.state.data.WERKS,
@@ -168,17 +168,17 @@ class DetailFindingScreenRedesign extends Component {
             FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
             FINDING_DESC: this.state.data.FINDING_DESC,
             FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
-            DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,
+            DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,        
             STATUS: status,
             ASSIGN_TO: this.state.data.ASSIGN_TO,
             PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
             LONG_FINDING: this.state.data.LONG_FINDING,
-            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,
+            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,    
         }
 
-        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS], indexData);
-        if (this.state.progress == 100) {
+        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, save.DUE_DATE], indexData);
+        if(this.state.progress == 100){
             this._saveImageUpdate();
         }
 
@@ -192,83 +192,70 @@ class DetailFindingScreenRedesign extends Component {
     }
 
     _saveImageUpdate() {
-        this.state.imgBukti.map(item => {
+        this.state.imgBukti.map(item=>{
             TaskServices.saveData('TR_IMAGE', item);
         })
     }
 
-    getContactName = (userAuth) => {
+    getContactName = (userAuth) =>{
         try {
             let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
-            return data.FULLNAME;
+            return data.FULLNAME;            
         } catch (error) {
             return ''
         }
     }
 
-    getColorBatasWaktu(param) {
-        switch (param) {
-            case 'Batas waktu belum ditentukan':
-                return 'red';
-            default:
-                return '#000000';
-        }
-    }
-
-    render() {
+    render(){        
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
         const dtInsertTime = changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss");
-        const dtBatasWaktu = changeFormatDate("" + this.state.data.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
-        console.log('dtInsertTime : ' + dtInsertTime)
-        console.log('dtBatasWaktu : ' + dtBatasWaktu)
-        moment.locale();
+        // const dtBatasWaktu = changeFormatDate("" + this.state.data.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
+        // moment.locale();
 
-
-        let batasWaktu;
-        if (this.state.data.DUE_DATE == 0) {
-            batasWaktu = 'Batas waktu belum ditentukan';
-        } else {
-            batasWaktu = moment(dtBatasWaktu).format('LL');
+        let batasWaktu = '';
+        if(this.state.updatedDueDate == 'Select Calendar'){
+            batasWaktu = 'Batas waktu belum ditentukan'
+        }else{
+            batasWaktu = this.state.updatedDueDate
         }
-
-        return (
+        return(
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1 }}>
 
-                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, paddingLeft: 15, paddingRight: 15 }}>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, paddingLeft: 15, paddingRight: 15}}>
                         <Image style={{ marginRight: 16, width: 40, height: 40, borderRadius: 10 }}
                             source={require('../../Images/icon/ic_games_menu.png')}></Image>
                         <View style={{ flex: 1 }} >
                             <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Detail Temuan</Text>
                             <Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>
-                                {moment(dtInsertTime).format('LL')}
+                                {dtInsertTime}
                             </Text>
                         </View>
                     </View>
 
-                    <View style={{ flex: 1 }}>
+                    <View style = {{flex:1}}>
                         <View style={{
                             flex: 1,
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginTop: 16
                         }}>
-                            <View style={{ height: 200 }}>
-                                <ImageSlider
+                            <View style={{height:200}}>
+                                <ImageSlider 
                                     images={this.state.images}
                                     customSlide={({ index, item, style, width }) => (
                                         // It's important to put style here because it's got offset inside
-                                        <View key={index} style={[style, { backgroundColor: 'yellow' }]}>
+                                        <View key={index} style={[style, {backgroundColor:'yellow'}]}>                                      
                                             <View style={{
                                                 backgroundColor: '#5b5a5a', width: 80,
-                                                padding: 5, position: 'absolute', top: 0, right: 10, zIndex: 1, justifyContent: 'center', alignItems: 'center',
-                                                margin: 10, borderRadius: 25,
+                                                padding: 5, position: 'absolute', top:0 , right:10, zIndex: 1, justifyContent: 'center', alignItems: 'center', 
+                                                margin:10, borderRadius: 25,
                                             }}>
                                                 <Text style={{ fontSize: 10, color: 'white' }}>{this.getStatusImage(item.STATUS_IMAGE)}</Text>
                                             </View>
                                             <FastImage style={{ alignItems: 'center', width: '100%', height: '100%' }}
                                                 source={{
-                                                    uri: 'file://' + item.IMAGE_PATH_LOCAL,
+                                                    uri: 'file://'+item.IMAGE_PATH_LOCAL,
                                                     priority: FastImage.priority.normal,
                                                 }} />
                                             <View style={{
@@ -280,29 +267,29 @@ class DetailFindingScreenRedesign extends Component {
                                         </View>
                                     )}
                                     customButtons={(position, move) => (
-                                        <View style={{ flex: 1, flexDirection: 'row', }}>
-                                            {this.state.images.map((image, index) => {
-                                                // return (
-                                                //   <TouchableHighlight
-                                                //     key={index}
-                                                //     underlayColor="#ccc"
-                                                //     onPress={() => move(index)}
-                                                //     style={{
-                                                //         alignItems: 'center',
-                                                //         justifyContent: 'center',
-                                                //         width: 6,
-                                                //         height: 6,
-                                                //         backgroundColor: 'white',
-                                                //         borderRadius: 100,}}
-                                                //   >
-                                                //   </TouchableHighlight>
-                                                // );
-                                            })}
+                                        <View style={{flex:1, flexDirection:'row',}}>
+                                        {this.state.images.map((image, index) => {
+                                            // return (
+                                            //   <TouchableHighlight
+                                            //     key={index}
+                                            //     underlayColor="#ccc"
+                                            //     onPress={() => move(index)}
+                                            //     style={{
+                                            //         alignItems: 'center',
+                                            //         justifyContent: 'center',
+                                            //         width: 6,
+                                            //         height: 6,
+                                            //         backgroundColor: 'white',
+                                            //         borderRadius: 100,}}
+                                            //   >
+                                            //   </TouchableHighlight>
+                                            // );
+                                        })}
                                         </View>
                                     )}
                                 />
-                            </View>
-                        </View>
+                            </View>                            
+                        </View>                         
                     </View>
 
 
@@ -325,13 +312,9 @@ class DetailFindingScreenRedesign extends Component {
                             <View style={styles.column}>
                                 <Text style={styles.label}>Batas Waktu </Text>
                                 {isEmpty(this.state.data.DUE_DATE) && (
-                                    <Text style={styles.item} onPress={this._showDateTimePicker} style={{ fontSize: 14, color: '#999' }}>: {this.state.updatedDueDate} </Text>)}
+                                    <Text style={styles.item} onPress={this._showDateTimePicker} style={{ fontSize: 13, color: 'red' }}>: {batasWaktu} </Text>)}
                                 {!isEmpty(this.state.data.DUE_DATE) && (
-                                    <Text style={{
-                                        width: '60%',
-                                        color: this.getColorBatasWaktu(batasWaktu),
-                                        fontSize: 14
-                                    }}>: {batasWaktu} </Text>)}
+                                    <Text style={styles.item}>: {this.state.data.DUE_DATE} </Text>)}
                             </View>
 
                             <DateTimePicker
@@ -348,7 +331,7 @@ class DetailFindingScreenRedesign extends Component {
                         </View>
                     </View>
 
-                    <Text style={[styles.title, { paddingLeft: 15, paddingRight: 15 }]}>Deskripsi:</Text>
+                    <Text style={[styles.title,{paddingLeft: 15, paddingRight: 15}]}>Deskripsi:</Text>
                     <Text style={{ fontSize: 14, paddingLeft: 15, paddingRight: 15 }}> {this.state.data.FINDING_DESC}</Text>
 
                     <View style={{ flex: 1, paddingLeft: 15, paddingRight: 15 }}>
@@ -393,9 +376,9 @@ class DetailFindingScreenRedesign extends Component {
                         </View>
                     </View>
 
-                    <View style={{ flexDirection: 'row', marginTop: 20, paddingLeft: 15, paddingRight: 15 }}>
+                    <View style={{flexDirection:'row', marginTop: 20, paddingLeft: 15, paddingRight: 15}}>
                         <Text style={styles.title}>Bukti Kerja:</Text>
-                        <Card style={[styles.cardContainer, { marginLeft: 15 }]}>
+                        <Card style={[styles.cardContainer, {marginLeft: 15}]}>
                             <TouchableOpacity style={{ padding: 40 }}
                                 onPress={() => { this._takePicture() }}
                                 disabled={this.state.disabledView}
@@ -446,7 +429,7 @@ const styles = StyleSheet.create({
         width: '60%',
         color: "#999",
         fontSize: 14
-    },
+    }, 
     title: {
         fontWeight: 'bold',
         fontSize: 15,
@@ -457,11 +440,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: '#eee',
         borderColor: '#ddd'
-    },
-    statusImg: {
+    }, 
+    statusImg: {        
         position: 'absolute',
         top: 10,
-        right: 15,
+        right: 15, 
         backgroundColor: Colors.brand,
         borderRadius: 25,
         padding: 15,

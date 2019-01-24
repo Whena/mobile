@@ -225,10 +225,11 @@ export default class HistoryInspection extends Component {
         LAT_TRACK: lat.toString(),
         LONG_TRACK: lon.toString(),
         INSERT_USER: this.state.dataLogin[0].USER_AUTH_CODE,
-        INSERT_TIME: today
+        INSERT_TIME: today,
+        STATUS_SYNC: 'N'
     }
     TaskService.saveData('TM_INSPECTION_TRACK', data)
-    alert('ok')
+    //alert('ok')
   }
 
   render() {

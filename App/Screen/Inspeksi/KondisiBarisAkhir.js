@@ -166,7 +166,7 @@ class KondisiBarisAkhir extends Component{
 
     changeColorSlide(){          
         // this.props.navigation.navigate('SelesaiInspeksi');    
-        let total = TaskService.findBy('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', this.state.dataUsual.BLOCK_INSPECTION_CODE).length;
+        let total = TaskService.findBy('TR_BLOCK_INSPECTION_H', 'ID_INSPECTION', this.state.dataInspeksi.ID_INSPECTION).length;
         if(total >= 1){
             this.setState({fulFillMandatory:true})
             if(!this.state.switchLanjut){
@@ -212,11 +212,11 @@ class KondisiBarisAkhir extends Component{
 
     calculateBaris(){
         
-        var piringan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'ID_INSPECTION'], ['CC0007', this.state.dataInspeksi.ID_INSPECTION]);
-        var sarkul = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','ID_INSPECTION'], ['CC0008', this.state.dataInspeksi.ID_INSPECTION]);
-        var tph = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','ID_INSPECTION'], ['CC0009', this.state.dataInspeksi.ID_INSPECTION]);
-        var gawangan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','ID_INSPECTION'], ['CC0010', this.state.dataInspeksi.ID_INSPECTION]);
-        var prunning = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','ID_INSPECTION'], ['CC0011', this.state.dataInspeksi.ID_INSPECTION]);        
+        var piringan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE', 'BLOCK_INSPECTION_CODE'], ['CC0007', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var sarkul = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0008', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var tph = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0009', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var gawangan = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0010', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);
+        var prunning = TaskService.findByWithList('TR_BLOCK_INSPECTION_D', ['CONTENT_INSPECTION_CODE','BLOCK_INSPECTION_CODE'], ['CC0011', this.state.inspeksiHeader.BLOCK_INSPECTION_CODE]);        
         
         var jmlNilaiPiringan = this.getTotalNilaiComponent(piringan);
         var jmlNilaiSarkul = this.getTotalNilaiComponent(sarkul);
@@ -293,6 +293,9 @@ class KondisiBarisAkhir extends Component{
         TaskService.updateScoreInspeksi(param, indexData);
 
         // barisPembagi.map(item=>{TaskService.updateInspectionHScore(item.BLOCK_INSPECTION_CODE, param) })
+        
+        let val = this.calculateBaris()
+        TaskService.updateInspectionHScore(this.state.inspeksiHeader.BLOCK_INSPECTION_CODE, val)
 
         const navigation = this.props.navigation;
         const resetAction = StackActions.reset({
@@ -445,23 +448,25 @@ class KondisiBarisAkhir extends Component{
             TaskService.saveData('TR_BARIS_INSPECTION', this.state.dataInspeksi)
         }
 
+        let blokInspectionCode = `I${this.state.dataUsual.USER_AUTH}${getTodayDate('YYMMDDHHmmss')}`
         var params = {
             USER_AUTH: this.state.dataUsual.USER_AUTH,
             BA: this.state.dataUsual.BA,
             AFD: this.state.dataUsual.AFD,
             BLOK: this.state.dataUsual.BLOK, 
             BARIS: this.state.txtBaris,
-            BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE
+            BLOCK_INSPECTION_CODE: blokInspectionCode
         }
 
         if(this.state.fulFillMandatory){
             this.calculate();
-        }else{          
+        }else{  
+        
             let param = this.calculateBaris()
             TaskService.updateInspectionHScore(this.state.dataUsual.BLOCK_INSPECTION_CODE, param)
-        
+
             var modelInspeksi = {
-                BLOCK_INSPECTION_CODE: `I${this.state.dataUsual.USER_AUTH}${getTodayDate('YYMMDDHHmmss')}`,
+                BLOCK_INSPECTION_CODE: blokInspectionCode,
                 ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
                 WERKS: this.state.inspeksiHeader.WERKS,
                 AFD_CODE: this.state.inspeksiHeader.AFD_CODE,
@@ -483,7 +488,7 @@ class KondisiBarisAkhir extends Component{
             }
             let model =  {
                 ID_INSPECTION: this.state.dataInspeksi.ID_INSPECTION,
-                BLOCK_INSPECTION_CODE: this.state.dataInspeksi.BLOCK_INSPECTION_CODE,
+                BLOCK_INSPECTION_CODE: blokInspectionCode,
                 EST_NAME: this.state.dataInspeksi.EST_NAME,
                 BLOCK_CODE: this.state.dataInspeksi.BLOCK_CODE,
                 AFD_CODE: this.state.dataInspeksi.AFD_CODE,

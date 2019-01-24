@@ -50,7 +50,6 @@ export function* postInspeksiHeader(api, action) {
 
 export function* postInspeksiDetail(api, action) {
     const { data } = action;
-    // console.log("Data Post Inspeksi Detail : " + JSON.stringify(data));
     const response = yield call(api.postInspeksiDetail, data);
 
     if (typeof atob !== 'undefined') {

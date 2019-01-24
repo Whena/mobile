@@ -79,7 +79,6 @@ class FormStep1 extends Component {
     }
 
     clearFoto(){
-        alert('jkbsad')
         if(this.state.photos.length > 0){
             this.state.photos.map(item =>{                
                 RNFS.unlink(item.uri)

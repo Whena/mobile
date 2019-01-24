@@ -135,12 +135,6 @@ class BuatInspeksiRedesign extends Component {
             });
         })
         this.getLocation();
-
-        let time = TaskService.getAllData('TM_TIME_TRACK')[0]
-
-        //for track
-        let id = setInterval(()=> this.getLocation2(this.state.blokInspeksiCode), 10000);
-        this.setState({intervalId:id})
     }
 
     insertTrackLokasi(blokInsCode, lat, lon){
@@ -153,10 +147,11 @@ class BuatInspeksiRedesign extends Component {
             LAT_TRACK: lat.toString(),
             LONG_TRACK: lon.toString(),
             INSERT_USER: this.state.dataLogin[0].USER_AUTH_CODE,
-            INSERT_TIME: today
+            INSERT_TIME: today,
+            STATUS_SYNC: 'N'
         }
         TaskService.saveData('TM_INSPECTION_TRACK', data)
-        alert('ok')
+        // alert('ok')
     }
 
     hideAndShowBaris(param){
@@ -293,7 +288,13 @@ class BuatInspeksiRedesign extends Component {
             STATUS_SYNC: 'N',
             INSPECTION_RESULT: '',
             INSPECTION_SCORE: ''
-        }
+        }        
+
+        let time = TaskService.getAllData('TM_TIME_TRACK')[0]
+
+        //for track
+        let id = setInterval(()=> this.getLocation2(this.state.blokInspeksiCode), 10000);
+        this.setState({intervalId:id})
 
         this.props.navigation.navigate('TakeFotoBaris', {
             inspeksiHeader: modelInspeksiH,

@@ -31,7 +31,7 @@ import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
 import { getRegion, postRegion } from './RegionSagas';
 // import { postInspeksiHeader, postInspeksiDetail, postFindingData } from './InspeksiSagas';
-import { postInspeksiHeader, postInspeksiDetail } from './InspeksiSagas';
+import { postInspeksiHeader, postInspeksiDetail, postInspeksiTrackingPath, getInspeksiParamTrackingPath } from './InspeksiSagas';
 import { getAfd, postAfd } from './AfdSagas';
 import { getEst, postEst } from './EstSagas';
 import { getKriteria, postKriteria } from './KriteriaSagas';

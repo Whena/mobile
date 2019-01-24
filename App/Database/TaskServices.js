@@ -174,6 +174,8 @@ const TaskServices = {
     RealmSchemas.write(() => {
       data.STATUS = param[0];
       data.PROGRESS = param[1];
+      data.STATUS_SYNC = 'N';
+      data.DUE_DATE = param[2]
     });
   },
 
@@ -227,6 +229,12 @@ const TaskServices = {
         });
       }
     }
+  },
+
+  deleteContoh: function (table, index) {
+    RealmSchemas.write(() => {
+      RealmSchemas.delete(RealmSchemas.objects(table)[index]);
+    });
   },
 
   updateTmRegionByRegionCode: function (regionCode, param) {

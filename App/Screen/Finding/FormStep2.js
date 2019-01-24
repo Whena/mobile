@@ -81,6 +81,7 @@ class FormStep2 extends Component {
             keterangan: "",
             priority: "",
             batasWaktu: "",
+            batasWaktuSave: '',
             tugasKepada: "",
             assignto: "",
             category: "",
@@ -129,22 +130,6 @@ class FormStep2 extends Component {
     };
 
     componentDidMount() {
-        // let data = TaskServices.getAllData('TM_BLOCK');
-        // for (var i = 0; i < data.length; i++) {
-        //     let statusBlok = this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE);
-        //     let estateName = this.getEstateName(data[i].WERKS);
-        //     this.state.person.push({
-        //         blokCode: data[i].BLOCK_CODE,
-        //         blokName: data[i].BLOCK_NAME,
-        //         afdCode: data[i].AFD_CODE,
-        //         werks: data[i].WERKS,
-        //         werksAfdCode: data[i].WERKS_AFD_CODE,
-        //         werksAfdBlokCode: data[i].WERKS_AFD_BLOCK_CODE,
-        //         statusBlok: this.getStatusBlok(data[i].WERKS_AFD_BLOCK_CODE),
-        //         compCode: data[i].COMP_CODE,
-        //         allShow: `${data[i].BLOCK_NAME}/${statusBlok}/${estateName}`
-        //     });
-        // }
         this.getLocation();
         // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         // this.handleAndroidBackButton(this.exitAlert);
@@ -259,19 +244,11 @@ class FormStep2 extends Component {
                 "Batas waktu harus diisi"
             );
         } else {
-            let param;
-            if (this.state.batasWaktu == "") {
-                param = 0
-            }
-            this.saveData(param)
+            this.saveData()
         }
     }
 
-    saveData(param) {
-
-        const today = getTodayDate("YYYYMMDDHHmmss");
-        console.log("Today : " + parseInt(today));
-
+    saveData() {
         var data = {
             FINDING_CODE: this.state.TRANS_CODE,
             WERKS: this.state.werks,
@@ -280,7 +257,7 @@ class FormStep2 extends Component {
             FINDING_CATEGORY: this.state.categoryCode,
             FINDING_DESC: this.state.keterangan,
             FINDING_PRIORITY: this.state.priority,
-            DUE_DATE: param,
+            DUE_DATE: this.state.batasWaktu, //parseInt(this.state.batasWaktuSave),
             STATUS: 'BARU',
             ASSIGN_TO: this.state.assignto,
             PROGRESS: 0,
@@ -288,7 +265,7 @@ class FormStep2 extends Component {
             LONG_FINDING: this.state.longitude.toString(),
             REFFERENCE_INS_CODE: "",
             INSERT_USER: this.state.user.USER_AUTH_CODE,
-            INSERT_TIME: parseInt(today),
+            INSERT_TIME: parseInt(getTodayDate('YYYYMMDDHHmmss')),
             STATUS_SYNC: "N"
         }
 
@@ -316,9 +293,13 @@ class FormStep2 extends Component {
 
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
-    _handleDatePicked = (date) => {
-        this.setState({ batasWaktu: parseInt.moment(date).format("YYMMDDHHmmss") })
-        // this._hideDateTimePicker();
+    _handleDatePicked = (date) => {        
+        // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
+        // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
+        // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYYMMDD")})
+        
+        this.setState({ batasWaktu: moment(date).format("YYYY-MM-DD") })
+        this._hideDateTimePicker();
     };
 
     _showLocation = () => {
@@ -504,7 +485,7 @@ class FormStep2 extends Component {
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
-                                <TouchableOpacity onPress={this._showDateTimePicker} disabled={this.state.disableCalendar}>
+                                <TouchableOpacity onPress={this._showDateTimePicker} disabled ={this.state.disableCalendar}>
                                     {isEmpty(this.state.batasWaktu) && (
                                         <Text style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
                                     {!isEmpty(this.state.batasWaktu) && (

@@ -20,6 +20,7 @@ export default Creators;
 
 export const INITIAL_STATE = Immutable({
 	fetchingInspeksi: null,
+	fetchingInspeksiParam: null,
 	error: null,
 	inspeksi: null
 });
@@ -36,7 +37,7 @@ export const InspeksiSelectors = {
 export const postInspeksiHeader = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
 export const postInspeksiDetail = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
 export const postInspeksiTrackingPath = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
-export const getInspeksiParamTrackingPath = (state, { data }) => state.merge({ fetchingInspeksi: true, error: null, inspeksi: null });
+export const getInspeksiParamTrackingPath = (state, { data }) => state.merge({ fetchingInspeksiParam: true, error: null, inspeksi: null });
 // export const postFindingData = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
 
 // successful api lookup

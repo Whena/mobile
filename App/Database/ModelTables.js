@@ -195,7 +195,7 @@ const TR_FINDING = {
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
         FINDING_PRIORITY: 'string',
-        DUE_DATE: { type: 'int', default: 0 },
+        DUE_DATE: 'string',//{ type: 'int', default: 0 },
         STATUS: 'string',
         ASSIGN_TO: 'string',
         PROGRESS: { type: 'int', default: 0 },//'string',
@@ -327,7 +327,8 @@ const TM_INSPECTION_TRACK = {
         LAT_TRACK: 'string',
         LONG_TRACK: 'string',
         INSERT_USER: 'string',
-        INSERT_TIME: 'string'
+        INSERT_TIME: 'string',
+        STATUS_SYNC: 'string'
     }
 }
 
