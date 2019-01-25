@@ -17,8 +17,8 @@ class FilterScreen extends React.Component {
         super(props);
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.state = {
-            searchedBisnisArea: [],
-            bisnisArea: [],
+            searchedKontak: [],
+            kontak: [],
             user: null
         }
     }
@@ -37,34 +37,34 @@ class FilterScreen extends React.Component {
     }
 
     componentDidMount() {
-        let data = TaskServices.getAllData('TM_EST');
+        let data = TaskServices.getAllData('TR_CONTACT');
         let arr = [];
         for (var i = 0; i < data.length; i++) {
             arr.push({
-                userAuth: data[i].EST_CODE,
-                fullName: data[i].WERKS,
-                userRole: data[i].EST_NAME,
+                userAuth: data[i].USER_AUTH_CODE,
+                fullName: data[i].FULLNAME,
+                userRole: data[i].USER_ROLE,
             });
-            this.setState({ bisnisArea: arr, searchedBisnisArea: arr })
+            this.setState({ kontak: arr, searchedKontak: arr })
         }
     }
 
-    onSelectBa(user){
-        this.props.navigation.state.params.changeBa(user);
+    onSelectAssignto(user){
+        this.props.navigation.state.params.assignTo(user);
         this.props.navigation.goBack();
       };
 
-    searchedBisnisArea = (searchedText) => {
-        var searchedBisnisArea = this.state.bisnisArea.filter(function (adress) {
+    searchedKontak = (searchedText) => {
+        var searchedKontak = this.state.kontak.filter(function (adress) {
             return adress.fullName.toLowerCase().indexOf(searchedText.toLowerCase()) > -1;
         });
-        this.setState({ searchedBisnisArea: searchedBisnisArea });
+        this.setState({ searchedKontak: searchedKontak });
     };
 
-    renderBisnisArea = (user) => {
+    renderkontak = (user) => {
         return (
             <View style={{ flex: 1, padding: 5 }}>
-                <TouchableOpacity onPress={() => { this.onSelectBa(user) }}>
+                <TouchableOpacity onPress={() => { this.onSelectAssignto(user) }}>
                     <Text style={{ fontSize: 15, color: 'black' }}>{user.fullName}</Text>
                     <Text style={{ fontSize: 13, color: 'grey', marginTop: 3 }}>{user.userRole}</Text>
                 </TouchableOpacity>
@@ -80,14 +80,14 @@ class FilterScreen extends React.Component {
                     barStyle="light-content" />
                 <Content >
                     <View style={{ flex: 1, flexDirection: 'row', padding: 16 }}>
-                        <View style={styles.containerBisnisArea}>
+                        <View style={styles.containerkontak}>
                             <View style={{ justifyContent: 'center' }} >
                                 <Icons name="ios-search" color={'grey'} size={20} style={{ marginLeft: 12, marginRight: 6 }} />
                             </View>
                             <TextInput
                                 style={styles.textinput}
-                                onChangeText={this.searchedBisnisArea}
-                                placeholder="Pilih Lokasi" />
+                                onChangeText={this.searchedKontak}
+                                placeholder="Pilih Pemberi Tugas" />
                         </View>
 
                         <View style={{ width: 60, justifyContent: 'flex-end', alignContent: 'center' }}>
@@ -102,8 +102,8 @@ class FilterScreen extends React.Component {
 
                     <View style={{ marginTop: 5, padding: 16 }}>
                         <ListView
-                            dataSource={ds.cloneWithRows(this.state.searchedBisnisArea)}
-                            renderRow={this.renderBisnisArea}
+                            dataSource={ds.cloneWithRows(this.state.searchedKontak)}
+                            renderRow={this.renderkontak}
                             renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />} />
                     </View>
 
@@ -114,7 +114,7 @@ class FilterScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    containerBisnisArea: {
+    containerkontak: {
         flex: 1,
         flexDirection: 'row',
         backgroundColor: '#f5f5f5',

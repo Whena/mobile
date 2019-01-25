@@ -231,7 +231,7 @@ const TaskServices = {
     }
   },
 
-  deleteContoh: function (table, index) {
+  deleteRecord: function (table, index) {
     RealmSchemas.write(() => {
       RealmSchemas.delete(RealmSchemas.objects(table)[index]);
     });

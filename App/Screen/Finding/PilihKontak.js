@@ -53,7 +53,11 @@ class PilihKontak extends Component {
   };
 
   componentDidMount(){
-    let data = TaskService.getAllData('TR_CONTACT');
+    // let data = TaskService.getAllData('TR_CONTACT');
+    // console.log("All Data TR_CONTACT : " + SON.stringify(data));
+    let data = TaskService.query('TR_CONTACT', 'USER_ROLE CONTAINS[c] "ASISTEN"');
+    // console.log(JSON.stringify(dataFilter))
+    // alert(JSON.stringify(data));
     let arr = [];
     for(var i=0; i<data.length; i++){
       arr.push({

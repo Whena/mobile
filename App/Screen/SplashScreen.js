@@ -9,6 +9,8 @@ import TaskServices from '../Database/TaskServices'
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 import RegionAction from '../Redux/RegionRedux'
+import moment from 'moment';
+import R, { isEmpty } from 'ramda'
 var RNFS = require('react-native-fs');
 import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoKategori } from '../Lib/dirStorage';
 
@@ -34,7 +36,7 @@ class SplashScreen extends Component {
         navigation.dispatch(resetAction);
     }
 
-    async componentDidMount() {  
+    async componentDidMount() {
 
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
@@ -58,7 +60,7 @@ class SplashScreen extends Component {
         } else {
             Alert.alert('Seluruh Permission harus di hidupkan')
         }
-    }   
+    }
 
     render() {
         return (

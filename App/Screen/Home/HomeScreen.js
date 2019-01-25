@@ -10,6 +10,7 @@ import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
 import RegionAction from '../../Redux/RegionRedux'
 import Moment from 'moment';
+import R, { isEmpty } from 'ramda';
 import { changeFormatDate } from '../../Lib/Utils';
 var RNFS = require('react-native-fs');
 
@@ -52,15 +53,11 @@ class HomeScreen extends React.Component {
       data: [],
       // images,
       // bukti
-      thumnailImage: ''
-    }
-  }
-
-  _getStatus() {
-    if (this.state.data.PROGRESS == 100) {
-      return "After"
-    } else if (this.state.data.PROGRESS == 0) {
-      return "Before"
+      thumnailImage: '',
+      dataMore7Hari: [],
+      dataMore7HariHeader: [],
+      dataMore7HariDetail: [],
+      dataMore7HariBaris: []
     }
   }
 
@@ -71,27 +68,154 @@ class HomeScreen extends React.Component {
     }
   )
 
+  componentWillUnmount() {
+    this.willFocus.remove()
+  }
+
+  componentDidMount() {
+    this._changeFilterList();
+    this._deleteFinding();
+    this._deleteInspeksiHeader();
+  }
+
   _initData() {
-    // var 
     var dataSorted = TaskServices.getAllData('TR_FINDING');
     var data = dataSorted.sorted('INSERT_TIME', true);
     this.setState({ data })
   }
 
-  componentWillUnmount() {
-    this.willFocus.remove()
+  _getStatus() {
+    if (this.state.data.PROGRESS == 100) {
+      return "After"
+    } else if (this.state.data.PROGRESS == 0) {
+      return "Before"
+    }
   }
 
-  // componentWillMount(){
-  //   this._initData()
-  // }
+  _deleteFinding() {
+    var data = TaskServices.query('TR_FINDING', 'PROGRESS = 100');
+    var dataMore7Hari = []
+    var dataNoDate = []
+    var now = Moment(new Date())
 
-  async componentDidMount() {
-    this._changeFilterList();
-    RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+    data.map(item => {
+      if (isEmpty(item.DUE_DATE)) {
+        dataNoDate.push(item)
+      } else {
+        var diff = Moment(new Date(item.DUE_DATE)).diff(now, 'day');
+        if (diff > 7) {
+          this.setState({ dataMore7Hari: dataMore7Hari.push(item) })
+        }
+      }
+    })
 
-    var query = TaskServices.getAllData('TR_FINDING');
-    console.log("TR_FINDING : " + JSON.stringify(query));
+    console.log("Data Query Splash : " + JSON.stringify(this.state.dataMore7Hari));
+    let allData = this.state.dataMore7Hari;
+    if (this.state.dataMore7Hari.length > 0) {
+      this.state.dataMore7Hari.map(item => {
+        let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
+        this._deleteImageFinding(item.FINDING_CODE);
+        TaskServices.deleteRecord('TR_FINDING', indexData);
+      });
+    }
+  }
+
+  _deleteInspeksiHeader() {
+    var data = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
+    console.log("TR_BLOCK_INSPECTION_H : " + JSON.stringify(data));
+    var dataMore7Hari = [];
+    var dataNoDate = [];
+    var now = Moment(new Date());
+
+    data.map(item => {
+      console.log("INSERT_TIME : " + item.INSERT_TIME);
+      if (isEmpty(item.INSERT_TIME)) {
+        dataNoDate.push(item)
+      } else {
+        var diff = Moment(new Date(item.INSERT_TIME)).diff(now, 'day');
+        if (diff > 7) {
+          this.setState({ dataMore7HariHeader: dataMore7Hari.push(item) })
+        }
+      }
+    })
+
+    console.log("Data Query Inspection Header : " + JSON.stringify(this.state.dataMore7HariHeader));
+    let allData = this.state.dataMore7HariHeader;
+    if (this.state.dataMore7HariHeader.length > 0) {
+      this.state.dataMore7HariHeader.map(item => {
+        let indexData = R.findIndex(R.propEq('TR_BLOCK_INSPECTION_H', item.BLOCK_INSPECTION_CODE))(allData);
+        this._deleteInspeksiDetail(item.BLOCK_INSPECTION_CODE);
+        this._deleteImageInspeksi(item.BLOCK_INSPECTION_CODE);
+        this._deleteInspeksiBaris(item.BLOCK_INSPECTION_CODE)
+        TaskServices.deleteRecord('TR_BLOCK_INSPECTION_H', indexData);
+      });
+    }
+  }
+
+  _deleteInspeksiDetail(BLOCK_INSPECTION_CODE) {
+    let allData = TaskServices.findBy2('TR_BLOCK_INSPECTION_D', 'BLOCK_INSPECTION_CODE', BLOCK_INSPECTION_CODE);
+    let indexData = R.findIndex(R.propEq('TR_BLOCK_INSPECTION_D', BLOCK_INSPECTION_CODE))(allData);
+    TaskServices.deleteRecord('TR_BLOCK_INSPECTION_D', indexData);
+  }
+
+  _deleteInspeksiBaris(BLOCK_INSPECTION_CODE) {
+    let allData = TaskServices.findBy2('TR_BARIS_INSPECTION', 'BLOCK_INSPECTION_CODE', BLOCK_INSPECTION_CODE);
+    let indexData = R.findIndex(R.propEq('TR_BARIS_INSPECTION', BLOCK_INSPECTION_CODE))(allData);
+    TaskServices.deleteRecord('TR_BARIS_INSPECTION', indexData);
+  }
+
+  _deleteImageFinding(TR_CODE) {
+    let allData = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', FINDING_CODE);
+    let indexData = R.findIndex(R.propEq('TR_IMAGE', TR_CODE))(allData);
+    this.deleteImageFileTemuan(allData.IMAGE_PATH_LOCAL);
+    TaskServices.deleteRecord('TR_IMAGE', indexData);
+  }
+
+  _deleteImageInspeksi(TR_CODE) {
+    let allData = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', BLOCK_INSPECTION_CODE);
+    let indexData = R.findIndex(R.propEq('TR_IMAGE', TR_CODE))(allData);
+    this.deleteImageFileInspeksi(allData.IMAGE_PATH_LOCAL);
+    TaskServices.deleteRecord('TR_IMAGE', indexData);
+  }
+
+  deleteImageFileTemuan(filepath) {
+    RNFS.exists(filepath)
+      .then((result) => {
+        console.log("file exists: ", result);
+        if (result) {
+          return RNFS.unlink(filepath)
+            .then(() => {
+              console.log('FILE DELETED');
+            })
+            // `unlink` will throw an error, if the item to unlink does not exist
+            .catch((err) => {
+              console.log(err.message);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
+
+  deleteImageFileInspeksi(filepath) {
+    RNFS.exists(filepath)
+      .then((result) => {
+        console.log("file exists: ", result);
+        if (result) {
+          return RNFS.unlink(filepath)
+            .then(() => {
+              console.log('FILE DELETED');
+            })
+            // `unlink` will throw an error, if the item to unlink does not exist
+            .catch((err) => {
+              console.log(err.message);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }
 
   _changeFilterList = data => {
@@ -111,46 +235,61 @@ class HomeScreen extends React.Component {
       var query = TaskServices.getAllData('TR_FINDING');
 
       console.log("Data Filter Ba : " + item.ba);
+      console.log("Data Filter User Auth : " + item.userAuth);
       console.log("Data Filter Status : " + item.status);
       console.log("Data Filter Start Batas Waktu : " + item.stBatasWaktu);
       console.log("Data Filter End Batas Waktu : " + item.endBatasWaktu);
+      console.log("Data Filter Val Batas Waktu : " + item.valBatasWaktu);
+      console.log("Data Filter Val Assignto : " + item.valAssignto);
+
 
       // let oldContacts = realm.objects('Contact').filtered('age > 2');
       let ba = item.ba;
+      let userAuth = item.userAuth;
       let status = item.status;
       let stBatasWaktu = item.stBatasWaktu;
       let endBatasWaktu = item.endBatasWaktu.substring(0, 8) + '235959';
+      let valBatasWaktu = item.valBatasWaktu;
+      let valAssignto = item.valAssignto;
 
-      let queryBa;
-      if (ba == "Cari BA") {
-        queryBa = ""
+      let varBa = 'WERKS = ' + `"${ba}"`
+      let varUserAuth = 'AND WERKS = ' + `"${userAuth}"`
+      let varStatus = 'AND STATUS = ' + `"${status}"`
+      let varInsertTime = 'AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
+
+      let stBa;
+      if (ba == 'Pilih Lokasi') {
+        stBa = 'WERKS CONTAINS[c] ' + `"${""}"`
       } else {
-        queryBa = "WERKS" + ' == \"' + ba + '\" ';
+        stBa = varBa
       }
 
-      let queryStatus = "AND STATUS" + ' == \"' + status + '\" ';
+      let stUserAuth;
+      if (valAssignto == 'Pilih Pemberi Tugas') {
+        stUserAuth = 'AND ASSIGN_TO CONTAINS[c] ' + `"${""}"`
+      } else {
+        stUserAuth = varUserAuth
+      }
 
-      let queryAll = query.filtered(queryBa + queryStatus);
-      console.log("Data Query : " + JSON.stringify(queryAll));
+      let stStatus;
+      if (status == 'Pilih Status') {
+        stStatus = 'AND STATUS CONTAINS[c] ' + `"${""}"`
+      } else {
+        stStatus = varStatus
+      }
 
-      // queryBa = query.filtered(`WERKS${" == "}${ba}${" AND STATUS"}${" == "}${status}`);
-      // console.log("Data Query : " + JSON.stringify(queryBa));
+      let stInsertTime;
+      if (valBatasWaktu == 'Pilih Batas Waktu') {
+        stInsertTime = 'AND INSERT_TIME CONTAINS[c] ' + `"${""}"`
+      } else {
+        stInsertTime = varInsertTime
+      }
 
+      // let data = query.filtered(`${varInsertTime} ${varStatus} ${varBa}`);
+      let data = query.filtered(`${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`);
 
-
-      // let queryBatasWaktu;
-      // if (ba == "Cari BA") {
-      //   queryBa = ""
-      // } else {
-      //   queryBa = "AND WERKS" + ' == \"' + ba + '\" ';
-      // }
-
-      // let queryBatasWaktu;
-      // if(status)
-
-      // let queryBatasWaktu = "INSERT_TIME" + ' => \"' + stBatasWaktu + '\" ' + "AND INSERT_TIME" + ' <= \"' + endBatasWaktu + '\" ';
-
-      // this.setState({ data });
+      console.log("Data Query : " + JSON.stringify(data));
+      this.setState({ data });
     })
   }
 
@@ -192,17 +331,35 @@ class HomeScreen extends React.Component {
   _renderItem = (item, index) => {
 
     const nav = this.props.navigation
-    const insert_user = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.INSERT_USER);
-    const assign_to = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
+
+    console.log(item.INSERT_USER);
+
+    const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.INSERT_USER);
+
+    let user;
+    if (INSERT_USER == undefined) {
+      user = 'User belum terdaftar. Hubungi Admin.';
+    } else {
+      user = INSERT_USER.FULLNAME;
+    }
+
+    const ASSIGN_TO = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
+
+    let assign_to;
+    if (ASSIGN_TO == undefined) {
+      assign_to = 'User tidak ada. Hubungi Admin.';
+    } else {
+      assign_to = ASSIGN_TO.FULLNAME;
+    }
+
     const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
     const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
     const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
 
-    const dt = changeFormatDate("" + item.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
-    console.log('Date Time : ' + dt)
+    const dt = changeFormatDate(item.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
     Moment.locale();
     let batasWaktu;
-    if (dt == 0) {
+    if (dt == '') {
       batasWaktu = 'Batas waktu belum ditentukan';
     } else {
       batasWaktu = Moment(dt).format('LL');
@@ -224,7 +381,7 @@ class HomeScreen extends React.Component {
             <CardItem>
               <Left>
                 <Thumbnail style={{ borderColor: 'grey', borderWidth: 0.5, height: 48, width: 48 }} source={require('../../Images/img_no_photo.jpg')} />
-                <Body><Text>{insert_user.FULLNAME}</Text></Body>
+                <Body><Text>{user}</Text></Body>
               </Left>
             </CardItem>
             <CardItem cardBody>
@@ -252,12 +409,39 @@ class HomeScreen extends React.Component {
     );
   }
 
-  render() {
+  _validasiData(param) {
+    if (param == 0) {
+      return this._renderNoData();
+    } else {
+      return this._renderData();
+    }
+  }
 
+  _renderNoData() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', alignContent: 'center' }}>
+        <Text style={{ fontSize: 16, alignSelf: 'center', marginTop: 200 }}>'Belum ada temuan di area Kamu'</Text>
+      </View>
+    )
+  }
+
+  _renderData() {
+    return (
+      <View>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}>
+          {this.state.data.map((item, index) => this._renderItem(item, index))}
+        </ScrollView>
+      </View>
+    )
+  }
+
+  render() {
     return (
       <Container style={{ padding: 16 }}>
-        <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
         <Content>
+          <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
           <View style={styles.sectionTimeline}>
             <Text style={styles.textTimeline}>Timeline</Text>
             <View style={styles.rightSection}>
@@ -267,11 +451,7 @@ class HomeScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}>
-            {this.state.data.map((item, index) => this._renderItem(item, index))}
-          </ScrollView>
+          {this._validasiData(this.state.data.length)}
         </Content>
       </Container >
     )

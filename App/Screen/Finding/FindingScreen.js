@@ -5,7 +5,8 @@ import FindingTabNavigator from './FindingTabNavigator'
 
 export default class FindingScreen extends Component {
   static router = FindingTabNavigator.router;
-  static navigationOptions = {
+  
+  static navigationOptions = ({ navigation }) => ({
     headerStyle: {
       backgroundColor: Colors.tintColor
     },
@@ -16,23 +17,23 @@ export default class FindingScreen extends Component {
       fontWeight: '400',
       marginHorizontal: 12
     },
-    title: 'Temuan',
+    title: 'Lainnya',
     headerTintColor: '#fff',
     headerRight: (
-      <TouchableOpacity onPress={() => alert('Underconstruc')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_inbox.png')} />
         </View>
       </TouchableOpacity>
     ),
     headerLeft: (
-      <TouchableOpacity onPress={() => alert('This is a button!')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Sync')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_sync.png')} />
         </View>
       </TouchableOpacity>
     )
-  };
+  });
 
   render() {
     return (

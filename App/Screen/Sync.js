@@ -824,7 +824,6 @@ class SyncScreen extends React.Component {
         return IMEI_2;
     }
 
-
     _downloadImageFinding(data) {
         var url = data.IMAGE_URL;
         const { config, fs } = RNFetchBlob

@@ -31,8 +31,10 @@ class FilterScreen extends React.Component {
         super(props);
 
         this.state = {
-            valBisnisArea: 'Cari BA',
-            valTanggal: 'Pilih Tanggal',
+            valBisnisArea: 'Pilih Lokasi',
+            valAssignto: 'Pilih Pemberi Tugas',
+            valUserAuthCode: '',
+            valTanggal: 'Pilih Batas Waktu',
             valBatasWaktu: 'Pilih Batas Waktu',
             valStBatasWaktu: '',
             valEndBatasWaktu: '',
@@ -49,6 +51,14 @@ class FilterScreen extends React.Component {
         })
     }
 
+    assignTo = data => {
+        console.log("Data ASSIGN TO : " + data.fullName);
+        this.setState({
+            valAssignto: data.fullName,
+            valUserAuthCode: data.userAuth
+        });
+    }
+
     changeBatasWaktu = data => {
         console.log("Data : " + data);
         let resultParsed = JSON.parse(data)
@@ -57,27 +67,34 @@ class FilterScreen extends React.Component {
         let endDate = Moment(resultParsed.endDate).format('YYYYMMDDHHmmss');
 
         let setData;
+        let endDataParam;
         if (endDate == 'Invalid date') {
-            setData = Moment(changeFormatDate(stDate, "YYYY-MM-DD hh-mm-ss")).format('LL')
+            setData = Moment(changeFormatDate(stDate, "YYYY-MM-DD hh-mm-ss")).format('LL');
+            endDataParam = Moment(resultParsed.startDate).format('YYYYMMDDHHmmss');
         } else {
             setData = Moment(changeFormatDate(stDate, "YYYY-MM-DD hh-mm-ss")).format('LL') + " s/d " +
-                Moment(changeFormatDate(endDate, "YYYY-MM-DD hh-mm-ss")).format('LL')
+                Moment(changeFormatDate(endDate, "YYYY-MM-DD hh-mm-ss")).format('LL');
+            endDataParam = Moment(resultParsed.endDate).format('YYYYMMDDHHmmss');
         }
 
         this.setState({
             valStBatasWaktu: stDate,
-            valEndBatasWaktu: endDate,
+            valEndBatasWaktu: endDataParam,
             valBatasWaktu: setData
         })
     }
 
     _changeFilterList() {
         let arrData = [];
+
         arrData.push({
             ba: this.state.valBisnisArea,
             status: this.getStatus(this.state.selected),
             stBatasWaktu: this.state.valStBatasWaktu,
-            endBatasWaktu: this.state.valEndBatasWaktu
+            endBatasWaktu: this.state.valEndBatasWaktu,
+            valBatasWaktu: this.state.valBatasWaktu,
+            userAuth: this.state.valUserAuthCode,
+            valAssignto: this.state.valAssignto
         })
         // console.log(JSON.stringify(arrData));
         this.props.navigation.state.params._changeFilterList(arrData);
@@ -99,11 +116,11 @@ class FilterScreen extends React.Component {
 
     getStatus(param) {
         switch (param) {
-            case 'key0':
-                return 'BARU';
             case 'key1':
-                return 'SEDANG DIPROSES';
+                return 'BARU';
             case 'key2':
+                return 'SEDANG DIPROSES';
+            case 'key3':
                 return 'SELESAI';
             default:
                 return 'BARU';
@@ -124,23 +141,11 @@ class FilterScreen extends React.Component {
                             <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
                         </TouchableOpacity>
 
-                        {/* <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>TANGGAL PEMBUATAN</Text>
-
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <View>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar')} >
-                                    <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valTanggal}</Text>
-                                    <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-
-                            </View>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar')} >
-                                <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valTanggal}</Text>
-                                <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
-                            </TouchableOpacity>
-                        </View> */}
+                        <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>PEMBERI TUGAS</Text>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PemberiTugas', { assignTo: this.assignTo })} >
+                            <Text style={{ color: 'black', marginLeft: 8, fontSize: 16, marginTop: 8 }}>{this.state.valAssignto}</Text>
+                            <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey', marginTop: 8 }}></View>
+                        </TouchableOpacity>
 
                         <Text style={{ fontWeight: '500', marginLeft: 8, fontSize: 16, marginTop: 16 }}>TANGGAL PEMBUATAN</Text>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('Calendar', { changeBatasWaktu: this.changeBatasWaktu })}  >
@@ -156,9 +161,10 @@ class FilterScreen extends React.Component {
                             style={{ width: undefined }}
                             selectedValue={this.state.selected}
                             onValueChange={this.onValueChange.bind(this)}>
-                            <Picker.Item label="BARU" value="key0" />
-                            <Picker.Item label="SEDANG DI PROSES" value="key1" />
-                            <Picker.Item label="SELESAI" value="key2" />
+                            <Picker.Item label="Pilih Status" value="key0" />
+                            <Picker.Item label="BARU" value="key1" />
+                            <Picker.Item label="SEDANG DI PROSES" value="key2" />
+                            <Picker.Item label="SELESAI" value="key3" />
                         </Picker>
                         <View style={{ height: 0.5, flex: 1, flexDirection: 'row', backgroundColor: 'grey' }}></View>
 

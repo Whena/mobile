@@ -30,9 +30,10 @@ import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
 import test from '../Screen/Inspeksi/test';
-import FilterScreen from '../Screen/FilterScreen'
-import BisnisAreaScreen from '../Screen/BisnisArea'
+import FilterScreen from '../Screen/FilterScreen';
+import BisnisAreaScreen from '../Screen/BisnisArea';
 import CalendarsScreen from '../Screen/Calendar';
+import PemberiTugas from '../Screen/PemberiTugas';
 
 // import TestUpload from '../Screen/TestUpload'
 
@@ -80,6 +81,7 @@ const main = createStackNavigator({
     Filter: { screen: FilterScreen },
     BisnisArea: { screen: BisnisAreaScreen },
     Calendar: { screen: CalendarsScreen },
+    PemberiTugas: { screen: PemberiTugas },
 
     //inspeksi
     BuatInspeksi: { screen: BuatInspeksi },

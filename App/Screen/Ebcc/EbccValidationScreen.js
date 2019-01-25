@@ -5,7 +5,7 @@ import Colors from '../../Constant/Colors'
 
 export default class FindingScreen extends Component {
 
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => ({
     headerStyle: {
       backgroundColor: Colors.tintColor
     },
@@ -19,20 +19,20 @@ export default class FindingScreen extends Component {
     title: 'EBCC Validasi',
     headerTintColor: '#fff',
     headerRight: (
-      <TouchableOpacity onPress={() => alert('Underconstruc')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_inbox.png')} />
         </View>
       </TouchableOpacity>
     ),
     headerLeft: (
-      <TouchableOpacity onPress={() => alert('This is a button!')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Sync')}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 12 }}>
           <Image style={{ width: 28, height: 28 }} source={require('../../Images/icon/ic_sync.png')} />
         </View>
       </TouchableOpacity>
     )
-  };
+  });
 
   render() {
     return (
@@ -45,7 +45,7 @@ export default class FindingScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:'#fff',
+    backgroundColor: '#fff',
     padding: 16,
     flex: 1,
     alignItems: 'center',
