@@ -177,7 +177,7 @@ const TR_CONTACT = {
         USER_AUTH_CODE: 'string',
         EMPLOYEE_NIK: 'string',
         USER_ROLE: 'string',
-        LOCATION_CODE: 'string',
+        LOCATION_CODE: { type: 'string', optional: true },
         REF_ROLE: 'string',
         JOB: 'string',
         FULLNAME: 'string'

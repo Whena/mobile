@@ -4,6 +4,7 @@ import Colors from '../../Constant/Colors'
 import Fonts from '../../Constant/Fonts'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
+import Entypo from 'react-native-vector-icons/Entypo';
 import R from 'ramda';
 import TaskServices from '../../Database/TaskServices'
 import { getTodayDate } from '../../Lib/Utils'
@@ -11,7 +12,7 @@ import { getTodayDate } from '../../Lib/Utils'
 
 class KondisiBaris1 extends Component {
 
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             backgroundColor: Colors.tintColor
         },
@@ -22,7 +23,14 @@ class KondisiBaris1 extends Component {
             fontSize: 18,
             fontWeight: '400'
         },
-    };
+        headerRight: (
+            <TouchableOpacity onPress={() => navigation.navigate('FindingFormNavigator')}>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 16 }}>
+                    <Entypo name='flashlight' size={24} color='white' />
+                </View>
+            </TouchableOpacity>
+        ),
+    });
 
     constructor(props) {
         super(props);

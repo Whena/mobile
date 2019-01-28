@@ -8,6 +8,7 @@ import { RNSlidingButton, SlideDirection } from 'rn-sliding-button';
 import TaskServices from '../../Database/TaskServices'
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
+import Entypo from 'react-native-vector-icons/Entypo'
 import { NavigationActions, StackActions } from 'react-navigation';
 import { getTodayDate } from '../../Lib/Utils'
 import R from 'ramda';
@@ -26,6 +27,13 @@ class KondisiBaris2 extends Component {
             fontSize: 18,
             fontWeight: '400'
         },
+        headerRight: (
+            <TouchableOpacity onPress={() => navigation.navigate('FindingFormNavigator')}>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 16 }}>
+                    <Entypo name='flashlight' size={24} color='white' />
+                </View>
+            </TouchableOpacity>
+        ),
     };
 
     constructor(props) {
@@ -136,17 +144,17 @@ class KondisiBaris2 extends Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.hideAndShow();
     }
 
-    kodisiPemupukanIsOn(){        
-		const data = this.state.kondisiBaris1;
-        let indexPkkTdkPupuk = R.findIndex(R.propEq('CONTENT_INSPECTION_CODE','CC0006'))(data);
+    kodisiPemupukanIsOn() {
+        const data = this.state.kondisiBaris1;
+        let indexPkkTdkPupuk = R.findIndex(R.propEq('CONTENT_INSPECTION_CODE', 'CC0006'))(data);
         let mdl = data[indexPkkTdkPupuk];
-        if(mdl.VALUE == '0'){
+        if (mdl.VALUE == '0') {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -295,44 +303,44 @@ class KondisiBaris2 extends Component {
         this.validation()
     };
 
-    validation(){
+    validation() {
         //TM dan TBM3 TPH mandatory
         //TM Prunning mandatory
         //titi panen jika switch on wajib dipilih
         //TBM3 kastrasi dan sanitasi mandatory
         //
-        if(this.state.piringan == ''){
+        if (this.state.piringan == '') {
             alert('Piringan belim dipilih');
-        }else if(this.state.sarKul == ''){
+        } else if (this.state.sarKul == '') {
             alert('Pasar Pikul belim dipilih');
-        }else if((this.state.statusBlok == 'TM' || this.state.statusBlok == 'TBM 3') && this.state.TPH == ''){
+        } else if ((this.state.statusBlok == 'TM' || this.state.statusBlok == 'TBM 3') && this.state.TPH == '') {
             alert('TPH belum dipilih')
-        }else if(this.state.TPH == '' && this.state.switchTPH == true){
+        } else if (this.state.TPH == '' && this.state.switchTPH == true) {
             alert('TPH belim dipilih');
-        }else if(this.state.GWG == ''){
+        } else if (this.state.GWG == '') {
             alert('Gawangan belim dipilih');
-        }else if(this.state.PRUN == '' && this.state.statusBlok == 'TM'){
+        } else if (this.state.PRUN == '' && this.state.statusBlok == 'TM') {
             alert('Prunning belim dipilih');
-        }else if(this.state.TIPA == '' && this.state.switchTIPA == true){
+        } else if (this.state.TIPA == '' && this.state.switchTIPA == true) {
             alert('Titi Panen belim dipilih');
-        }else if(this.state.KASTRASI == '' && this.state.statusBlok == 'TBM 3'){
+        } else if (this.state.KASTRASI == '' && this.state.statusBlok == 'TBM 3') {
             alert('Kastrasi belum dipilih')
-        }else if(this.state.SANITASI == '' && this.state.statusBlok == 'TBM 3'){
+        } else if (this.state.SANITASI == '' && this.state.statusBlok == 'TBM 3') {
             alert('Sanitasi belum dipilih')
-        }else if(this.kodisiPemupukanIsOn() && this.state.PENABUR == ''){
+        } else if (this.kodisiPemupukanIsOn() && this.state.PENABUR == '') {
             alert('Sistem Penaburan belum dipilih')
-        }else if(this.kodisiPemupukanIsOn() && this.state.PUPUK == ''){
+        } else if (this.kodisiPemupukanIsOn() && this.state.PUPUK == '') {
             alert('Kondisi Pupuk belum dipilih')
-        }else{
+        } else {
             this.insertDB();
         }
     }
 
-    insertDB() { 
+    insertDB() {
 
 
         var listBaris2 = [];
-        if(this.state.showPiringan){
+        if (this.state.showPiringan) {
             var data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}7`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -344,8 +352,8 @@ class KondisiBaris2 extends Component {
             }
             listBaris2.push(data);
         }
-        
-        if(this.state.showSarkul){
+
+        if (this.state.showSarkul) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}8`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -358,7 +366,7 @@ class KondisiBaris2 extends Component {
             listBaris2.push(data)
         }
 
-        if(this.state.showTph && this.state.switchTPH){
+        if (this.state.showTph && this.state.switchTPH) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}9`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -369,9 +377,9 @@ class KondisiBaris2 extends Component {
                 STATUS_SYNC: 'N'
             }
             listBaris2.push(data)
-        }        
+        }
 
-        if(this.state.showGwg){
+        if (this.state.showGwg) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}10`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -384,7 +392,7 @@ class KondisiBaris2 extends Component {
             listBaris2.push(data);
         }
 
-        if(this.state.showPrun){
+        if (this.state.showPrun) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}11`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -397,7 +405,7 @@ class KondisiBaris2 extends Component {
             listBaris2.push(data);
         }
 
-        if(this.state.showTipa && this.state.switchTIPA){
+        if (this.state.showTipa && this.state.switchTIPA) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}12`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -432,7 +440,7 @@ class KondisiBaris2 extends Component {
         }
         listBaris2.push(data);
 
-        if(this.state.showKastrasi){
+        if (this.state.showKastrasi) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}15`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -444,8 +452,8 @@ class KondisiBaris2 extends Component {
             }
             listBaris2.push(data);
         }
-        
-        if(this.state.showSanitasi){
+
+        if (this.state.showSanitasi) {
             data = {
                 BLOCK_INSPECTION_CODE_D: `ID${this.state.dataUsual.USER_AUTH}${getTodayDate('YYYYMMDDHHmmss')}16`,
                 BLOCK_INSPECTION_CODE: this.state.dataUsual.BLOCK_INSPECTION_CODE,
@@ -823,7 +831,7 @@ class KondisiBaris2 extends Component {
 
                 {/*CIRCLE*/}
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}>
-                    <TouchableOpacity style={styles.cicle2} onPress={() => {this.props.navigation.goBack() }}>
+                    <TouchableOpacity style={styles.cicle2} onPress={() => { this.props.navigation.goBack() }}>
                         {/* <Icon name={"chevron-left"}  size={10} color="white" /> */}
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.cicle, { marginLeft: 10 }]} onPress={() => { }}>

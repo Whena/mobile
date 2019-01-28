@@ -253,9 +253,10 @@ class HomeScreen extends React.Component {
       let valAssignto = item.valAssignto;
 
       let varBa = 'WERKS = ' + `"${ba}"`
-      let varUserAuth = 'AND WERKS = ' + `"${userAuth}"`
-      let varStatus = 'AND STATUS = ' + `"${status}"`
-      let varInsertTime = 'AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
+      let varUserAuth = ' AND INSERT_USER = ' + `"${userAuth}"`
+      let varStatus = ' AND STATUS = ' + `"${status}"`
+      let varInsertTime = ' AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
+      console.log("Query All : " + (varBa + varUserAuth + varStatus + varInsertTime));
 
       let stBa;
       if (ba == 'Pilih Lokasi') {
@@ -266,28 +267,28 @@ class HomeScreen extends React.Component {
 
       let stUserAuth;
       if (valAssignto == 'Pilih Pemberi Tugas') {
-        stUserAuth = 'AND ASSIGN_TO CONTAINS[c] ' + `"${""}"`
+        stUserAuth = ' AND INSERT_USER CONTAINS[c] ' + `"${""}"`
       } else {
         stUserAuth = varUserAuth
       }
 
       let stStatus;
       if (status == 'Pilih Status') {
-        stStatus = 'AND STATUS CONTAINS[c] ' + `"${""}"`
+        stStatus = ' AND STATUS CONTAINS[c] ' + `"${""}"`
       } else {
         stStatus = varStatus
       }
 
       let stInsertTime;
       if (valBatasWaktu == 'Pilih Batas Waktu') {
-        stInsertTime = 'AND INSERT_TIME CONTAINS[c] ' + `"${""}"`
+        stInsertTime = ' AND INSERT_TIME CONTAINS[c] ' + `"${"0"}"`
       } else {
         stInsertTime = varInsertTime
       }
 
       // let data = query.filtered(`${varInsertTime} ${varStatus} ${varBa}`);
       let data = query.filtered(`${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`);
-
+      console.log('Data Console Log : ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`)
       console.log("Data Query : " + JSON.stringify(data));
       this.setState({ data });
     })
@@ -344,6 +345,7 @@ class HomeScreen extends React.Component {
     }
 
     const ASSIGN_TO = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
+    console.log("ASSIGN_TO : " + ASSIGN_TO.FULLNAME)
 
     let assign_to;
     if (ASSIGN_TO == undefined) {
@@ -356,7 +358,7 @@ class HomeScreen extends React.Component {
     const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
     const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
 
-    const dt = changeFormatDate(item.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
+    const dt = item.DUE_DATE
     Moment.locale();
     let batasWaktu;
     if (dt == '') {
@@ -396,7 +398,7 @@ class HomeScreen extends React.Component {
               <Body>
                 <Text>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
                 <Text style={{ marginTop: 6 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
-                <Text style={{ marginTop: 6 }}>Ditugaskan kepada : {assign_to.FULLNAME}</Text>
+                <Text style={{ marginTop: 6 }}>Ditugaskan kepada : {assign_to}</Text>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Text style={{ marginTop: 6 }}>Batas Waktu : </Text>
                   <Text style={{ marginTop: 6, color: this.getColorBatasWaktu(batasWaktu) }}>{batasWaktu}</Text>

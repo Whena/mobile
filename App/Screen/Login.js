@@ -1,6 +1,6 @@
 
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     StyleSheet,
     Text,
@@ -8,38 +8,41 @@ import {
     KeyboardAvoidingView,
     Keyboard,
     StatusBar,
-    ImageBackground,Alert
-  } from 'react-native';
-  
+    ImageBackground, Alert, BackHandler
+} from 'react-native';
+
+import HandleBack from '../Component/Back'
+
 // import {Container, Content, Header} from 'native-base'
 // import Logo from '../Component/Logo';
 import Form from '../Component/Form';
 import { connect } from 'react-redux';
 import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
-import { NavigationActions, StackActions  } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 import Colors from '../Constant/Colors';
-import {isNil } from 'ramda';
+import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
 import CategoryAction from '../Redux/CategoryRedux';
 import ContactAction from '../Redux/ContactRedux';
 const IMEI = require('react-native-imei');
 
-class Login extends Component{
+class Login extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             fetching: false,
             user_id: '',
             user_name: '',
             token: '',
-            imei: ''
+            imei: '',
+            exit: '',
         }
     }
 
     static navigationOptions = {
-        header: null,        
+        header: null,
     }
 
     get_IMEI_Number() {
@@ -60,27 +63,31 @@ class Login extends Component{
             USER_ROLE: user.USER_ROLE,
             STATUS: 'LOGIN'
         };
-        TaskServices.saveData('TR_LOGIN',data);
+        TaskServices.saveData('TR_LOGIN', data);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         // let data = TaskServices.getAllData('TR_LOGIN')[0]
         // if(data.length > 0){
 
         // }
+        const { navigation } = this.props;
+        const itemId = navigation.getParam('exit');
+        this.state.logOut = itemId
+        console.log(this.state.logOut);
     }
 
     componentWillReceiveProps(newProps) {
-		if (!isNil(newProps.auth)) {
-			this.setState({ fetching: newProps.auth.fetching });
+        if (!isNil(newProps.auth)) {
+            this.setState({ fetching: newProps.auth.fetching });
         }
-		if (!isNil(newProps.auth.user)) {
+        if (!isNil(newProps.auth.user)) {
             this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
 
-		}
+        }
     }
-    
+
     navigateScreen(screenName) {
         const navigation = this.props.navigation;
         const resetAction = StackActions.reset({
@@ -89,7 +96,7 @@ class Login extends Component{
         });
         navigation.dispatch(resetAction);
     }
-    
+
     // checkUser(username){
     //     let data = TaskServices.findBy2('TR_LOGIN', 'USERNAME', username);
     //     if(data.length > 0){
@@ -108,73 +115,87 @@ class Login extends Component{
         });
     }
 
-    render(){
-        return(
-            <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
-                <KeyboardAvoidingView
-                    style={styles.container}
-                    behavior="padding" >
-                    <StatusBar
-                        hidden={true}
-                        barStyle="light-content"
-                    />
-                    
+    //Add By Aminju 20/01/2019 15:45
+    state = {
+        logOut: false,
+    };
+    onBack = () => {
+        if (this.state.logOut) {
+            BackHandler.exitApp();
+            return true;
+        }
+        return false;
+    };
 
-                    {/* <Logo/> */}
+    render() {
+        return (
+            //Add By Aminju 20/01/2019 15:45 (Handle Back Method)
+            <HandleBack onBack={this.onBack}>
+                <ImageBackground source={require('../Images/background_login.png')} style={styles.container}>
+                    <KeyboardAvoidingView
+                        style={styles.container}
+                        behavior="padding" >
+                        <StatusBar
+                            hidden={true}
+                            barStyle="light-content"
+                        />
 
-                    <Form
-                        onBtnClick={data=>{this.onLogin(data.strEmail, data.strPassword)}}/>
-                    <View style={styles.footerView}>
-                        <Text style={styles.footerText}>{'\u00A9'} 2018 Copyrights PT Triputra Agro Persada</Text>
-                    </View>
-                    <ProgressDialog
-                        visible={this.state.fetching}
-                        activityIndicatorSize="large"
-                        message="Loading..."
-                    />
-                </KeyboardAvoidingView> 
-            </ImageBackground>
-                  
+
+                        {/* <Logo/> */}
+
+                        <Form
+                            onBtnClick={data => { this.onLogin(data.strEmail, data.strPassword) }} />
+                        <View style={styles.footerView}>
+                            <Text style={styles.footerText}>{'\u00A9'} 2018 Copyrights PT Triputra Agro Persada</Text>
+                        </View>
+                        <ProgressDialog
+                            visible={this.state.fetching}
+                            activityIndicatorSize="large"
+                            message="Loading..."
+                        />
+                    </KeyboardAvoidingView>
+                </ImageBackground>
+            </HandleBack>
         );
     }
 }
 
 const mapStateToProps = state => {
-	return {
-		auth: state.auth
-	};
+    return {
+        auth: state.auth
+    };
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
-		authRequest: obj => dispatch(AuthAction.authRequest(obj))
-	};
+    return {
+        authRequest: obj => dispatch(AuthAction.authRequest(obj))
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
 
 const styles = StyleSheet.create({
-    container : {
-      flex: 1,
-      alignItems:'center',
-      justifyContent :'center',
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    signupTextCont : {
-      flexGrow: 1,
-      alignItems:'flex-end',
-      justifyContent :'center',
-      paddingVertical:16,
-      flexDirection:'row'
+    signupTextCont: {
+        flexGrow: 1,
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        flexDirection: 'row'
     },
     signupText: {
-        color:'rgba(255,255,255,0.6)',
-        fontSize:16
+        color: 'rgba(255,255,255,0.6)',
+        fontSize: 16
     },
     signupButton: {
-        color:'#ffffff',
-        fontSize:16,
-        fontWeight:'500',
-    },footerView: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '500',
+    }, footerView: {
         flexGrow: 1,
         alignItems: 'flex-end',
         justifyContent: 'center',
@@ -185,5 +206,5 @@ const styles = StyleSheet.create({
         color: '#51a977',
         fontSize: 12,
     },
-  });
+});
 
