@@ -602,10 +602,22 @@ class KondisiBaris2 extends Component {
                         <View style={{ marginTop: 15 }}>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <Text style={{ color: 'grey' }}>TPH</Text>
+
                                 <Switch
+                                    thumbTintColor={this.state.switchTPH ? "#66ff66" : 'red'}                                    
+                                    onTintColor={'#b2ffb2'}
+                                    tintColor={'#ff8080'}
                                     onValueChange={(value) => this.setState({ switchTPH: value })}
-                                    style={{ marginBottom: 10, position: 'absolute', right: 0 }}
+                                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginBottom: 10, position: 'absolute', right: 0 }}
                                     value={this.state.switchTPH} />
+                                    
+                                {/* <Switch
+                                    onValueChange={(value) => this.setState({ switchTPH: value })}
+                                    value={this.state.switchTPH}
+                                    thumbTintColor={this.state.switchTPH ? BtnStyles.btnBiasa : 'red'}
+                                    onTintColor={this.state.switchTPH ? '#128c7e' : '#ff8080'}
+                                    tintColor={this.state.switchTPH ? '#25d366' : "#ff8080"}
+                                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginBottom: 10, position: 'absolute', right: 0 }} /> */}
                             </View>
 
                             {this.state.switchTPH &&
@@ -681,8 +693,11 @@ class KondisiBaris2 extends Component {
                             <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <Text style={{ color: 'grey' }}>Titi Panen</Text>
                                 <Switch
+                                    thumbTintColor={this.state.switchTIPA ? "#66ff66" : 'red'}                                    
+                                    onTintColor={'#b2ffb2'}
+                                    tintColor={'#ff8080'}
                                     onValueChange={(value) => this.setState({ switchTIPA: value })}
-                                    style={{ marginBottom: 10, position: 'absolute', right: 0 }}
+                                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginBottom: 10, position: 'absolute', right: 0 }}
                                     value={this.state.switchTIPA} />
                             </View>
 
@@ -831,7 +846,7 @@ class KondisiBaris2 extends Component {
 
                 {/*CIRCLE*/}
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}>
-                    <TouchableOpacity style={styles.cicle2} onPress={() => { this.props.navigation.goBack() }}>
+                    <TouchableOpacity style={styles.cicle2} onPress={() => {this.props.navigation.goBack() }}>
                         {/* <Icon name={"chevron-left"}  size={10} color="white" /> */}
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.cicle, { marginLeft: 10 }]} onPress={() => { }}>

@@ -25,6 +25,8 @@ export const reducers = combineReducers({
 	finding: require('./FindingRedux').reducer,
 	findingImage: require('./FindingImageRedux').reducer,
 	findingUpload: require('./FindingUploadRedux').reducer,
+	tMobile: require('./TMobileRedux').reducer,
+	paramTrack: require('./ParamTrackRedux').reducer,
 
 	network
 });

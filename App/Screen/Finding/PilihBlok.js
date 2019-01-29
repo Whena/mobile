@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    Text, StyleSheet, ListView, TextInput, TouchableOpacity, View
+    Text, StyleSheet, ListView, TextInput, TouchableOpacity, View, Keyboard
 } from 'react-native';
 import {
     Container,
@@ -73,6 +73,25 @@ class PilihBlok extends Component {
             user: null
         };
     }
+
+    componentWillMount () {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+    }
+
+    componentWillUnmount () {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+
+    _keyboardDidShow () {
+    // alert('Keyboard Shown');
+    }
+
+    _keyboardDidHide () {
+    // alert('Keyboard Hidden');
+    }
+    
 
     componentDidMount() {
         let data = TaskService.getAllData('TM_BLOCK');
@@ -182,6 +201,7 @@ class PilihBlok extends Component {
                             style={[styles.searchInput]}
                             onChangeText={this.searchedBloks}
                             defaultValue={this.state.blok}
+                            onSubmitEditing={Keyboard.dismiss}
                             placeholder="Cari nama blok" />
                     </View>
                     {this.state.showList && <View>
@@ -210,11 +230,13 @@ class PilihBlok extends Component {
                         >
                         </Marker>
                     </MapView>
+
+                    {!this.state.showList && 
                     <IconLoc
                         onPress={() => { this.setState({fetchLocation: true}), this.getLocation() }}
                         name="location-arrow"
                         size={24}
-                        style={{ alignSelf: 'flex-end', marginBottom: 280, marginRight: 10 }} />
+                        style={{ alignSelf: 'flex-end', marginBottom: 280, marginRight: 10 }} />}
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setLokasi()}}>

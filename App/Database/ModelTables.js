@@ -332,7 +332,6 @@ const TM_INSPECTION_TRACK = {
 
 const TM_TIME_TRACK = {
     name: 'TM_TIME_TRACK',
-    // primaryKey:'',
     properties: {
         PARAMATER_GROUP: 'string',
         PARAMETER_NAME: 'string',

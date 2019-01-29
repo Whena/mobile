@@ -311,6 +311,8 @@ class HomeScreen extends React.Component {
         return 'rgba(254, 178, 54, 0.7)';
       case 'BARU':
         return 'rgba(255, 77, 77, 0.7)';
+      case 'Batas waktu belum ditentukan':
+        return 'red';
       default:
         return '#ff7b25';
     }
@@ -383,25 +385,25 @@ class HomeScreen extends React.Component {
             <CardItem>
               <Left>
                 <Thumbnail style={{ borderColor: 'grey', borderWidth: 0.5, height: 48, width: 48 }} source={require('../../Images/img_no_photo.jpg')} />
-                <Body><Text>{user}</Text></Body>
+                <Body><Text style={{fontSize: 14}}>{user}</Text></Body>
               </Left>
             </CardItem>
             <CardItem cardBody>
               <ImageBackground source={sources} style={{ height: 210, width: null, flex: 1, flexDirection: 'column-reverse' }} >
                 <View style={{ alignContent: 'center', paddingTop: 2, paddingLeft: 12, flexDirection: 'row', height: 42, backgroundColor: this.getColor(item.STATUS) }} >
                   <Image style={{ marginTop: 2, height: 28, width: 28 }} source={require('../../Images/icon/ic_new_timeline.png')}></Image>
-                  <Text style={{ marginLeft: 12, color: 'white' }}>{item.STATUS}</Text>
+                  <Text style={{ marginLeft: 12, color: 'white', fontSize: 14 }}>{item.STATUS}</Text>
                 </View>
               </ImageBackground>
             </CardItem>
             <CardItem>
               <Body>
-                <Text>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
-                <Text style={{ marginTop: 6 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
-                <Text style={{ marginTop: 6 }}>Ditugaskan kepada : {assign_to}</Text>
+                <Text style={{fontSize: 14}}>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
+                <Text style={{ marginTop: 6, fontSize: 14 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
+                <Text style={{ marginTop: 6, fontSize: 14 }}>Ditugaskan kepada : {assign_to.FULLNAME}</Text>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                  <Text style={{ marginTop: 6 }}>Batas Waktu : </Text>
-                  <Text style={{ marginTop: 6, color: this.getColorBatasWaktu(batasWaktu) }}>{batasWaktu}</Text>
+                  <Text style={{ marginTop: 6, fontSize: 14 }}>Batas Waktu : </Text>
+                  <Text style={{ marginTop: 6, color: this.getColor(batasWaktu), fontSize: 14 }}>{batasWaktu}</Text>
                 </View>
               </Body>
             </CardItem>

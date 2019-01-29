@@ -97,13 +97,6 @@ class Login extends Component {
         navigation.dispatch(resetAction);
     }
 
-    // checkUser(username){
-    //     let data = TaskServices.findBy2('TR_LOGIN', 'USERNAME', username);
-    //     if(data.length > 0){
-
-    //     }
-    // }
-
     onLogin(username, password) {
         Keyboard.dismiss();
         var Imei = this.get_IMEI_Number();

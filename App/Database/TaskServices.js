@@ -1,4 +1,5 @@
 import RealmSchemas from './RealmSchema'
+import R from 'ramda'
 
 const TaskServices = {
 
@@ -57,65 +58,78 @@ const TaskServices = {
   query: function (table, query) {
     let list = RealmSchemas.objects(table);
     return list.filtered(query);
-  },
+  },  
 
-  deleteTest: function (object) {
+  deleteAllData: function (table) {
     RealmSchemas.write(() => {
-      RealmSchemas.delete(object);
+      let data = RealmSchemas.objects(table);
+      RealmSchemas.delete(data);
+    })
+  },  
+
+  deleteRecord: function (table, index) {
+    RealmSchemas.write(() => {
+      RealmSchemas.delete(RealmSchemas.objects(table)[index]);
     });
   },
 
+  // deleteTest: function (object) {
+  //   RealmSchemas.write(() => {
+  //     RealmSchemas.delete(object);
+  //   });
+  // },
 
-  deleteTrackInsByTrackInsCode: function (value) {
-    let total = RealmSchemas.objects('TR_TRACK_INSPECTION');
-    for (var i = 0; i < total.length; i++) {
-      if (value === total[i].TRACK_INSPECTION_CODE) {
-        RealmSchemas.write(() => {
-          RealmSchemas.delete(RealmSchemas.objects('TR_TRACK_INSPECTION')[i]);
-        });
-      }
-    }
-  },
 
-  deleteInpeksiHeaderByBlockInsCode: function (value) {
-    let total = RealmSchemas.objects('TR_BLOCK_INSPECTION_H');
-    for (var i = 0; i < total.length; i++) {
-      if (value === total[i].BLOCK_INSPECTION_CODE) {
-        RealmSchemas.write(() => {
-          RealmSchemas.delete(RealmSchemas.objects('TR_BLOCK_INSPECTION_H')[i]);
-        });
-      }
-    }
-  },
+  // deleteTrackInsByTrackInsCode: function (value) {
+  //   let total = RealmSchemas.objects('TR_TRACK_INSPECTION');
+  //   for (var i = 0; i < total.length; i++) {
+  //     if (value === total[i].TRACK_INSPECTION_CODE) {
+  //       RealmSchemas.write(() => {
+  //         RealmSchemas.delete(RealmSchemas.objects('TR_TRACK_INSPECTION')[i]);
+  //       });
+  //     }
+  //   }
+  // },
 
-  deleteTRBaris: function (value) {
-    let total = RealmSchemas.objects('TR_BARIS_INSPECTION');
-    for (var i = 0; i < total.length; i++) {
-      if (value === total[i].BLOCK_INSPECTION_CODE) {
-        RealmSchemas.write(() => {
-          RealmSchemas.delete(RealmSchemas.objects('TR_BARIS_INSPECTION')[i]);
-        });
-      }
-    }
-  },
+  // deleteInpeksiHeaderByBlockInsCode: function (value) {
+  //   let total = RealmSchemas.objects('TR_BLOCK_INSPECTION_H');
+  //   for (var i = 0; i < total.length; i++) {
+  //     if (value === total[i].BLOCK_INSPECTION_CODE) {
+  //       RealmSchemas.write(() => {
+  //         RealmSchemas.delete(RealmSchemas.objects('TR_BLOCK_INSPECTION_H')[i]);
+  //       });
+  //     }
+  //   }
+  // },
 
-  deleteTRBarisByID: function (value) {
-    let total = RealmSchemas.objects('TR_BARIS_INSPECTION');
-    for (var i = 0; i < total.length; i++) {
-      if (value === total[i].ID) {
-        RealmSchemas.write(() => {
-          RealmSchemas.delete(RealmSchemas.objects('TR_BARIS_INSPECTION')[i]);
-        });
-      }
-    }
-  },
+  // deleteTRBaris: function (value) {
+  //   let total = RealmSchemas.objects('TR_BARIS_INSPECTION');
+  //   for (var i = 0; i < total.length; i++) {
+  //     if (value === total[i].BLOCK_INSPECTION_CODE) {
+  //       RealmSchemas.write(() => {
+  //         RealmSchemas.delete(RealmSchemas.objects('TR_BARIS_INSPECTION')[i]);
+  //       });
+  //     }
+  //   }
+  // },
 
-  deleteBy: function (table, param, value) {
-    let sortedPeople = RealmSchemas.objects(table).sorted(param)
-    let Dave = RealmSchemas.objects(table).filtered("ID=1")
-    let indexOfDave = sortedPeople.indexOf(Dave)
-    return indexOfDave;
-  },
+  // deleteTRBarisByID: function (value) {
+  //   let total = RealmSchemas.objects('TR_BARIS_INSPECTION');
+  //   for (var i = 0; i < total.length; i++) {
+  //     if (value === total[i].ID) {
+  //       RealmSchemas.write(() => {
+  //         RealmSchemas.delete(RealmSchemas.objects('TR_BARIS_INSPECTION')[i]);
+  //       });
+  //     }
+  //   }
+  // },
+
+  // deleteBy: function (table, param, value) {
+  //   let sortedPeople = RealmSchemas.objects(table).sorted(param)
+  //   let Dave = RealmSchemas.objects(table).filtered("ID=1")
+  //   let indexOfDave = sortedPeople.indexOf(Dave)
+  //   return indexOfDave;
+  // },
 
   //   deleteByQuery(table, param, value){    
   //     RealmSchemas.write(() => {
@@ -137,35 +151,156 @@ const TaskServices = {
   //     data[0].LAT_TRACK = 'HATI'
   // })
 
-  deleteData: function (table, obj) {
+  // updateData: function (table, whereClause, value) {
+  //   var data = RealmSchemas.objects(table);
+  //   var field = whereClause;
+  //   RealmSchemas.write(() => {
+  //     data[0].field = value
+  //   })
+  // },
+
+  // updateData2: function (table, whereClause, valueClause, param, value) {
+  //   let list = RealmSchemas.objects(table);
+
+  //   RealmSchemas.write(() => {
+  //     for (var i = 0; i < list.length; i++) {
+  //       data[i].param = value[i]
+  //     }
+  //   });
+  // },
+
+  updateAfdeling: function(param, index){
+    let data = RealmSchemas.objects('TM_AFD')[index];
     RealmSchemas.write(() => {
-      let data = RealmSchemas.create(table, obj);
-      RealmSchemas.delete(data);
-    })
+      data.REGION_CODE = param.REGION_CODE;
+      data.COMP_CODE = param.COMP_CODE;
+      data.EST_CODE = param.EST_CODE;
+      data.WERKS = param.WERKS;
+      data.AFD_CODE = param.AFD_CODE;
+      data.AFD_NAME = param.AFD_NAME;
+    });
   },
 
-  deleteAllData: function (table) {
+  updateBlock: function(param, index){
+    let data = RealmSchemas.objects('TM_BLOCK')[index];
     RealmSchemas.write(() => {
-      let data = RealmSchemas.objects(table);
-      RealmSchemas.delete(data);
-    })
+      data.REGION_CODE = param.REGION_CODE;
+      data.COMP_CODE = param.COMP_CODE;
+      data.EST_CODE = param.EST_CODE;
+      data.WERKS = param.WERKS;
+      data.AFD_CODE = param.AFD_CODE;
+      data.BLOCK_CODE = param.AFD_NAME;
+      data.BLOCK_NAME = param.BLOCK_NAME;
+      data.WERKS_AFD_CODE = param.WERKS_AFD_CODE;
+      data.LATITUDE_BLOCK = param.LATITUDE_BLOCK;
+      data.LONGITUDE_BLOCK = param.LONGITUDE_BLOCK;
+    });
   },
 
-  updateData: function (table, whereClause, value) {
-    var data = RealmSchemas.objects(table);
-    var field = whereClause;
+  updateRegion: function (param, index){
+    let data = RealmSchemas.objects('TM_REGION')[index];
     RealmSchemas.write(() => {
-      data[0].field = value
-    })
+      data.NATIONAL = param.NATIONAL;
+      data.REGION_NAME = param.REGION_NAME
+    });
   },
 
-  updateData2: function (table, whereClause, valueClause, param, value) {
-    let list = RealmSchemas.objects(table);
-
+  updateEstate: function(param, index){
+    let data = RealmSchemas.objects('TM_EST')[index];
     RealmSchemas.write(() => {
-      for (var i = 0; i < list.length; i++) {
-        data[i].param = value[i]
-      }
+      data.REGION_CODE = param.REGION_CODE;
+      data.COMP_CODE = param.COMP_CODE;
+      data.EST_CODE = param.EST_CODE;
+      data.EST_NAME = param.EST_NAME;
+      data.CITY = param.CITY;
+    });
+  },
+
+  updateLandUse: function(param, index){
+    let data = RealmSchemas.objects('TM_LAND_USE')[index];
+    RealmSchemas.write(() => {
+      data.NATIONAL = param.REGION_CODE;
+      data.REGION_CODE = param.REGION_CODE;
+      data.COMP_CODE = param.COMP_CODE;
+      data.WERKS = param.WERKS;
+      data.SUB_BA_CODE = param.SUB_BA_CODE,
+      data.KEBUN_CODE = param.KEBUN_CODE,
+      data.AFD_CODE = param.AFD_CODE;
+      data.AFD_NAME = param.AFD_NAME;
+      data.WERKS_AFD_CODE = param.WERKS_AFD_CODE;
+      data.BLOCK_CODE = param.AFD_NAME;
+      data.BLOCK_NAME = param.BLOCK_NAME;
+      data.LAND_USE_CODE = param.LAND_USE_CODE;
+      data.LAND_USE_NAME = param.LAND_USE_NAME;
+      data.LAND_USE_CODE_GIS= param.LAND_USE_CODE_GIS;
+      data.SPMON = param.SPMON;
+      data.LAND_CAT= param.LAND_CAT;
+      data.LAND_CAT_L1_CODE = param.LAND_CAT_L1_CODE;
+      data.LAND_CAT_L1 = param.LAND_CAT_L1;
+      data.LAND_CAT_L2_CODE = param.LAND_CAT_L2_CODE;
+      data.MATURITY_STATUS = param.MATURITY_STATUS;
+      data.SCOUT_STATUS = param.SCOUT_STATUS;
+      data.AGES = param.AGES;
+      data.HA_SAP = param.HA_SAP;
+      data.PALM_SAP = param.PALM_SAP;
+      data.SPH_SAP = param.SPH_SAP;
+      data.HA_GIS = param.HA_GIS;
+      data.PALM_GIS = param.PALM_GIS;
+      data.SPH_GIS = param.SPH_GIS;
+    });
+  },
+
+  updateComp: function(param, index){
+    let data = RealmSchemas.objects('TM_COMP')[index];
+    RealmSchemas.write(() => {
+      data.NATIONAL = param.REGION_CODE;
+      data.REGION_CODE = param.COMP_CODE;
+      data.COMP_NAME = param.EST_CODE;
+      data.ADDRESS = param.EST_NAME;
+    });
+  },
+
+  updateContent: function(param, index){
+    let data = RealmSchemas.objects('TM_CONTENT')[index];
+    RealmSchemas.write(() => {
+      data.GROUP_CATEGORY = param.GROUP_CATEGORY;
+      data.CATEGORY = param.CATEGORY;
+      data.CONTENT_NAME = param.CONTENT_NAME;
+      data.UOM = param.UOM;
+      data.FLAG_TYPE = param.FLAG_TYPE;
+      data.URUTAN = param.URUTAN;
+    });
+  },
+
+  updateFindingDownload: function(param, index){
+    let data = RealmSchemas.objects('TR_FINDING')[index];
+    RealmSchemas.write(() => {
+      data.WERKS = param.WERKS;
+      data.AFD_CODE = param.AFD_CODE;
+      data.BLOCK_CODE = param.BLOCK_CODE;
+      data.FINDING_CATEGORY = param.FINDING_CATEGORY;
+      data.FINDING_DESC = param.FINDING_DESC;
+      data.FINDING_PRIORITY = param.FINDING_PRIORITY;      
+      data.DUE_DATE = param.DUE_DATE;
+      data.STATUS = param.STATUS;
+      data.ASSIGN_TO = param.ASSIGN_TO;
+      data.PROGRESS = param.PROGRESS;
+      data.LAT_FINDING = param.LAT_FINDING;
+      data.LONG_FINDING = param.LONG_FINDING;      
+      data.REFFERENCE_INS_CODE = param.REFFERENCE_INS_CODE;
+      data.INSERT_USER = param.INSERT_USER;
+      data.INSERT_TIME = param.INSERT_TIME;
+      data.STATUS_SYNC = param.STATUS_SYNC;
+    });
+  },
+
+  updateParamTrack: function(param, index){
+    let data = RealmSchemas.objects('TM_TIME_TRACK')[index];
+    RealmSchemas.write(() => {
+      data.PARAMATER_GROUP = param.PARAMATER_GROUP;
+      data.PARAMETER_NAME = param.PARAMETER_NAME;
+      data.DESC = param.DESC;
+      data.NO_URUT = param.NO_URUT;
     });
   },
   
@@ -206,9 +341,6 @@ const TaskServices = {
     RealmSchemas.write(() => {
       data.INSPECTION_SCORE = param[0];
       data.INSPECTION_RESULT = param[1];
-      // data.END_INSPECTION = param[2];
-      // data.LAT_END_INSPECTION = param[3];
-      // data.LONG_END_INSPECTION = param[4];
     });
   },
 
@@ -229,12 +361,6 @@ const TaskServices = {
         });
       }
     }
-  },
-
-  deleteRecord: function (table, index) {
-    RealmSchemas.write(() => {
-      RealmSchemas.delete(RealmSchemas.objects(table)[index]);
-    });
   },
 
   updateTmRegionByRegionCode: function (regionCode, param) {

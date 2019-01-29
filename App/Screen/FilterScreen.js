@@ -86,7 +86,6 @@ class FilterScreen extends React.Component {
 
     _changeFilterList() {
         let arrData = [];
-
         arrData.push({
             ba: this.state.valBisnisArea,
             status: this.getStatus(this.state.selected),

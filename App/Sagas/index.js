@@ -23,15 +23,16 @@ import { ContentLabelTypes } from '../Redux/ContentLabelRedux';
 import { FindingTypes } from '../Redux/FindingRedux';
 import { FindingImageTypes } from '../Redux/FindingImageRedux';
 import { FindingUploadTypes } from '../Redux/FindingUploadRedux';
+import { TMobileTypes} from '../Redux/TMobileRedux';
+import { ParamTrackTypes} from '../Redux/ParamTrackRedux'
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
 import { getAuth, userUpdate } from './AuthSagas';
 import { getCategory } from './CategorySagas';
 import { getContact } from './ContactSagas';
-import { getRegion, postRegion } from './RegionSagas';
-// import { postInspeksiHeader, postInspeksiDetail, postFindingData } from './InspeksiSagas';
-import { postInspeksiHeader, postInspeksiDetail, postInspeksiTrackingPath, getInspeksiParamTrackingPath } from './InspeksiSagas';
+import { getRegion } from './RegionSagas';
+import { postInspeksiHeader, postInspeksiDetail, postInspeksiTrackingPath } from './InspeksiSagas';
 import { getAfd, postAfd } from './AfdSagas';
 import { getEst, postEst } from './EstSagas';
 import { getKriteria, postKriteria } from './KriteriaSagas';
@@ -43,6 +44,8 @@ import { getContentLabel, postContentLabel } from './ContentLabelSagas';
 import { getFinding } from './FindingSagas';
 import { getFindingImage } from './FindingImageSagas';
 import { postFindingData } from './FindingUploadSagas';
+import {postTMobileSync } from './TMobileSagas';
+import {getInspeksiParamTrackingPath } from './ParamTrackSagas';
 
 //Add by Aminju
 import { getBlock, postBlock } from './BlockSagas'
@@ -65,12 +68,10 @@ export default function* root() {
 		takeLatest(CategoryTypes.CATEGORY_REQUEST, getCategory, miApi),
 		takeLatest(ContactTypes.CONTACT_REQUEST, getContact, miApi),
 		takeLatest(RegionTypes.REGION_REQUEST, getRegion, miApi),
-		takeLatest(RegionTypes.REGION_POST, postRegion, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_HEADER, postInspeksiHeader, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_DETAIL, postInspeksiDetail, miApi),
 		takeLatest(InspeksiTypes.INSPEKSI_POST_TRACKING_PATH, postInspeksiTrackingPath, miApi),
-		takeLatest(InspeksiTypes.INSPEKSI_GET_PARAM_TRACKING_PATH, getInspeksiParamTrackingPath, miApi),
-		//takeLatest(InspeksiTypes.FINDING_POST_DATA, postFindingData, miApi),
+		// takeLatest(InspeksiTypes.INSPEKSI_GET_PARAM_TRACKING_PATH, getInspeksiParamTrackingPath, miApi),
 		takeLatest(BlockTypes.BLOCK_REQUEST, getBlock, miApi),
 		takeLatest(BlockTypes.BLOCK_POST, postBlock, miApi),
 		takeLatest(AfdTypes.AFD_REQUEST, getAfd, miApi),
@@ -91,7 +92,9 @@ export default function* root() {
 		takeLatest(ContentLabelTypes.CONTENT_LABEL_POST, postContentLabel, miApi),
 		takeLatest(FindingTypes.FINDING_REQUEST, getFinding, miApi),
 		takeLatest(FindingImageTypes.FINDING_IMAGE_REQUEST, getFindingImage, miApi),
-		takeLatest(FindingUploadTypes.FINDING_POST_DATA, postFindingData, miApi),
+		takeLatest(FindingUploadTypes.FINDING_POST_DATA, postFindingData, miApi),		
+		takeLatest(TMobileTypes.TM_POST, postTMobileSync, miApi),
+		takeLatest(ParamTrackTypes.PARAM_TRACK_REQUEST, getInspeksiParamTrackingPath, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

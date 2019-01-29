@@ -4,25 +4,24 @@ import Immutable from 'seamless-immutable';
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-	regionRequest: null,
-	regionSuccess: ['payload'],
-	regionFailure: null
+	tmPost: ['data'],
+	tmSuccess: ['payload'],
+	tmFailure: null
 });
 
-export const RegionTypes = Types;
+export const TMobileTypes = Types;
 export default Creators;
 
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-	fetchingRegion: null,
+	fetchingMobile: null,
 	error: null,
-	region: null
 });
 
 /* ------------- Selectors ------------- */
 
-export const RegionSelectors = {
+export const TMobileSelectors = {
 	getData: state => state.data
 };
 
@@ -30,21 +29,21 @@ export const RegionSelectors = {
 
 // request the data from an api
 
-export const request = (state, { data }) => state.merge({ fetchingRegion: true, error: null, region: null });
+export const postMobileSync = (state, { data }) => state.merge({ fetchingMobile: true, data, region: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetchingRegion: false, error: null, region: payload });
+	return state.merge({ fetchingMobile: false, error: null, region: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetchingRegion: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingMobile: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-	[Types.REGION_REQUEST]: request,
-	[Types.REGION_SUCCESS]: success,
-	[Types.REGION_FAILURE]: failure
+	[Types.TM_POST]: postMobileSync,
+	[Types.TM_SUCCESS]: success,
+	[Types.TM_FAILURE]: failure
 });

@@ -4,47 +4,46 @@ import Immutable from 'seamless-immutable';
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-	regionRequest: null,
-	regionSuccess: ['payload'],
-	regionFailure: null
+	paramTrackRequest: null,
+	paramTrackSuccess: ['payload'],
+	paramTrackFailure: null
 });
 
-export const RegionTypes = Types;
+export const ParamTrackTypes = Types;
 export default Creators;
 
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-	fetchingRegion: null,
+	fetchingParamTrack: null,
 	error: null,
-	region: null
+	paramTrack: null
 });
 
 /* ------------- Selectors ------------- */
 
-export const RegionSelectors = {
+export const fetchingParamTrackSelectors = {
 	getData: state => state.data
 };
 
 /* ------------- Reducers ------------- */
 
 // request the data from an api
-
-export const request = (state, { data }) => state.merge({ fetchingRegion: true, error: null, region: null });
+export const request = (state, { data }) => state.merge({ fetchingParamTrack: true, error: null, paramTrack: null });
 
 // successful api lookup
 export const success = (state, action) => {
 	const { payload } = action;
-	return state.merge({ fetchingRegion: false, error: null, region: payload });
+	return state.merge({ fetchingParamTrack: false, error: null, paramTrack: payload });
 };
 
 // Something went wrong somewhere.
-export const failure = state => state.merge({ fetchingRegion: false, error: true, payload: null });
+export const failure = state => state.merge({ fetchingParamTrack: false, error: true, payload: null });
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-	[Types.REGION_REQUEST]: request,
-	[Types.REGION_SUCCESS]: success,
-	[Types.REGION_FAILURE]: failure
+	[Types.PARAM_TRACK_REQUEST]: request,
+	[Types.PARAM_TRACK_SUCCESS]: success,
+	[Types.PARAM_TRACK_FAILURE]: failure
 });

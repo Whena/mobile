@@ -7,8 +7,7 @@ const { Types, Creators } = createActions({
 	inspeksiPostHeader: ['data'],
 	inspeksiPostDetail: ['data'],
 	inspeksiPostTrackingPath: ['data'],
-	inspeksiGetParamTrackingPath: null,
-	// findingPostData: ['data'],
+	// inspeksiGetParamTrackingPath: null,
 	inspeksiSuccess: ['payload'],
 	inspeksiFailure: null
 });
@@ -37,8 +36,7 @@ export const InspeksiSelectors = {
 export const postInspeksiHeader = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
 export const postInspeksiDetail = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
 export const postInspeksiTrackingPath = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
-export const getInspeksiParamTrackingPath = (state, { data }) => state.merge({ fetchingInspeksiParam: true, error: null, inspeksi: null });
-// export const postFindingData = (state, { data }) => state.merge({ fetchingInspeksi: true, data, inspeksi: null });
+// export const getInspeksiParamTrackingPath = (state, { data }) => state.merge({ fetchingInspeksiParam: true, error: null, inspeksi: null });
 
 // successful api lookup
 export const success = (state, action) => {
@@ -54,8 +52,7 @@ export const reducer = createReducer(INITIAL_STATE, {
 	[Types.INSPEKSI_POST_HEADER]: postInspeksiHeader,
 	[Types.INSPEKSI_POST_DETAIL]: postInspeksiDetail,
 	[Types.INSPEKSI_POST_TRACKING_PATH]: postInspeksiTrackingPath,
-	[Types.INSPEKSI_GET_PARAM_TRACKING_PATH]: getInspeksiParamTrackingPath,
-	// [Types.FINDING_POST_DATA]: postFindingData,
+	// [Types.INSPEKSI_GET_PARAM_TRACKING_PATH]: getInspeksiParamTrackingPath,
 	[Types.INSPEKSI_SUCCESS]: success,
 	[Types.INSPEKSI_FAILURE]: failure
 });

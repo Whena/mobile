@@ -29,23 +29,23 @@ export function* getRegion(api, action) {
 
 }
 
-export function* postRegion(api, action) {
-    const { data } = action;
-    const response = yield call(api.postRegion, data);
+// export function* postRegion(api, action) {
+//     const { data } = action;
+//     const response = yield call(api.postRegion, data);
 
-    if (typeof atob !== 'undefined') {
-        console.log(response);
-        console.log('^^^ POST REGION ^^^');
-    }
+//     if (typeof atob !== 'undefined') {
+//         console.log(response);
+//         console.log('^^^ POST REGION ^^^');
+//     }
 
-    if (response.ok) {
-        yield put(RegionActions.regionSuccess({ payload: response.data, change: true }));
-    } else {
-        yield put(RegionActions.regionFailure({
-            path: 'Complete Post Region',
-            message: response.data.message ? response.data.message : '',
-            response
-        }));
-    }
-}
+//     if (response.ok) {
+//         yield put(RegionActions.regionSuccess({ payload: response.data, change: true }));
+//     } else {
+//         yield put(RegionActions.regionFailure({
+//             path: 'Complete Post Region',
+//             message: response.data.message ? response.data.message : '',
+//             response
+//         }));
+//     }
+// }
 

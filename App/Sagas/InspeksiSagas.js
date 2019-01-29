@@ -1,32 +1,32 @@
 import { call, put } from 'redux-saga/effects';
 import InspeksiActions from '../Redux/InspeksiRedux';
 
-export function* getInspeksiParamTrackingPath(api, action) {
-    const { data } = action;
-    const response = yield call(api.getInspeksiParamTrackingPath, data);
+// export function* getInspeksiParamTrackingPath(api, action) {
+//     const { data } = action;
+//     const response = yield call(api.getInspeksiParamTrackingPath, data);
 
-    if (typeof atob !== 'undefined') {
-        console.log(response);
-        console.log('^^^ GET ALL PARAM TRACKING PATH ^^^');
-    }
-    if (response.ok) {
-        switch (response.data.status) {
-            case false:
-                yield put(InspeksiActions.inspeksiFailed('Paramater Salah'));
-                break;
-            case true:
-                console.log('^^^ SUCCESS PARAM TRACKING PATH ^^^');
-                yield put(InspeksiActions.inspeksiSuccess(response.data.data));
-                break;
-            default:
-                yield put(InspeksiActions.inspeksiFailed('Unknown responseType'));
-                break;
-        }
-    } else {
-        yield put(RegionActions.inspeksiFailed(response.problem));
-    }
+//     if (typeof atob !== 'undefined') {
+//         console.log(response);
+//         console.log('^^^ GET ALL PARAM TRACKING PATH ^^^');
+//     }
+//     if (response.ok) {
+//         switch (response.data.status) {
+//             case false:
+//                 yield put(InspeksiActions.inspeksiFailed('Paramater Salah'));
+//                 break;
+//             case true:
+//                 console.log('^^^ SUCCESS PARAM TRACKING PATH ^^^');
+//                 yield put(InspeksiActions.inspeksiSuccess(response.data.data));
+//                 break;
+//             default:
+//                 yield put(InspeksiActions.inspeksiFailed('Unknown responseType'));
+//                 break;
+//         }
+//     } else {
+//         yield put(RegionActions.inspeksiFailed(response.problem));
+//     }
 
-}
+// }
 
 export function* postInspeksiHeader(api, action) {
     const { data } = action;

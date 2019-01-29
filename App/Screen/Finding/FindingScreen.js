@@ -17,7 +17,7 @@ export default class FindingScreen extends Component {
       fontWeight: '400',
       marginHorizontal: 12
     },
-    title: 'Lainnya',
+    title: 'Temuan',
     headerTintColor: '#fff',
     headerRight: (
       <TouchableOpacity onPress={() => navigation.navigate('Inbox')}>
