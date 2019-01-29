@@ -12,7 +12,7 @@ import Dash from 'react-native-dash'
 import TaskServices from '../../Database/TaskServices'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import Icon2 from 'react-native-vector-icons/MaterialIcons'
-import { NavigationActions, StackActions  } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 // import layer from '../../Data/skm.json'
 
 import MapView from 'react-native-maps';
@@ -83,7 +83,12 @@ export default class ListFinding extends Component {
   };
 
   _initData() {
-    var data = TaskServices.query('TR_FINDING', 'PROGRESS < 100');
+
+    const login = TaskServices.getAllData('TR_LOGIN');
+    const user_auth = login[0].USER_AUTH_CODE;
+
+    var data = TaskServices.query('TR_FINDING', `PROGRESS < 100 AND ASSIGN_T0 = "${user_auth}"`);
+
     var dataLewat = []
     var data7Hari = []
     var dataMore7Hari = []
@@ -115,8 +120,8 @@ export default class ListFinding extends Component {
     // this.props.navigation.dispatch(NavigationActions.navigate({ routeName: 'BuatInspeksi'}));
   }
 
-  getColor(param){
-    switch(param){
+  getColor(param) {
+    switch (param) {
       case 'SELESAI':
         return Colors.brand;
       case 'SEDANG DIPROSES':
@@ -128,17 +133,17 @@ export default class ListFinding extends Component {
     }
   }
 
-  getEstateName(werks){
+  getEstateName(werks) {
     try {
-        let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
-        return data.EST_NAME;
+      let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+      return data.EST_NAME;
     } catch (error) {
-        return '';
-    }    
+      return '';
+    }
   }
 
-  getBlokName(blockCode){
-    try {      
+  getBlokName(blockCode) {
+    try {
       let data = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', blockCode);
       return data.BLOCK_NAME;
     } catch (error) {
@@ -146,20 +151,20 @@ export default class ListFinding extends Component {
     }
   }
 
-  _renderItem = (item, index)=> {
+  _renderItem = (item, index) => {
     const nav = this.props.navigation;
     const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE)
     var label = { backgroundColor: item.PROGRESS == '0' ? 'rgba(255, 0, 0, 0.7)' : 'rgba(255, 255, 0, 0.7)' };
     let showImage;
-    if(image == undefined){
+    if (image == undefined) {
       showImage = <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={require('../../Images/background.png')} />
-    }else{
+    } else {
       showImage = <Image style={{ alignItems: 'stretch', width: 120, height: 120, borderRadius: 10 }} source={{ uri: "file://" + image.IMAGE_PATH_LOCAL }} />
     }
     let showBlockDetail = `${this.getEstateName(item.WERKS)}-${this.getBlokName(item.BLOCK_CODE)}`
     return (
       < TouchableOpacity
-        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE })}}
+        onPress={() => { nav.navigate('DetailFinding', { ID: item.FINDING_CODE }) }}
         key={index}
       >
         <View style={{ height: 120, width: 120, marginLeft: 16 }}>
@@ -212,7 +217,7 @@ export default class ListFinding extends Component {
 
           <View style={{ marginTop: 16, height: 120 }}>
             <ScrollView contentContainerStyle={{ paddingRight: 16 }} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {this.state.dataNoDate.map((item,index)=>this._renderItem(item, index))}
+              {this.state.dataNoDate.map((item, index) => this._renderItem(item, index))}
             </ScrollView >
           </View>
 
@@ -279,7 +284,7 @@ export default class ListFinding extends Component {
         <ActionButton style={{ marginEnd: -10, marginBottom: -10 }}
           buttonColor={Colors.tintColor}
           onPress={() => { this.actionButtonClick() }}
-          icon={<Icon2 color = 'white' name='edit' size={25} />}>
+          icon={<Icon2 color='white' name='edit' size={25} />}>
         </ActionButton>
       </Container >
 

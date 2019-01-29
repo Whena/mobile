@@ -79,9 +79,43 @@ class HomeScreen extends React.Component {
   }
 
   _initData() {
-    var dataSorted = TaskServices.getAllData('TR_FINDING');
-    var data = dataSorted.sorted('INSERT_TIME', true);
-    this.setState({ data })
+
+    const login = TaskServices.getAllData('TR_LOGIN');
+    const user_auth = login[0].USER_AUTH_CODE;
+    const ref_role = login[0].REFFERENCE_ROLE;
+    const loc_code = login[0].LOCATION_CODE;
+    const region_code = loc_code.substring(1, 2);
+
+    console.log("USER AUTH CODE : " + user_auth);
+    console.log("REFFERENCE ROLE : " + ref_role);
+    console.log("LOCATION CODE : " + loc_code);
+
+    var finding = TaskServices.getAllData('TR_FINDING');
+    var findingSorted = finding.sorted('INSERT_TIME', true);
+    var findingFilter;
+
+    if (ref_role == 'REGION_CODE') {
+      findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${region_code}"`);
+      var estate = TaskServices.getAllData('TM_ESTATE');
+      var estateFilter = estate.filtered(`REGION_CODE = "${loc_code}"`);
+
+      console.log("Estate Filter : " + estateFilter);
+    } else if (ref_role == 'COMP_CODE') {
+      findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${loc_code}" AND ASSIGN_TO != "${user_auth}"`);
+    } else if (ref_role == 'WERKS') {
+      findingFilter = findingSorted.filtered(`WERKS = "${loc_code}" AND ASSIGN_TO != "${user_auth}"`);
+    } else if (ref_role == 'AFD_CODE') {
+      const werks = loc_code.substring(0, 4);
+      console.log("WERKS : " + werks);
+      const afd_code = loc_code.substring(4, 5);
+      console.log("AFD CODE : " + afd_code);
+
+      findingFilter = findingSorted.filtered(`WERKS = "${werks}" AND AFD_CODE = "${afd_code}" AND ASSIGN_TO != "${user_auth}"`);
+    } else {
+      findingFilter = finding.sorted('INSERT_TIME', true);
+    }
+
+    this.setState({ data: findingFilter })
   }
 
   _getStatus() {

@@ -53,12 +53,19 @@ class PilihKontak extends Component {
   };
 
   componentDidMount() {
-    // let data = TaskService.getAllData('TR_CONTACT');
-    // console.log("All Data TR_CONTACT : " + SON.stringify(data));
-    const user = TaskServices.getAllData('TR_LOGIN');
-    console.log(JSON.stringify(user[0].LOCATION_CODE.substring(0, 2)));
-    let loc_code = user[0].LOCATION_CODE.substring(0, 2);
-    let data = TaskServices.query('TR_CONTACT', `USER_ROLE CONTAINS[c] "ASISTEN" AND LOCATION_CODE CONTAINS[c] "${loc_code}"`);
+
+    const { navigation } = this.props;
+    const afdCode = navigation.getParam('afdCode');
+    const werks = navigation.getParam('werks');
+    const withAfd = werks + afdCode;
+
+    console.log(withAfd)
+
+    let data = TaskServices.query('TR_CONTACT', `REF_ROLE = "AFD_CODE" AND LOCATION_CODE = "${withAfd}" AND USER_ROLE CONTAINS[c] "ASISTEN"`);
+    console.log(JSON.stringify(data));
+    let data1 = TaskServices.query('TR_CONTACT', `REF_ROLE = "BA_CODE" AND LOCATION_CODE = "${werks}" AND USER_ROLE CONTAINS[c] "ASISTEN"`);
+    console.log(JSON.stringify(data1));
+
     let arr = [];
     for (var i = 0; i < data.length; i++) {
       arr.push({
@@ -66,8 +73,19 @@ class PilihKontak extends Component {
         fullName: data[i].FULLNAME,
         userRole: data[i].USER_ROLE,
       });
-      this.setState({ adresses: arr, searchedAdresses: arr })
     }
+    console.log("Array : " + JSON.stringify(arr));
+
+    for (var j = 0; j < data1.length; j++) {
+      arr.push({
+        userAuth: data[j].USER_AUTH_CODE,
+        fullName: data[j].FULLNAME,
+        userRole: data[j].USER_ROLE
+      })
+    }
+    console.log("Array Update : " + JSON.stringify(arr));
+
+    this.setState({ adresses: arr, searchedAdresses: arr })
   }
 
   searchedAdresses = (searchedText) => {

@@ -293,11 +293,11 @@ class FormStep2 extends Component {
 
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
-    _handleDatePicked = (date) => {        
+    _handleDatePicked = (date) => {
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYYMMDD")})
-        
+
         this.setState({ batasWaktu: moment(date).format("YYYY-MM-DD") })
         this._hideDateTimePicker();
     };
@@ -469,7 +469,12 @@ class FormStep2 extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={style.label}> Ditugaskan Kepada<Text style={style.mandatory}>*</Text></Text>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak', { changeContact: this.changeContact })}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('PilihKontak',
+                            {
+                                changeContact: this.changeContact,
+                                werks: this.state.werks,
+                                afdCode: this.state.afdCode
+                            })}>
                             {isEmpty(this.state.tugasKepada) && (
                                 <Text style={{ fontSize: 14, color: '#999' }}> Pilih Karyawan </Text>)}
                             {!isEmpty(this.state.tugasKepada) && (
@@ -485,7 +490,7 @@ class FormStep2 extends Component {
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
-                                <TouchableOpacity onPress={this._showDateTimePicker} disabled ={this.state.disableCalendar}>
+                                <TouchableOpacity onPress={this._showDateTimePicker} disabled={this.state.disableCalendar}>
                                     {isEmpty(this.state.batasWaktu) && (
                                         <Text style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
                                     {!isEmpty(this.state.batasWaktu) && (
