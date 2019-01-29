@@ -56,9 +56,8 @@ export default class MoreScreen extends Component {
   }
 
   logout() {
-    TaskServices.deleteAllData('TR_LOGIN');
+    TaskServices.updateLogin('TR_LOGIN');
     this.setState({ showConfirm: false });
-    // this.navigateScreen('Login');
     this.props.navigation.navigate('Login', { exit: 'true' });
   }
 

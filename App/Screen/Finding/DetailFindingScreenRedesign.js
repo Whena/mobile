@@ -208,9 +208,8 @@ class DetailFindingScreenRedesign extends Component{
 
     render(){        
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
-        const dtInsertTime = changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss");
-        // const dtBatasWaktu = changeFormatDate("" + this.state.data.DUE_DATE, "YYYY-MM-DD hh-mm-ss");
-        // moment.locale();
+        moment.locale();
+        let dtInsertTime = moment(this.state.data.INSERT_TIME).format('LL');
 
         let batasWaktu = '';
         if(this.state.updatedDueDate == 'Select Calendar'){
@@ -301,7 +300,7 @@ class DetailFindingScreenRedesign extends Component{
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Kategori </Text>
-                                <Text style={styles.item}>: {category.CATEGORY_NAME} </Text>
+                                <Text style={styles.item}>: {category ? category.CATEGORY_NAME : 'not defined'} </Text>
                             </View>
 
                             <View style={styles.column}>
@@ -340,14 +339,16 @@ class DetailFindingScreenRedesign extends Component{
                             <Slider
                                 ref='sliderProgress'
                                 step={25}
-                                thumbTouchSize={{ width: 40, height: 40 }}
-                                disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
+                                style={{ flex:1 }}
+                                // thumbTouchSize={{ width: 40, height: 40 }}
+                                // disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
                                 maximumValue={100}
-                                thumbStyle={{ backgroundColor: Colors.brand }}
-                                style={{ height: 20, flex: 1 }}
-                                trackStyle={{ height: 5 }}
+                                thumbStyle={styles.thumb}
+                                trackStyle={styles.track}
                                 value={this.state.progress}
                                 disabled={this.state.disabledProgress}
+                                minimumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brandSecondary }
+                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.brand : Colors.abuabu}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -366,8 +367,6 @@ class DetailFindingScreenRedesign extends Component{
                                     }
                                 }}
                             />
-                            {/* <Progress.Bar showsText={true} height={20}
-                                color={Colors.brand} width={null} progress={0.6} /> */}
                             <Text style={{
                                 height: 20,
                                 textAlignVertical: 'center',
@@ -474,4 +473,20 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         textAlign: 'center'
     },
+
+    track: {
+        height: 14,
+        borderRadius: 2,
+        backgroundColor: 'white',
+        borderColor: '#9a9a9a',
+        borderWidth: 1
+      },
+      thumb: {
+        width: 25,
+        height: 25,
+        borderRadius: 2,
+        backgroundColor: '#eaeaea',
+        borderColor: '#9a9a9a',
+        borderWidth: 1
+      }
 })

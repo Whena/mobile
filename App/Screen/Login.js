@@ -20,12 +20,12 @@ import { connect } from 'react-redux';
 import AuthAction from '../Redux/AuthRedux';
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { NavigationActions, StackActions } from 'react-navigation';
-import Colors from '../Constant/Colors';
 import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
-import CategoryAction from '../Redux/CategoryRedux';
-import ContactAction from '../Redux/ContactRedux';
 const IMEI = require('react-native-imei');
+var RNFS = require('react-native-fs');
+import RNFetchBlob from 'rn-fetch-blob'
+import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoKategori } from '../Lib/dirStorage';
 
 class Login extends Component {
 
@@ -67,14 +67,40 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        // let data = TaskServices.getAllData('TR_LOGIN')[0]
-        // if(data.length > 0){
-
-        // }
         const { navigation } = this.props;
         const itemId = navigation.getParam('exit');
         this.state.logOut = itemId
-        console.log(this.state.logOut);
+    }
+
+    checkUser(USER_AUTH_CODE){
+
+        let data = TaskServices.getAllData('TR_LOGIN')[0]
+        if(data !== undefined && USER_AUTH_CODE !== data.USER_AUTH_CODE){
+            TaskServices.deleteAllData('TR_LOGIN');
+            TaskServices.deleteAllData('TR_BLOCK_INSPECTION_H');
+            TaskServices.deleteAllData('TR_BLOCK_INSPECTION_D');
+            TaskServices.deleteAllData('TR_BARIS_INSPECTION');
+            TaskServices.deleteAllData('TR_IMAGE');
+            TaskServices.deleteAllData('TM_REGION');
+            TaskServices.deleteAllData('TM_COMP');
+            TaskServices.deleteAllData('TM_EST');
+            TaskServices.deleteAllData('TM_AFD');
+            TaskServices.deleteAllData('TM_BLOCK');
+            TaskServices.deleteAllData('TR_CATEGORY');
+            TaskServices.deleteAllData('TR_CONTACT');
+            TaskServices.deleteAllData('TR_FINDING');
+            TaskServices.deleteAllData('TM_KRITERIA');
+            TaskServices.deleteAllData('TM_LAND_USE');
+            TaskServices.deleteAllData('TM_CONTENT');
+            TaskServices.deleteAllData('TM_CONTENT_LABEL');
+            TaskServices.deleteAllData('TM_INSPECTION_TRACK');
+            TaskServices.deleteAllData('TM_TIME_TRACK');
+
+            RNFetchBlob.fs.unlink(`file://${dirPhotoTemuan}`)
+            RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiBaris}`)
+            RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiSelfie}`)
+            RNFetchBlob.fs.unlink(`file://${dirPhotoKategori}`)
+        }
     }
 
     componentWillReceiveProps(newProps) {
@@ -82,6 +108,7 @@ class Login extends Component {
             this.setState({ fetching: newProps.auth.fetching });
         }
         if (!isNil(newProps.auth.user)) {
+            this.checkUser(newProps.auth.user.USER_AUTH_CODE)
             this.insertUser(newProps.auth.user);
             this.navigateScreen('MainMenu');
 
@@ -100,11 +127,36 @@ class Login extends Component {
     onLogin(username, password) {
         Keyboard.dismiss();
         var Imei = this.get_IMEI_Number();
-
+        //let data = {
+        //    username: username,
+        //    password: password,
+        //    imei: Imei
+        //}
+        // this.postLogin(data)
         this.props.authRequest({
             username: username,
             password: password,
             imei: Imei
+        });
+    }
+
+    postLogin(param){
+        fetch('http://149.129.245.230:3008/api/login', {
+        method: 'POST',
+        headers: { 
+            'Cache-Control': 'no-cache',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' ,
+            // 'Authorization': `Bearer ${user.ACCESS_TOKEN}`
+        },
+        body:  JSON.stringify(param)
+        })
+        .then(function(response){ 
+            return response.json();   
+        })
+        .then(function(data){ 
+            alert(JSON.stringify(data))
+            console.log(data)
         });
     }
 

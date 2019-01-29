@@ -169,6 +169,13 @@ const TaskServices = {
   //   });
   // },
 
+  updateLogin: function(){
+    let data = RealmSchemas.objects('TR_LOGIN')[0];
+    RealmSchemas.write(() => {
+      data.STATUS = 'LOGOUT';
+    });
+  },
+
   updateAfdeling: function(param, index){
     let data = RealmSchemas.objects('TM_AFD')[index];
     RealmSchemas.write(() => {

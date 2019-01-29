@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { ImageBackground, StatusBar, Text, Alert } from 'react-native';
+import { ImageBackground, StatusBar, Text, AppRegistry } from 'react-native';
 import { Container } from 'native-base'
 import { NavigationActions, StackActions } from 'react-navigation';
 import { getPermission } from '../Lib/Utils'
@@ -9,17 +9,23 @@ import TaskServices from '../Database/TaskServices'
 import CategoryAction from '../Redux/CategoryRedux'
 import ContactAction from '../Redux/ContactRedux'
 import RegionAction from '../Redux/RegionRedux'
-import moment from 'moment';
-import R, { isEmpty } from 'ramda'
 var RNFS = require('react-native-fs');
-import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoKategori } from '../Lib/dirStorage';
+import RNFetchBlob from 'rn-fetch-blob'
+import R, { isEmpty, isNil } from 'ramda'
+import { dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoTemuan, dirPhotoKategori } from '../Lib/dirStorage';
+import {convertTimestampToDate, getTodayDate, getUUID} from '../Lib/Utils'
+import moment from 'moment'
+
+
+const user = TaskServices.getAllData('TR_LOGIN');
 
 class SplashScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            json: ''
+            json: '',
+            value: true
         }
     }
 
@@ -36,31 +42,45 @@ class SplashScreen extends Component {
         navigation.dispatch(resetAction);
     }
 
-    async componentDidMount() {
+    checkUser(){
+        let data = TaskServices.getAllData('TR_LOGIN')
+        console.log(data)
+        if(data !== undefined && data.length > 0){
+            if(data[0].STATUS == 'LOGIN'){
+                this.navigateScreen('MainMenu');
+            }else{
+                this.navigateScreen('Login');  
+            }
+        }else{
+            this.navigateScreen('Login');
+        }
+    }
 
+    makeFolder(){
+        //buat Folder DiExtrnal
+        RNFS.mkdir('file:///storage/emulated/0/MobileInspection');
+        //buat folder internal    
+        RNFS.mkdir(dirPhotoInspeksiBaris);
+        RNFS.mkdir(dirPhotoInspeksiSelfie);
+        RNFS.mkdir(dirPhotoTemuan);
+        RNFS.mkdir(dirPhotoKategori);
+    }
+
+    async componentDidMount() {   
+
+        // let data = TaskServices.getAllData('TR_BLOCK_INSPECTION_D');
+        // alert(JSON.stringify({data}))
+        
         var isAllGrandted = await getPermission();
         if (isAllGrandted === true) {
-
-            //buat Folder DiExtrnal
-            RNFS.mkdir('file:///storage/emulated/0/MobileInspection');
-
-            //buat folder internal    
-            RNFS.mkdir(dirPhotoInspeksiBaris);
-            RNFS.mkdir(dirPhotoInspeksiSelfie);
-            RNFS.mkdir(dirPhotoTemuan);
-            RNFS.mkdir(dirPhotoKategori);
-
+            this.makeFolder()
             setTimeout(() => {
-                if (TaskServices.getTotalData('TR_LOGIN') > 0) {
-                    this.navigateScreen('MainMenu');
-                } else {
-                    this.navigateScreen('Login');
-                }
+                this.checkUser();
             }, 2000);
         } else {
             Alert.alert('Seluruh Permission harus di hidupkan')
         }
-    }
+    }   
 
     render() {
         return (
@@ -70,7 +90,6 @@ class SplashScreen extends Component {
                     barStyle="light-content"
                 />
                 <ImageBackground source={require('../Images/splash.png')} style={{ flex: 1 }} />
-                {/* <Text>{this.state.json}</Text> */}
 
             </Container>
 

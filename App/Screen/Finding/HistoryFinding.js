@@ -34,7 +34,7 @@ export default class HistoryFinding extends Component {
   _initData() {
     let user = TaskServices.getAllData('TR_LOGIN')[0]
     var data = TaskServices.query('TR_FINDING', `INSERT_USER = '${user.USER_AUTH_CODE}'`);
-    data = data.sorted('INSERT_TIME', true)    
+    data = data.sorted('INSERT_TIME', true);
     this.setState({ data })
   }
 

@@ -70,6 +70,26 @@ class BuatInspeksiRedesign extends Component {
         // )
     };  
 
+    // static navigationOptions = ({ navigation }) => ({
+    //     headerStyle: {
+    //         backgroundColor: Colors.tintColor
+    //     },
+    //     title: 'Buat Inspeksi',
+    //     headerTintColor: '#fff',
+    //     headerTitleStyle: {
+    //         flex: 1,
+    //         fontSize: 18,
+    //         fontWeight: '400'
+    //     },
+    //     headerRight: (
+    //         <TouchableOpacity onPress={() => {}}>
+    //             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 16 }}>
+    //                 <IconLoc name='location-arrow' size={20} color='white' />
+    //             </View>
+    //         </TouchableOpacity>
+    //     ),
+    // });
+
     constructor(props) {
         super(props);        
         let dataLogin = TaskService.getAllData('TR_LOGIN');
@@ -94,7 +114,8 @@ class BuatInspeksiRedesign extends Component {
             afdCode: '',
             werks: '',
             clickLOV: false,
-            intervalId: 0
+            intervalId: 0,
+            showBtn: true,
         };
     }
 
@@ -115,6 +136,26 @@ class BuatInspeksiRedesign extends Component {
             // return person.filter(person => person.blokCode.search(regex) >= 0);
         // }
         
+    }
+
+    componentWillMount () {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{this.setState({showBtn:false})});
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>{this.setState({showBtn:true})});
+    }
+
+    componentWillUnmount () {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+
+    _keyboardDidShow () {
+        // this.setState({showBtn : false})
+    // alert('Keyboard Shown');
+    }
+
+    _keyboardDidHide () {
+        // this.setState({showBtn : true})
+    // alert('Keyboard Hidden');
     }
 
     componentDidMount() {
@@ -437,17 +478,17 @@ class BuatInspeksiRedesign extends Component {
                         </MapView>
                     }                 
 
-                    <IconLoc
+                    {this.state.showBtn && <IconLoc
                         onPress={()=>{this.setState({fetchLocation: true}); this.getLocation()}}
                         name="location-arrow"
                         size={24}
-                        style={{ alignSelf: 'flex-end', marginBottom:130, marginRight: 10}}/>  
+                        style={{ alignSelf: 'flex-end', marginBottom:130, marginRight: 10}}/>} 
 
-                    <View style={styles.buttonContainer}>
+                    {this.state.showBtn && <View style={styles.buttonContainer}>
                         <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.validation()}}>
                             <Text style={styles.buttonText}>Mulai Inspeksi</Text>
                         </TouchableOpacity>                        
-                    </View>
+                    </View>}
                 </View>
                 
 

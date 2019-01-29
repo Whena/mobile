@@ -220,23 +220,6 @@ const TM_KRITERIA = {
     }
 }
 
-const TM_USER_AUTH = {
-    name: 'TM_USER_AUTH',
-    properties: {
-        USER_AUTH_CODE: 'string',
-        EMPLOYEE_NIK: 'string',
-        USER_ROLE: 'string',
-        REFFERENCE_ROLE: 'string',
-        LOCATION_CODE: 'string',
-        INSERT_USER: 'string',
-        INSERT_TIME: 'string',
-        UPDATE_USER: 'string',
-        UPDATE_TIME: 'string',
-        DELETE_USER: 'string',
-        DELETE_TIME: 'string'
-    }
-}
-
 const TM_PJS = {
     name: 'TM_PJS',
     properties: {
@@ -356,7 +339,6 @@ export default {
     TM_BLOCK,
     TM_EST,
     TM_KRITERIA,
-    TM_USER_AUTH,
     TM_PJS,
     TM_LAND_USE,
     TM_COMP,

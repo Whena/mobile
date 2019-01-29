@@ -13,6 +13,7 @@ export default {
   warningText: '#666804',
   noticeBackground: tintColor,
   noticeText: '#fff',
+  abuabu: '#D8D8D8',
 
   brand: '#239023',
   brandSecondary: '#EDAE49',

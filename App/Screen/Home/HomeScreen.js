@@ -328,15 +328,6 @@ class HomeScreen extends React.Component {
     })
   }
 
-  getColorBatasWaktu(param) {
-    switch (param) {
-      case 'Batas waktu belum ditentukan':
-        return 'red';
-      default:
-        return '#000000';
-    }
-  }
-
   getColor(param) {
     switch (param) {
       case 'SELESAI':
@@ -365,12 +356,18 @@ class HomeScreen extends React.Component {
     }
   }
 
+  getContactName = (userAuth) =>{
+    try {
+        let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
+        return data.FULLNAME;            
+    } catch (error) {
+        return ''
+    }
+  }
+
   _renderItem = (item, index) => {
 
     const nav = this.props.navigation
-
-    console.log(item.INSERT_USER);
-
     const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.INSERT_USER);
 
     let user;
@@ -434,7 +431,7 @@ class HomeScreen extends React.Component {
               <Body>
                 <Text style={{fontSize: 14}}>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
                 <Text style={{ marginTop: 6, fontSize: 14 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
-                <Text style={{ marginTop: 6, fontSize: 14 }}>Ditugaskan kepada : {assign_to.FULLNAME}</Text>
+                <Text style={{ marginTop: 6, fontSize: 14 }}>Ditugaskan kepada : {this.getContactName(item.ASSIGN_TO)}</Text>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   <Text style={{ marginTop: 6, fontSize: 14 }}>Batas Waktu : </Text>
                   <Text style={{ marginTop: 6, color: this.getColor(batasWaktu), fontSize: 14 }}>{batasWaktu}</Text>

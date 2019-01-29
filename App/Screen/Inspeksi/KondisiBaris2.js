@@ -16,7 +16,7 @@ import R from 'ramda';
 
 class KondisiBaris2 extends Component {
 
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             backgroundColor: Colors.tintColor
         },

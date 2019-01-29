@@ -1,11 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import { Container, Content, Row } from 'native-base'
-
+import { Container, Content } from 'native-base'
 import * as Progress from 'react-native-progress';
-import ProgressCircle from 'react-native-progress-circle'
 import Colors from '../Constant/Colors';
-
 import { moment } from 'moment';
 
 import RegionAction from '../Redux/RegionRedux';
@@ -24,17 +21,15 @@ import FindingAction from '../Redux/FindingRedux';
 import FindingImageAction from '../Redux/FindingImageRedux';
 import InspeksiAction from '../Redux/InspeksiRedux'
 import FindingUploadAction from '../Redux/FindingUploadRedux'
-
+import TMobileAction from '../Redux/TMobileRedux'
+import ParamTrackAction from '../Redux/ParamTrackRedux'
 import { ProgressDialog } from 'react-native-simple-dialogs';
 import { dirPhotoKategori, dirPhotoTemuan } from '../Lib/dirStorage';
-
 import { connect } from 'react-redux';
 import R, { isEmpty, isNil } from 'ramda'
 import RNFetchBlob from 'rn-fetch-blob'
-
 import TaskServices from '../Database/TaskServices'
-import { getTodayDate, convertTimestampToDate } from '../Lib/Utils';
-const IMEI = require('react-native-imei');
+import { getTodayDate, convertTimestampToDate, fetchPostDataWithToken } from '../Lib/Utils';
 var RNFS = require('react-native-fs');
 
 
@@ -59,10 +54,6 @@ class SyncScreen extends React.Component {
     constructor() {
         super();
         this.state = {
-            progressValue: 0.00,
-            tglMobileSync: "",
-            tabelUpdate: '',
-            imei: '',
             progress: 0,
             progressAfd: 0,
             progressRegion: 0,
@@ -96,6 +87,7 @@ class SyncScreen extends React.Component {
             downloadCategory: false,
             downloadFinding: false,
             downloadFindingImage: false,
+            downloadParamTrack: false,
             uploadFinding: false,
             uploadInspeksi: false,
             downloadInspeksiParam: false,
@@ -162,13 +154,13 @@ class SyncScreen extends React.Component {
         }
     }
 
+    //upload
     loadDataFinding() {
         let countData = TaskServices.getAllData('TR_FINDING');
         this.setState({ progressFindingData: 1, valueFindingDataUpload: countData.length, totalFindingDataUpload: countData.length});
-
         if (countData.length > 0) {
             countData.map(item => {
-                this.state.dataFinding.push(item)
+                // this.state.dataFinding.push(item)
                 this.kirimFinding(item);
             });
         } else {
@@ -181,7 +173,6 @@ class SyncScreen extends React.Component {
             let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
             var query = dataHeader.filtered('STATUS_SYNC = "N"');
             let countData = query;
-            console.log("countData : " + countData.length);
 
             this.setState({ 
                 progressInspeksiHeader: 1, 
@@ -196,7 +187,7 @@ class SyncScreen extends React.Component {
                         this.state.dataBarisInspeksi.push(item.ID_INSPECTION)
                     }
                     this.state.blockInspectionCodes.push(item.BLOCK_INSPECTION_CODE)
-                    this.state.dataInspeksi.push(item)
+                    // this.state.dataInspeksi.push(item)
                     this.kirimInspeksiHeader(item);
 
                 });
@@ -218,8 +209,8 @@ class SyncScreen extends React.Component {
 
                     if (data !== null) {
                         for (var i = 0; i < data.length; i++) {
-                            this.state.dataInspeksiDetail.push(data[i])
-                            this.kirimInspeksiDetail(data[i]);
+                            // this.state.dataInspeksiDetail.push(data[i])
+                            this.kirimInspeksiDetail(data[i], data[i].BLOCK_INSPECTION_CODE_D);
                         }
                     }
                 })
@@ -233,27 +224,130 @@ class SyncScreen extends React.Component {
         let dataHeader = TaskServices.getAllData('TM_INSPECTION_TRACK');
         var query = dataHeader.filtered('STATUS_SYNC = "N"');
         let countData = query;
-        console.log("countData : " + countData.length);
-
-        this.setState({ progressInspectionTrack: 1 });
-        this.setState({ valueInspectionTrack: countData.length });
-        this.setState({ totalInspectionTrack: countData.length });
-
+        this.setState({ progressInspectionTrack: 1, valueInspectionTrack: countData.length, totalInspectionTrack: countData.length });
         if (countData.length > 0) {
             countData.map(item => {
-                this.state.dataTrack.push(item);
+                // this.state.dataTrack.push(item);
                 this.kirimInspectionTrack(item);
             })
         } else {
             // alert('Tidak ada data yg diupload');
-            this.setState({ progressInspectionTrack: 1 });
-            this.setState({ valueInspectionTrack: 0 });
-            this.setState({ totalInspectionTrack: 0 });
+            this.setState({ progressInspectionTrack: 1, valueInspectionTrack: 0, totalInspectionTrack: 0  });
         }
     }
 
+    fetchingData(URL, dataPost, table, idInspection){
+        fetch(URL, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' ,
+                'Authorization': `Bearer ${user.ACCESS_TOKEN}`
+            },
+        body: JSON.stringify(dataPost)
+        })
+        .then((response) => { 
+            return response.json();   
+        })
+        .then((data) => { 
+            console.log(data)
+            if(data.status){
+                if(table == 'header'){
+                    this.state.dataInspeksi.push(dataPost)
+                    this.updateInspeksi(dataPost);
+                    this.updateInspeksiBaris(idInspection);
+                }else if(table == 'detailHeader'){
+                    this.updateInspeksiDetail(dataPost)
+                }else if(table == 'tracking'){
+                    this.updateInspeksiTrack(dataPost)
+                }else if(table == 'finding'){
+                    this.updateFinding(dataPost)
+                }
+            }
+        })
+    }
+
+    updateInspeksi = param => {   
+        if(this.state.dataInspeksi !== null){
+            let allData = TaskServices.getAllData('TR_BLOCK_INSPECTION_H')
+            let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE', param.BLOCK_INSPECTION_CODE))(allData);
+            TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_H', 'Y', indexData);
+        }
+    }
+
+    updateInspeksiDetail = param => {        
+        if(this.state.dataInspeksiDetail !== null){
+            let allData = TaskServices.getAllData('TR_BLOCK_INSPECTION_D')
+            let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE_D', param.BLOCK_INSPECTION_CODE_D))(allData);
+            TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_D', 'Y', indexData);
+        }
+    }
+
+    updateInspeksiTrack = param => {
+        if(this.state.dataTrack !== null){
+            let allData = TaskServices.getAllData('TM_INSPECTION_TRACK')
+            let indexData = R.findIndex(R.propEq('TRACK_INSPECTION_CODE', param.TRACK_INSPECTION_CODE))(allData);
+            TaskServices.updateInspeksiSync('TM_INSPECTION_TRACK', 'Y', indexData);
+        }
+    }
+
+    updateInspeksiBaris = param =>{
+        if(this.state.dataBarisInspeksi !== null){
+            let allData = TaskServices.getAllData('TR_BARIS_INSPECTION');
+            let indexData = R.findIndex(R.propEq('ID_INSPECTION', param))(allData);
+            TaskServices.updateInspeksiSync('TR_BARIS_INSPECTION', 'Y', indexData);
+        }
+    }
+
+    updateFinding = param => {        
+        if(this.state.dataFinding !== null){
+            let allData = TaskServices.getAllData('TR_FINDING')
+            let indexData = R.findIndex(R.propEq('FINDING_CODE', param.FINDING_CODE))(allData);
+            TaskServices.updateFindingSync('TR_FINDING', ['Y', param.PROGRESS, param.DUE_DATE], indexData);
+        }
+    }
+
+    //upload to service
+    kirimInspeksiHeader(param) {
+        let data = {
+            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
+            WERKS: param.WERKS,
+            AFD_CODE: param.AFD_CODE,
+            BLOCK_CODE: param.BLOCK_CODE,
+            AREAL: param.AREAL,
+            INSPECTION_TYPE: "PANEN",
+            INSPECTION_DATE: convertTimestampToDate(param.INSPECTION_DATE, 'YYYYMMDDHHmmss'),
+            INSPECTION_RESULT: param.INSPECTION_RESULT,
+            INSPECTION_SCORE: param.INSPECTION_SCORE,
+            STATUS_SYNC: 'Y',
+            SYNC_TIME: getTodayDate('YYYYMMDDHHmmss'),
+            START_INSPECTION: convertTimestampToDate(param.START_INSPECTION, 'YYYYMMDDHHmmss'),
+            END_INSPECTION: param.END_INSPECTION,
+            LAT_START_INSPECTION: param.LAT_START_INSPECTION,
+            LONG_START_INSPECTION: param.LONG_START_INSPECTION,
+            LAT_END_INSPECTION: param.LAT_END_INSPECTION,
+            LONG_END_INSPECTION: param.LONG_END_INSPECTION,
+            INSERT_TIME: convertTimestampToDate(param.INSERT_TIME, 'YYYYMMDDHHmmss'),
+            INSERT_USER: user.USER_AUTH_CODE
+        }
+        this.fetchingData('http://149.129.245.230:3008/api/inspection-header', data, 'header', param.ID_INSPECTION);
+    }
+
+    kirimInspeksiDetail(result) {
+        let data = {
+            BLOCK_INSPECTION_CODE_D: result.BLOCK_INSPECTION_CODE_D,
+            BLOCK_INSPECTION_CODE: result.BLOCK_INSPECTION_CODE,
+            CONTENT_INSPECTION_CODE: result.CONTENT_INSPECTION_CODE,
+            VALUE: result.VALUE,
+            STATUS_SYNC: 'Y',
+            SYNC_TIME: getTodayDate('YYYYMMDDHHmmss'),
+            INSERT_USER: user.USER_AUTH_CODE,
+            INSERT_TIME: convertTimestampToDate(result, 'YYYYMMDDHHmmss')
+        }
+        this.fetchingData('http://149.129.245.230:3008/api/inspection-detail', data, 'detailHeader', '');
+    }
+
     kirimInspectionTrack(param) {
-        this.props.inspeksiPostTrackingPath({
+        let data = {
             TRACK_INSPECTION_CODE: param.TRACK_INSPECTION_CODE,
             BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
             DATE_TRACK: param.DATE_TRACK,
@@ -261,11 +355,12 @@ class SyncScreen extends React.Component {
             LONG_TRACK: param.LONG_TRACK,
             INSERT_USER: param.INSERT_USER,
             INSERT_TIME: param.INSERT_TIME
-        });
+        }
+        this.fetchingData('http://149.129.245.230:3008/api/inspection-tracking', data, 'tracking', '');
     }
 
     kirimFinding(param) {
-        this.props.findingPostData({
+        let data = {
             FINDING_CODE: param.FINDING_CODE,
             WERKS: param.WERKS,
             AFD_CODE: param.AFD_CODE,
@@ -281,617 +376,517 @@ class SyncScreen extends React.Component {
             REFFERENCE_INS_CODE: param.REFFERENCE_INS_CODE,
             INSERT_USER: param.INSERT_USER,
             INSERT_TIME: param.INSERT_TIME
-        });
-    }
-
-    kirimInspeksiHeader(param) {
-        console.log("param : " + JSON.stringify(param));
-        this.props.inspeksiPostHeader({
-            BLOCK_INSPECTION_CODE: param.BLOCK_INSPECTION_CODE,
-            WERKS: param.WERKS,
-            AFD_CODE: param.AFD_CODE,
-            BLOCK_CODE: param.BLOCK_CODE,
-            AREAL: param.AREAL,
-            INSPECTION_TYPE: "PANEN",
-            INSPECTION_DATE: convertTimestampToDate(param.INSPECTION_DATE, 'YYYYMMDDHHmmss'),
-            INSPECTION_RESULT: param.INSPECTION_RESULT,
-            INSPECTION_SCORE: param.INSPECTION_SCORE,
-            STATUS_SYNC: 'Y',
-            SYNC_TIME: convertTimestampToDate(param.SYNC_TIME, 'YYYYMMDDHHmmss'),
-            START_INSPECTION: convertTimestampToDate(param.START_INSPECTION, 'YYYYMMDDHHmmss'),
-            END_INSPECTION: param.END_INSPECTION,
-            LAT_START_INSPECTION: param.LAT_START_INSPECTION,
-            LONG_START_INSPECTION: param.LONG_START_INSPECTION,
-            LAT_END_INSPECTION: param.LAT_END_INSPECTION,
-            LONG_END_INSPECTION: param.LONG_END_INSPECTION,
-            INSERT_TIME: convertTimestampToDate(param.INSERT_TIME, 'YYYYMMDDHHmmss'),
-            INSERT_USER: user.USER_AUTH_CODE
-        });
-    }
-
-    kirimInspeksiDetail(result) {
-        console.log("param : " + JSON.stringify(result));
-        this.props.inspeksiPostDetail({
-            BLOCK_INSPECTION_CODE_D: result.BLOCK_INSPECTION_CODE_D,
-            BLOCK_INSPECTION_CODE: result.BLOCK_INSPECTION_CODE,
-            CONTENT_INSPECTION_CODE: result.CONTENT_INSPECTION_CODE,
-            VALUE: result.VALUE,
-            STATUS_SYNC: 'Y',
-            SYNC_TIME: getTodayDate('YYYYMMDDHHmmss'),
-            INSERT_USER: user.USER_AUTH_CODE,
-            INSERT_TIME: convertTimestampToDate(result, 'YYYYMMDDHHmmss')
-        });
-    }
-
-    kirimImage() {
-        const user = TaskServices.getAllData('TR_LOGIN')[0];
-        let all = TaskServices.getAllData('TR_IMAGE')
-        var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-        if (all !== undefined && dataImage !== undefined) {
-            for (var i = 0; i < dataImage.length; i++) {
-                var data = new FormData();
-                let idxOrder = null;
-                data.append('IMAGE_CODE', dataImage[i].IMAGE_CODE)
-                data.append('IMAGE_PATH_LOCAL', dataImage[i].IMAGE_PATH_LOCAL)
-                data.append('TR_CODE', dataImage[i].TR_CODE)
-                data.append('STATUS_IMAGE', dataImage[i].STATUS_IMAGE)
-                data.append('STATUS_SYNC', dataImage[i].STATUS_SYNC)
-                data.append('SYNC_TIME', parseInt(getTodayDate('YYYYMMDDHHmmss')))
-                data.append('INSERT_TIME', parseInt(convertTimestampToDate(dataImage[i].INSERT_TIME, 'YYYYMMDDHHmmss')))
-                data.append('INSERT_USER', dataImage[i].INSERT_USER)
-                data.append('FILENAME', {
-                    uri: `file://${dataImage[i].IMAGE_PATH_LOCAL}`,
-                    type: 'image/jpeg',
-                    name: dataImage[i].IMAGE_NAME,
-                });
-                let indexData = R.findIndex(R.propEq('IMAGE_CODE', dataImage[i].IMAGE_CODE))(all);
-                idxOrder = indexData
-                console.log(JSON.stringify(data))
-                // alert(JSON.stringify(data))
-                const url = "http://149.129.245.230:3012/image/upload-file/"
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Cache-Control': 'no-cache',
-                        Accept: 'application/json',
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${user.ACCESS_TOKEN}`,
-                    },
-                    body: data
-                })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
-                    if (responseJson.status) {
-                        this.setState({ progressUploadImage: 1 });
-                        this.setState({ valueImageUpload: dataImage.length });
-                        this.setState({ totalImagelUpload: dataImage.length });
-                        TaskServices.updateStatusImage('TR_IMAGE', 'SYNC', idxOrder);
-                    }
-                    console.log(responseJson)
-                }).catch((error) => {
-                    console.error(error);
-                });
-            }
         }
-        this.setState({ progressUploadImage: 1 });
-        this.setState({ valueImageUpload: 0 });
-        this.setState({ totalImagelUpload: 0 });
+        this.fetchingData('http://149.129.245.230:3008/api/finding', data, 'finding', '');
+    }    
+
+    async kirimImage() {
+        try {
+            const user = TaskServices.getAllData('TR_LOGIN')[0];
+            let all = TaskServices.getAllData('TR_IMAGE')
+            var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+            if (all !== undefined && dataImage !== undefined) {
+                dataImage.map((item, index) =>{
+                    RNFS.exists(`file://${item.IMAGE_PATH_LOCAL}`).
+                    then((exists) =>{
+                        if(exists){
+                            var data = new FormData();
+                            let idxOrder = null;
+                            data.append('IMAGE_CODE', item.IMAGE_CODE)
+                            data.append('IMAGE_PATH_LOCAL', item.IMAGE_PATH_LOCAL)
+                            data.append('TR_CODE', item.TR_CODE)
+                            data.append('STATUS_IMAGE', item.STATUS_IMAGE)
+                            data.append('STATUS_SYNC', 'Y')
+                            data.append('SYNC_TIME', getTodayDate('YYYYMMDDHHmmss'))
+                            data.append('INSERT_TIME', convertTimestampToDate(item.INSERT_TIME, 'YYYYMMDDHHmmss'))
+                            data.append('INSERT_USER', item.INSERT_USER)
+                            data.append('FILENAME', {
+                                uri: `file://${item.IMAGE_PATH_LOCAL}`,
+                                type: 'image/jpeg',
+                                name: item.IMAGE_NAME,
+                            });
+                            let indexData = R.findIndex(R.propEq('IMAGE_CODE', item.IMAGE_CODE))(all);
+                            idxOrder = indexData
+                            console.log(JSON.stringify(data))
+                            const url = "http://149.129.245.230:3012/image/upload-file/"
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Cache-Control': 'no-cache',
+                                    Accept: 'application/json',
+                                    'Content-Type': 'multipart/form-data',
+                                    Authorization: `Bearer ${user.ACCESS_TOKEN}`,
+                                },
+                                body: data
+                            })
+                            .then((response) => response.json())
+                            .then((responseJson) => {
+                                console.log(responseJson)
+                                var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
+                                if (responseJson.status) {
+                                    this.setState({ progressUploadImage: 1, valueImageUpload: dataImage.length, totalImagelUpload: dataImage.length });
+                                    TaskServices.updateStatusImage('TR_IMAGE', 'Y', idxOrder);
+                                }
+                            }).catch((error) => {
+                                console.error(error);
+                            });
+                        }else{                          
+                            let data = TaskServices.getAllData('TR_IMAGE');
+                            let indexData = R.findIndex(R.propEq('IMAGE_CODE', item.IMAGE_CODE))(data);
+                            TaskServices.deleteRecord('TR_IMAGE', indexData)
+                        } 
+                                       
+                    })
+                })           
+            }
+        } catch (error) {
+            
+        }
+        this.setState({ progressUploadImage: 1, valueImageUpload: 0, totalImagelUpload: 0  });
 
     }
 
     // POST MOBILE SYNC
     _postMobileSync(tableName) {
         var moment = require('moment');
-        this.props.regionPost({
-            TGL_MOBILE_SYNC: moment().format('YYYY-MM-DD hh:mm:ss'),
+        this.props.tmPost({
+            TGL_MOBILE_SYNC: moment().format('YYYY-MM-DD hh:mm:ss'), //'2019-01-20 10:00:00',
             TABEL_UPDATE: "hectare-statement/" + tableName
         });
     }
 
+    deleteData(table, whereClause, value){        
+        let allData = TaskServices.getAllData(table);
+        let indexData = R.findIndex(R.propEq(whereClause, value))(allData);
+        TaskServices.deleteRecord(table, indexData)
+    }
+
     _crudTM_Block(data) {
-        console.log("Simpan Block : " + data.simpan.length);
-
-        var i = 1;
+        let allData = TaskServices.getAllData('TM_BLOCK');        
         if (data.simpan.length > 0) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progress: i / data.simpan.length })
-                this.setState({ totalDownload: data.simpan.length })
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progress: i / data.simpan.length, totalDownload: data.simpan.length })
             }
-
             data.simpan.map(item => {
                 TaskServices.saveData('TM_BLOCK', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_BLOCK');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueDownload: countDataInsert })
-            })
-
-            // this._postMobileSync("block");
+            });
         } else {
             this.setState({ valueRegionDownload: i });
         }
-        // this.animate();
+        if(data.ubah.length > 0 && all.length > 0){
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE))(allData);
+                TaskServices.updateBlock(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && all.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_BLOCK', 'WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE);
+            }); 
+        }
+        // this._postMobileSync("block");
     }
 
-    _crudTM_Afd(data) {
-        console.log("Simpan AFD : " + data.simpan.length);
-        // this.setState({ downloadApa: "Sedang Download TM Afdeling" });
-
-        var i = 1;
+    _crudTM_Afd(data) {   
+        let allData = TaskServices.getAllData('TM_AFD');        
         if (data.simpan.length > 0) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressAfd: i / data.simpan.length })
-                this.setState({ totalAfdDownload: data.simpan.length })
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressAfd: i / data.simpan.length, totalAfdDownload: data.simpan.length })
             }
-
             data.simpan.map(item => {
                 TaskServices.saveData('TM_AFD', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_AFD');
-                console.log("countDataInsert : " + countDataInsert);
-                this.setState({ valueAfdDownload: countDataInsert });
-
-                this.setState({ isFinishAfd: true });
+                this.setState({ valueAfdDownload: countDataInsert, isFinishAfd: true });
             });
-
-            // this._postMobileSync("afdeling");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_AFD');
-            this.setState({ progressAfd: 1 })
-            this.setState({ valueAfdDownload: countDataInsert })
-            this.setState({ totalAfdDownload: 0 });
-
-            // this._postMobileSync("afdeling");
+            this.setState({ progressAfd: 1,valueAfdDownload: countDataInsert, totalAfdDownload: 0 })
         }
+
+        //update
+        if(data.ubah.length > 0 && allData.length > 0){
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('WERKS_AFD_CODE', item.WERKS_AFD_CODE))(allData);
+                TaskServices.updateAfdeling(item, indexData)
+            })
+        }
+        //hapus data
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_AFD', 'WERKS_AFD_CODE', item.WERKS_AFD_CODE);
+            });  
+        }        
+        // this._postMobileSync("afdeling");
     }
 
     _crudTM_Region(data) {
-        console.log("Simpan Region : " + data.simpan.length);
-        var i = 1;
+        let allData = TaskServices.getAllData('TM_REGION');  
         if (data.simpan.length > 0) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressRegion: i / data.simpan.length });
-                this.setState({ totalRegionDownload: data.simpan.length });
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressRegion: i / data.simpan.length, totalRegionDownload: data.simpan.length  });
             }
-
             data.simpan.map(item => {
                 TaskServices.saveData('TM_REGION', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_REGION');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueRegionDownload: countDataInsert });
             });
-
-            // this._postMobileSync("region");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_REGION');
-            this.setState({ progressRegion: 1 })
-            this.setState({ valueRegionDownload: countDataInsert });
-            this.setState({ totalRegionDownload: 0 });
-
-            // this._postMobileSync("region");
+            this.setState({ progressRegion: 1, valueRegionDownload: countDataInsert, totalRegionDownload: 0 })
         }
-
-        if (data.ubah.length > 0) {
+        if (data.ubah.length > 0 && allData.length > 0) {
             data.ubah.map(item => {
-                TaskServices.updatedDataNew('TM_REGION', item.REGION_CODE, item);
+                let indexData = R.findIndex(R.propEq('REGION_CODE', item.REGION_CODE))(allData);
+                TaskServices.updateRegion(item, indexData)
+                // TaskServices.updatedDataNew('TM_REGION', item.REGION_CODE, item);
             })
         }
-
-        // if (data.hapus.length > 0) {
-        //     data.ubah.map(item => {
-        //         TaskServices.deleteDataNew('TM_REGION', item.REGION_CODE, item);
-        //     })
-        //     console.log("All Data" + TaskServices.getAllData('TM_REGION'));
-        // }
-
-        // this.setState({ isBtnEnable: true });
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_REGION', 'REGION_CODE', item.REGION_CODE);
+            });  
+        }   
+        // this._postMobileSync("region");
     }
 
     _crudTM_Est(data) {
-        console.log('Data : ' + data);
-        var i = 1;
+        let allData = TaskServices.getAllData('TM_EST');
         if (data.simpan.length > 0 && data) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressEst: i / data.simpan.length })
-                this.setState({ totalEstDownload: data.simpan.length });
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressEst: i / data.simpan.length, totalEstDownload: data.simpan.length })
             }
-
             data.simpan.map(item => {
                 TaskServices.saveData('TM_EST', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_EST');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueEstDownload: countDataInsert });
             });
-            // this._postMobileSync("est");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_EST');
-            this.setState({ progressEst: 1 })
-            this.setState({ valueEstDownload: countDataInsert });
-            this.setState({ totalEstDownload: 0 });
-
-            // this._postMobileSync("est");
+            this.setState({ progressEst: 1, valueEstDownload: countDataInsert, totalEstDownload: 0 })
         }
+        if (data.ubah.length > 0 && allData.length > 0) {
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('WERKS', item.WERKS))(allData);
+                TaskServices.updateEstate(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_EST', 'WERKS', item.WERKS);
+            });  
+        }   
+        // this._postMobileSync("est");
     }
 
     _crudTM_LandUse(data) {
-        // if (data != null) {
-        console.log("Simpan Land Use : " + data.simpan.length);
-        var i = 0;
+        let allData = TaskServices.getAllData('TM_LAND_USE');
         if (data.simpan.length > 0) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressLandUse: i / data.simpan.length });
-                this.setState({ totalLandUseDownload: data.simpan.length });
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressLandUse: i / data.simpan.length, totalLandUseDownload: data.simpan.length });
             }
-
             data.simpan.map(item => {
                 TaskServices.saveData('TM_LAND_USE', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueLandUseDownload: countDataInsert });
             })
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_LAND_USE');
-
-            this.setState({ progressLandUse: 1 })
-            this.setState({ valueLandUseDownload: countDataInsert });
-            this.setState({ totalLandUseDownload: 0 });
+            this.setState({ progressLandUse: 1, valueLandUseDownload: countDataInsert, totalLandUseDownload: 0 })
 
         }
-
-        this.setState({ showButton: true });
-        alert('Sync Data Selesai')
+        if (data.ubah.length > 0 && allData.length > 0) {
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE))(allData);
+                TaskServices.updateLandUse(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE);
+            });  
+        }
     }
 
     _crudTM_Comp(data) {
-        console.log("Simpan Comp : " + data.simpan.length);
-        var i = 0;
+        let allData = TaskServices.getAllData('TM_COMP');
         if (data.simpan.length > 0) {
-
-            for (i = 1; i <= data.simpan.length; i++) {
-                this.setState({ progressComp: i / data.simpan.length });
-                this.setState({ valueCompDownload: i });
-                this.setState({ totalCompDownload: data.simpan.length });
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressComp: i / data.simpan.length, valueCompDownload: i, totalCompDownload: data.simpan.length });
             }
 
             data.simpan.map(item => {
                 TaskServices.saveData('TM_COMP', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_COMP');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueCompDownload: countDataInsert });
             })
-
-            // this._postMobileSync("comp");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_COMP');
-            this.setState({ progressComp: 1 })
-            this.setState({ valueCompDownload: countDataInsert });
-            this.setState({ totalCompDownload: 0 });
-
-            // this._postMobileSync("comp");
+            this.setState({ progressComp: 1, valueCompDownload: countDataInsert, totalCompDownload: 0 })
         }
-        // }
+        if (data.ubah.length > 0 && allData.length > 0) {
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('COMP_CODE', item.COMP_CODE))(allData);
+                TaskServices.updateComp(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TM_COMP', 'COMP_CODE', item.COMP_CODE);
+            });  
+        }        
+        // this._postMobileSync("comp");
     }
 
     _crudTM_Content(data) {
-        console.log("Simpan Content : " + data.length);
-
         if (data.length > 0) {
-
-            for (i = 1; i <= data.length; i++) {
-                this.setState({ progressContent: i / data.length });
-                this.setState({ totalContentDownload: data.length });
+            for (var i = 1; i <= data.length; i++) {
+                this.setState({ progressContent: i / data.length, totalContentDownload: data.length });
             }
-
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_CONTENT');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueContentDownload: countDataInsert });
             });
-
-            // this._postMobileSync("content");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_CONTENT');
-            this.setState({ progressContent: 1 })
-            this.setState({ valueContentDownload: countDataInsert });
-            this.setState({ totalContentDownload: 0 });
-
-            // this._postMobileSync("content");
+            this.setState({ progressContent: 1, valueContentDownload: countDataInsert, totalContentDownload: 0 })
         }
+        // this._postMobileSync("content");
     }
 
     _crudTM_ContentLabel(data) {
-        console.log("Simpan Content Label : " + data.length);
-
         if (data.length > 0) {
-
-            for (i = 1; i <= data.length; i++) {
-                this.setState({ progressContentLabel: i / data.length });
-                this.setState({ totalContentLabelDownload: data.length });
+            for (var i = 1; i <= data.length; i++) {
+                this.setState({ progressContentLabel: i / data.length, totalContentLabelDownload: data.length });
             }
-
             data.map(item => {
                 TaskServices.saveData('TM_CONTENT_LABEL', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_CONTENT_LABEL');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueContentLabelDownload: countDataInsert });
             });
-
-            // this._postMobileSync("content-label");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_CONTENT_LABEL');
-            this.setState({ progressContentLabel: 1 })
-            this.setState({ valueContentLabelDownload: countDataInsert });
-            this.setState({ totalContentLabelDownload: 0 });
-
-            // this._postMobileSync("content-label");
+            this.setState({ progressContentLabel: 1, valueContentLabelDownload: countDataInsert, totalContentLabelDownload: 0 })
         }
+        // this._postMobileSync("content-label");
     }
 
     _crudTM_Kriteria(data) {
-        console.log("Simpan Kriteria : " + data.length);
-
         if (data.length > 0) {
-
-            for (i = 1; i <= data.length; i++) {
-                this.setState({ progressKriteria: i / data.length });
-                this.setState({ totalKriteriaDownload: data.length });
+            for (var i = 1; i <= data.length; i++) {
+                this.setState({ progressKriteria: i / data.length, totalKriteriaDownload: data.length });
             }
-
             data.map(item => {
                 TaskServices.saveData('TM_KRITERIA', item);
-
                 let countDataInsert = TaskServices.getTotalData('TM_KRITERIA');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueKriteriaDownload: countDataInsert });
             });
-
-            // this._postMobileSync("kriteria");
         } else {
             let countDataInsert = TaskServices.getTotalData('TM_KRITERIA');
-            this.setState({ progressKriteria: 1 })
-            this.setState({ valueKriteriaDownload: countDataInsert });
-            this.setState({ totalKriteriaDownload: 0 });
-
-            // this._postMobileSync("kriteria");
+            this.setState({ progressKriteria: 1, valueKriteriaDownload: countDataInsert, totalKriteriaDownload: 0  })
         }
+        // this._postMobileSync("kriteria");
     }
 
     _crudTM_Finding(data) {
-        var dataSimpan = data.simpan;
-        console.log("Simpan Finding : " + dataSimpan.length);
-
-        if (dataSimpan.length > 0) {
-
-            for (i = 1; i <= dataSimpan.length; i++) {
-                this.setState({ progressFinding: i / dataSimpan.length });
-                this.setState({ totalFindingDownload: dataSimpan.length });
+        let allData = TaskServices.getAllData('TR_FINDING');
+        if (data.simpan.length > 0) {
+            for (var i = 1; i <= data.simpan.length; i++) {
+                this.setState({ progressFinding: i / data.simpan.length, totalFindingDownload: data.simpan.length });
             }
-
-            dataSimpan.map(item => {
+            data.simpan.map(item => {
                 TaskServices.saveData('TR_FINDING', item);
-
                 let countDataInsert = TaskServices.getTotalData('TR_FINDING');
-                console.log("countDataInsert : " + countDataInsert);
-                this.setState({ valueFindingDownload: countDataInsert });
-
-                this.setState({ isFinishFinding: true });
+                this.setState({ valueFindingDownload: countDataInsert, isFinishFinding: true });
             });
-
-            // this._postMobileSync("finding");
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_FINDING');
-            this.setState({ progressFinding: 1 })
-            this.setState({ valueFindingDownload: countDataInsert });
-            this.setState({ totalFindingDownload: 0 });
-
-            // this._postMobileSync("finding");
+            this.setState({ progressFinding: 1, valueFindingDownload: countDataInsert, totalFindingDownload: 0 })
         }
+        if (data.ubah.length > 0 && allData.length > 0) {
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
+                TaskServices.updateFindingDownload(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TR_FINDING', 'FINDING_CODE', item.FINDING_CODE);
+            });  
+        }   
+        // this._postMobileSync("finding");
     }
 
     _crudTM_Category(data) {
-        console.log("Simpan Category : " + data.length);
-
         if (data.length > 0) {
-
-            for (i = 1; i <= data.length; i++) {
-                this.setState({ progressCategory: i / data.length });
-                this.setState({ totalCategoryDownload: data.length });
+            for (var i = 1; i <= data.length; i++) {
+                this.setState({ progressCategory: i / data.length, totalCategoryDownload: data.length });
             }
-
             data.map(item => {
                 TaskServices.saveData('TR_CATEGORY', item);
                 let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
-                console.log("countDataInsert : " + countDataInsert);
                 this.setState({ valueCategoryDownload: countDataInsert });
-                this.download(item);
-
-                // this._postMobileSync("category");
+                this.downloadImageCategory(item);
             });
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
-            this.setState({ progressCategory: 1 })
-            this.setState({ valueCategoryDownload: countDataInsert });
-            this.setState({ totalCategoryDownload: 0 });
+            this.setState({ progressCategory: 1, valueCategoryDownload: countDataInsert, totalCategoryDownload: 0 })
         }
         // this._postMobileSync("category");
     }
 
 
     _crudTM_Contact(data) {
-        console.log("Simpan Contact : " + data.data.length);
         var dataContact = data.data;
-        console.log(JSON.stringify(dataContact))
-
         if (dataContact.length > 0) {
-
-            for (i = 1; i <= dataContact.length; i++) {
-                this.setState({ progressContact: i / dataContact.length });
-                this.setState({ totalContactDownload: dataContact.length });
+            for (var i = 1; i <= dataContact.length; i++) {
+                this.setState({ progressContact: i / dataContact.length, totalContactDownload: dataContact.length });
             }
-
             dataContact.map(item => {
                 TaskServices.saveData('TR_CONTACT', item);
-
                 let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
-                console.log("countDataInsert : " + countDataInsert);
-                this.setState({ valueContactDownload: countDataInsert });
-
-                this.setState({ isFinishFinding: true });
-
-                // this._postMobileSync("contact");
+                this.setState({ valueContactDownload: countDataInsert, isFinishFinding: true });
             });
-
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
-            this.setState({ progressContact: 1 })
-            this.setState({ valueContactDownload: countDataInsert });
-            this.setState({ totalContactDownload: 0 });
-
-            // this._postMobileSync("contact");
+            this.setState({ progressContact: 1,valueContactDownload: countDataInsert, totalContactDownload: 0 })
         }
+        // this._postMobileSync("contact");
     }
 
     _crudTM_Finding_Image(data) {
-
         var dataSimpan = data.simpan;
-        console.log("Simpan Finding Image : " + dataSimpan.length);
-
         if (dataSimpan.length > 0) {
-
-            for (i = 1; i <= dataSimpan.length; i++) {
-                this.setState({ progressFindingImage: i / dataSimpan.length });
-                this.setState({ totalFindingImageDownload: dataSimpan.length });
+            for (var i = 1; i <= dataSimpan.length; i++) {
+                this.setState({ progressFindingImage: i / dataSimpan.length, totalFindingImageDownload: dataSimpan.length });
             }
-
             dataSimpan.map(item => {
-
                 TaskServices.saveData('TR_IMAGE', item);
-
                 this._downloadImageFinding(item);
                 let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
-                this.setState({ valueFindingImageDownload: countDataInsert });
-                this.setState({ isFinishFindingImage: true });
+                this.setState({ valueFindingImageDownload: countDataInsert, isFinishFindingImage: true  });
             });
         } else {
             let countDataInsert = TaskServices.getTotalData('TR_IMAGE');
-            this.setState({ progressFindingImage: 1 })
-            this.setState({ valueFindingImageDownload: countDataInsert });
-            this.setState({ totalFindingImageDownload: 0 });
+            this.setState({ progressFindingImage: 1, valueFindingImageDownload: countDataInsert, totalFindingImageDownload: 0 })
         }
+        // if (data.ubah.length > 0 && allData.length > 0) {
+        //     data.ubah.map(item => {
+        //         let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
+        //         TaskServices.updateFindingDownload(item, indexData)
+        //     })
+        // }
+        // if(data.hapus.length > 0 && allData.length > 0){
+        //     data.hapus.map(item =>{
+        //         this.deleteData('TR_FINDING', 'FINDING_CODE', item.FINDING_CODE);
+        //     });  
+        // }
     }
 
     _crudTM_Inspeksi_Param(data) {
+        // alert(JSON.stringify(data))
+        // let datas = {
+        //     PARAMATER_GROUP: data.PARAMATER_GROUP,
+        //     PARAMETER_NAME: data.PARAMETER_NAME,
+        //     DESC: data.DESC,
+        //     NO_URUT: parseInt(data.NO_URUT)
+        // }
+        // TaskServices.saveData('TM_TIME_TRACK', datas)
+        // // TaskServices.saveData('TM_PARAM', data);
+        // let countDataInsert = TaskServices.getTotalData('TM_PARAM');
+        // this.setState({ progressParamInspection: 1, valueParamInspection: countDataInsert, totalParamInspection: 1 })
+        // if (data.length > 0) {
+        //     for (var i = 1; i <= data.length; i++) {
+        //         this.setState({ progressParamInspection: i / data.length, totalParamInspection: data.length });
+        //     }
+        //     data.map(item => {
+        //         TaskServices.saveData('TM_TIME_TRACK', item);
+        //         let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+        //         this.setState({ valueFindingImageDownload: countDataInsert });
+        //     });
+        // } else {
+        //     let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
+        //     this.setState({ progressParamInspection: 1, valueParamInspection: countDataInsert, totalParamInspection: 0 })
+        // }
+        
+        this.setState({ progressParamInspection: 1, valueParamInspection: 1, totalParamInspection: 1 })
 
-        var dataSimpan = data;
-        console.log("Simpan Inspeksi Param : " + dataSimpan.length);
+        this.setState({ showButton: true });
+        alert('Sync Data Selesai')
+    }
 
-        if (dataSimpan.length > 0) {
 
-            for (i = 1; i <= dataSimpan.length; i++) {
-                this.setState({ progressParamInspection: i / dataSimpan.length });
-                this.setState({ totalParamInspection: dataSimpan.length });
+    //download image
+    async _downloadImageFinding(data) {
+        let isExist = await RNFS.exists(`${dirPhotoTemuan}/${data.IMAGE_NAME}`)
+        if(!isExist){
+            var url = data.IMAGE_URL;
+            const { config, fs } = RNFetchBlob
+            let options = {
+                fileCache: true,
+                addAndroidDownloads: {
+                    useDownloadManager: true,
+                    notification: true,
+                    path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,
+                    description: 'Image'
+                }
             }
-
-            dataSimpan.map(item => {
-                TaskServices.saveData('TM_TIME_TRACK', item);
-                let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-                this.setState({ valueParamInspection: countDataInsert });
+            config(options).fetch('GET', url).then((res) => {
+                //   alert("Success Downloaded " + res);
             });
-        } else {
-            let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-            this.setState({ progressParamInspection: 1 })
-            this.setState({ valueParamInspection: countDataInsert });
-            this.setState({ totalParamInspection: 0 });
-        }
+        }        
     }
 
-    _get_IMEI_Number() {
-        var IMEI_2 = IMEI.getImei();
-        this.setState({ imei: IMEI_2 });
-        return IMEI_2;
-    }
-
-    _downloadImageFinding(data) {
-        var url = data.IMAGE_URL;
-        const { config, fs } = RNFetchBlob
-        let options = {
-            fileCache: true,
-            addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,
-                description: 'Image'
+    async downloadImageCategory(data) {
+        let isExist = await RNFS.exists(`${dirPhotoKategori}/${data.ICON}`)
+        if(!isExist){
+            var url = data.ICON_URL;
+            const { config, fs } = RNFetchBlob
+            let options = {
+                fileCache: true,
+                addAndroidDownloads: {
+                    useDownloadManager: true,
+                    notification: true,
+                    path: `${dirPhotoKategori}/${data.ICON}`,
+                    description: 'Image'
+                }
             }
-        }
-        config(options).fetch('GET', url).then((res) => {
-            //   alert("Success Downloaded " + res);
-        });
-    }
-
-    _crudTM_Inspeksi_Param(data) {
-
-        var dataSimpan = data;
-        console.log("Simpan Inspeksi Param : " + dataSimpan.length);
-
-        if (dataSimpan.length > 0) {
-
-            for (i = 1; i <= dataSimpan.length; i++) {
-                this.setState({ progressParamInspection: i / dataSimpan.length });
-                this.setState({ totalParamInspection: dataSimpan.length });
-            }
-
-            dataSimpan.map(item => {
-                TaskServices.saveData('TM_TIME_TRACK', item);
-                let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-                this.setState({ valueFindingImageDownload: countDataInsert });
+            config(options).fetch('GET', url).then((res) => {
+                //   alert("Success Downloaded " + res);
             });
-        } else {
-            let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-            this.setState({ progressParamInspection: 1 })
-            this.setState({ valueParamInspection: countDataInsert });
-            this.setState({ totalParamInspection: 0 });
+            if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
+                this.setState({ showButton: true });
+            }
         }
     }
 
     _onSync() {
 
-        this.kirimImage();
-        this.loadData();
-        this.loadDataFinding();
-        this.loadDataInspectionTrack();
+        // this.kirimImage();
+        // this.loadData();
+        // this.loadDataFinding();
+        // this.loadDataInspectionTrack();
 
         this.setState({
-            downloadRegion: false,
-            downloadAfd: false,
             downloadBlok: false,
+            downloadAfd: false,
+            downloadRegion: false,
             downloadEst: false,
             downloadLandUse: false,
             downloadComp: false,
             downloadContent: false,
-            downloadContact: false,
             downloadContentLabel: false,
             downloadKriteria: false,
+            downloadCategory: false,
+            downloadContact: false,
             downloadFinding: false,
             downloadFindingImage: false,
-            downloadCategory: false,
-            uploadFinding: false,
-            uploadInspeksi: false,
             downloadInspeksiParam: false,
-            fetchLocation: false,
-            isBtnEnable: false,
+            downloadTrack: false,
+            downloadParamTrack: false,
+
             progress: 0,
             progressAfd: 0,
             progressRegion: 0,
@@ -904,40 +899,35 @@ class SyncScreen extends React.Component {
             progressCategory: 0,
             progressContact: 0,
             progressFinding: 0,
-            progressFindingImage: 0
+            progressFindingImage: 0,
+            
+            uploadInspeksi: false,
+            uploadInspeksiDetail: false,
+            uploadFinding: false,
+            fetchLocation: false,
+            isBtnEnable: false,
 
         });
 
         // GET DATA MASTER
-        this.props.contentRequest();
         this.props.blockRequest();
-        this.props.afdRequest();
-        this.props.regionRequest();
-        this.props.estRequest();
-        this.props.landUseRequest();
-        this.props.compRequest();
-        this.props.contentLabelRequest();
-        this.props.kriteriaRequest();
-        this.props.categoryRequest();
-        this.props.contactRequest();
-        this.props.findingRequest();
-        this.props.findingImageRequest();
-        this.props.inspeksiGetParamTrackingPath();
+        // this.props.afdRequest();
+        // this.props.regionRequest();
+        // this.props.estRequest();
+        // this.props.landUseRequest();
+        // this.props.compRequest();
+        // this.props.contentRequest();
+        // this.props.contentLabelRequest();
+        // this.props.kriteriaRequest();
+        // this.props.categoryRequest();
+        // this.props.contactRequest();
+        // this.props.findingRequest();
+        // this.props.findingImageRequest();
+            // this.props.paramTrackRequest();
 
-    }
-
-    animate() {
-        let progress = 0;
-        let countData = 200;
-        this.setState({ progress });
-        progress = 100 / countData;
-        this.setState({ progress });
-        console.log("Progress : " + progress + "%")
     }
 
     componentWillReceiveProps(newProps) {
-
-        console.log(newProps)
 
         if (newProps.block.fetchingBlock !== null && !newProps.block.fetchingBlock && !this.state.downloadBlok) {
             let dataJSON = newProps.block.block;
@@ -945,6 +935,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Block(dataJSON);
             }
+            this.props.afdRequest();
         }
 
         if (newProps.afd.fetchingAfd !== null && !newProps.afd.fetchingAfd && !this.state.downloadAfd) {
@@ -953,14 +944,16 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Afd(dataJSON);
             }
+            this.props.regionRequest();            
         }
 
-        if (newProps.region.fetching !== null && !newProps.region.fetching && !this.state.downloadRegion) {
+        if (newProps.region.fetchingRegion !== null && !newProps.region.fetchingRegion && !this.state.downloadRegion) {
             let dataJSON = newProps.region.region;
             this.setState({ downloadRegion: true })
             if (dataJSON !== null) {
                 this._crudTM_Region(dataJSON);
             }
+            this.props.estRequest();
         }
 
         if (newProps.est.fetchingEst !== null && !newProps.est.fetchingEst && !this.state.downloadEst) {
@@ -969,6 +962,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Est(dataJSON);
             }
+            this.props.landUseRequest();
         }
 
         if (newProps.landUse.fetchingLandUse !== null && !newProps.landUse.fetchingLandUse && !this.state.downloadLandUse) {
@@ -977,6 +971,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_LandUse(dataJSON);
             }
+            this.props.compRequest();
         }
 
         if (newProps.comp.fetchingComp !== null && !newProps.comp.fetchingComp && !this.state.downloadComp) {
@@ -985,6 +980,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Comp(dataJSON);
             }
+            this.props.contentRequest();
         }
 
         if (newProps.content.fetchingContent !== null && !newProps.content.fetchingContent && !this.state.downloadContent) {
@@ -993,6 +989,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Content(dataJSON);
             }
+            this.props.contentLabelRequest();
         }
 
         if (newProps.contentLabel.fetchingContentLabel !== null && !newProps.contentLabel.fetchingContentLabel && !this.state.downloadContentLabel) {
@@ -1001,6 +998,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_ContentLabel(dataJSON);
             }
+            this.props.kriteriaRequest();
         }
 
         if (newProps.kriteria.fetchingKriteria !== null && !newProps.kriteria.fetchingKriteria && !this.state.downloadKriteria) {
@@ -1009,6 +1007,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Kriteria(dataJSON);
             }
+            this.props.categoryRequest();
         }
 
         if (newProps.category.fetchingCategory !== null && !newProps.category.fetchingCategory && !this.state.downloadCategory) {
@@ -1017,14 +1016,16 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Category(dataJSON);
             }
+            this.props.contactRequest();
         }
 
         if (newProps.contact.fetchingContact !== null && !newProps.contact.fetchingContact && !this.state.downloadContact) {
             let dataJSON = newProps.contact.contact;
+            this.setState({ downloadContact: true });
             if (dataJSON !== null) {
                 this._crudTM_Contact(dataJSON);
             }
-            this.setState({ downloadContact: true });
+            this.props.findingRequest();
         }
 
         if (newProps.finding.fetchingFinding !== null && !newProps.finding.fetchingFinding && !this.state.downloadFinding) {
@@ -1033,6 +1034,7 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Finding(dataJSON);
             }
+            this.props.findingImageRequest();
         }
 
         if (newProps.findingImage.fetchingFindingImage !== null && !newProps.findingImage.fetchingFindingImage && !this.state.downloadFindingImage) {
@@ -1041,115 +1043,132 @@ class SyncScreen extends React.Component {
             if (dataJSON !== null) {
                 this._crudTM_Finding_Image(dataJSON);
             }
+            this.props.paramTrackRequest();
         }
 
-        if (newProps.findingUpload.fetchingFindingPost !== null && !newProps.findingUpload.fetchingFindingPost && !this.state.uploadFinding) {
-            let dataJSON = newProps.findingUpload.data;
-            this.setState({ uploadFinding: true });
-            if (dataJSON !== null) {
-                this.updateFinding()
-            }
-        }
-
-        if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.uploadInspeksi) {
-            let dataJSON = newProps.inspeksi.data;
-            this.setState({ uploadInspeksi: true });
-            if (dataJSON !== null) {
-                this.updateInspeksi()
-                this.updateInspeksiDetail()
-                this.updateInspeksiBaris()
-                this.updateInspeksiTrack()
-            }
-        }        
-
-        if (newProps.inspeksi.fetchingInspeksiParam !== null && !newProps.inspeksi.fetchingInspeksiParam && !this.state.downloadInspeksiParam) {
-            let dataJSON = newProps.inspeksi.data;
-            this.setState({ downloadInspeksiParam: true });
+        if (newProps.paramTrack.fetchingParamTrack !== null && !newProps.paramTrack.fetchingParamTrack && !this.state.downloadParamTrack) {
+            let dataJSON = newProps.paramTrack.paramTrack;
+            this.setState({ downloadParamTrack: true });
             if (dataJSON !== null) {
                 this._crudTM_Inspeksi_Param(dataJSON);
             }
         }
 
+        // if (newProps.findingUpload.fetchingFindingPost !== null && !newProps.findingUpload.fetchingFindingPost && !this.state.uploadFinding) {
+        //     let dataJSON = newProps.findingUpload.data;
+        //     this.setState({ uploadFinding: true });
+        //     if (dataJSON !== null) {
+        //         this.updateFinding()
+        //     }
+        // }
+
+        // if (newProps.inspeksi.fetchingInspeksi !== null && !newProps.inspeksi.fetchingInspeksi && !this.state.uploadInspeksi) {
+        //     let dataJSON = newProps.inspeksi.data;
+        //     this.setState({ uploadInspeksi: true });
+        //     if (dataJSON !== null) {
+        //         // this.updateInspeksi()
+        //         // this.updateInspeksiDetail()
+        //         // this.updateInspeksiBaris()
+        //         // this.updateInspeksiTrack()
+        //     }
+        // }  
+
         RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
-    }
-
-    updateFinding(){        
-        if(this.state.dataFinding !== null){
-            let allData = TaskServices.getAllData('TR_FINDING')
-            this.state.dataFinding.map(item =>{
-                let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
-                TaskServices.updateFindingSync('TR_FINDING', ['Y', item.PROGRESS, item.DUE_DATE], indexData);
-            })
-        }
-    }
-
-    updateInspeksi(){      
-        if(this.state.dataInspeksi !== null){
-            let allData = TaskServices.getAllData('TR_BLOCK_INSPECTION_H')
-            this.state.dataInspeksi.map(item =>{   
-                let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE', item.BLOCK_INSPECTION_CODE))(allData);
-                TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_H', 'Y', indexData);
-            })
-        }
-    }
-
-    updateInspeksiDetail(){        
-        if(this.state.dataInspeksiDetail !== null){
-            let allData = TaskServices.getAllData('TR_BLOCK_INSPECTION_D')
-            this.state.dataInspeksiDetail.map(item =>{
-                let indexData = R.findIndex(R.propEq('BLOCK_INSPECTION_CODE_D', item.BLOCK_INSPECTION_CODE_D))(allData);
-                TaskServices.updateInspeksiSync('TR_BLOCK_INSPECTION_D', 'Y', indexData);
-            })
-        }
-    }
-
-    updateInspeksiBaris(){
-        if(this.state.dataBarisInspeksi !== null){
-            let allData = TaskServices.getAllData('TR_BARIS_INSPECTION')
-            this.state.dataBarisInspeksi.map(item =>{
-                let indexData = R.findIndex(R.propEq('ID_INSPECTION', item))(allData);
-                TaskServices.updateInspeksiSync('TR_BARIS_INSPECTION', 'Y', indexData);
-            })
-        }
-    }
-
-    updateInspeksiTrack(){
-        if(this.state.dataTrack !== null){
-            let allData = TaskServices.getAllData('TM_INSPECTION_TRACK')
-            this.state.dataTrack.map(item =>{
-                let indexData = R.findIndex(R.propEq('TRACK_INSPECTION_CODE', item.TRACK_INSPECTION_CODE))(allData);
-                TaskServices.updateInspeksiSync('TM_INSPECTION_TRACK', 'Y', indexData);
-            })
-        }
-    }
-
-    download(data) {
-        var url = data.ICON_URL;
-        const { config, fs } = RNFetchBlob
-        let options = {
-            fileCache: true,
-            addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                path: `${dirPhotoKategori}/${data.ICON}`,
-                description: 'Image'
-            }
-        }
-        config(options).fetch('GET', url).then((res) => {
-            //   alert("Success Downloaded " + res);
-        });
-
-        if (this.setState.isFinishFinding == true && this.setState.isFinishFindingImage == true) {
-            this.setState({ showButton: true });
-        }
     }
 
     render() {
         return (
             <Container style={{ flex: 1, padding: 16 }}>
                 <Content>
-                    <View style={{ flex: 1, marginTop: 0 }}>
+                <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI TRACK</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspectionTrack}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspectionTrack}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspectionTrack}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI HEADER</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspeksiHeaderUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspeksiHeaderUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspeksiHeader}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD INSPEKSI DETAIL</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueInspeksiDetailUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalInspeksiDetailUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressInspeksiDetail}
+                            indeterminate={this.state.indeterminate} />
+
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD FINDING DATA</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueFindingDataUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalFindingDataUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressFindingData}
+                            indeterminate={this.state.indeterminate} />
+
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text>UPLOAD IMAGE</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                <Text>{this.state.valueImageUpload}</Text>
+                                <Text>/</Text>
+                                <Text>{this.state.totalImagelUpload}</Text>
+                            </View>
+                        </View>
+                        <Progress.Bar
+                            height={20}
+                            width={null}
+                            style={{ marginTop: 2 }}
+                            progress={this.state.progressUploadImage}
+                            indeterminate={this.state.indeterminate} />
+                    </View>
+
+                    <View style={{ flex: 1, marginTop: 12 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text>BLOCK</Text>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -1403,93 +1422,7 @@ class SyncScreen extends React.Component {
                             progress={this.state.progressParamInspection}
                             indeterminate={this.state.indeterminate} />
                     </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>UPLOAD INSPEKSI TRACK</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueInspectionTrack}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalInspectionTrack}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressInspectionTrack}
-                            indeterminate={this.state.indeterminate} />
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>UPLOAD INSPEKSI HEADER</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueInspeksiHeaderUpload}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalInspeksiHeaderUpload}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressInspeksiHeader}
-                            indeterminate={this.state.indeterminate} />
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>UPLOAD INSPEKSI DETAIL</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueInspeksiDetailUpload}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalInspeksiDetailUpload}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressInspeksiDetail}
-                            indeterminate={this.state.indeterminate} />
-
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>UPLOAD FINDING DATA</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueFindingDataUpload}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalFindingDataUpload}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressFindingData}
-                            indeterminate={this.state.indeterminate} />
-
-                    </View>
-
-                    <View style={{ flex: 1, marginTop: 12 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text>UPLOAD IMAGE</Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Text>{this.state.valueImageUpload}</Text>
-                                <Text>/</Text>
-                                <Text>{this.state.totalImagelUpload}</Text>
-                            </View>
-                        </View>
-                        <Progress.Bar
-                            height={20}
-                            width={null}
-                            style={{ marginTop: 2 }}
-                            progress={this.state.progressUploadImage}
-                            indeterminate={this.state.indeterminate} />
-                    </View>
+                    
 
                     {this.state.showButton && <View style={{ flex: 1, marginTop: 48 }}>
                         <TouchableOpacity disabled={this.state.isBtnEnable} style={styles.button} onPress={() => { this.setState({ showButton: false }); this._onSync() }}>
@@ -1523,14 +1456,14 @@ const mapStateToProps = state => {
         category: state.category,
         findingImage: state.findingImage,
         inspeksi: state.inspeksi,
-        findingUpload: state.findingUpload
+        findingUpload: state.findingUpload,
+        paramTrack: state.paramTrack
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         regionRequest: () => dispatch(RegionAction.regionRequest()),
-        regionPost: obj => dispatch(RegionAction.regionPost(obj)),
         blockRequest: () => dispatch(BlockAction.blockRequest()),
         blockPost: obj => dispatch(BlockAction.blockPost(obj)),
         afdRequest: () => dispatch(AfdAction.afdRequest()),
@@ -1557,8 +1490,9 @@ const mapDispatchToProps = dispatch => {
         inspeksiPostHeader: obj => dispatch(InspeksiAction.inspeksiPostHeader(obj)),
         inspeksiPostDetail: obj => dispatch(InspeksiAction.inspeksiPostDetail(obj)),
         inspeksiPostTrackingPath: obj => dispatch(InspeksiAction.inspeksiPostTrackingPath(obj)),
-        inspeksiGetParamTrackingPath: obj => dispatch(InspeksiAction.inspeksiGetParamTrackingPath(obj)),
-        findingPostData: obj => dispatch(FindingUploadAction.findingPostData(obj))
+        paramTrackRequest: obj => dispatch(ParamTrackAction.paramTrackRequest(obj)),
+        findingPostData: obj => dispatch(FindingUploadAction.findingPostData(obj)),        
+        tmPost: obj => dispatch(TMobileAction.tmPost(obj)),
     };
 };
 

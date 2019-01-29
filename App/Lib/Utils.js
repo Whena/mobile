@@ -1,26 +1,45 @@
 import { isNil, isEmpty } from 'ramda';
-// import API from '../Services/Api'
 import DeviceInfo from 'react-native-device-info';
 import { Platform, PixelRatio, Dimensions, PermissionsAndroid, Alert } from 'react-native';
 const moment = require('moment');
 const momentTimezone = require('moment-timezone');
-
 var uuid = require('react-native-uuid');
 
-// export function formatRp(num, fixed = 0) {
-// 	num = parseFloat(num);
-// 	var p = num.toFixed(fixed).split('.');
-// 	return (
-// 		'Rp. ' +
-// 		p[0]
-// 			.split('')
-// 			.reverse()
-// 			.reduce(function(acc, num, i, orig) {
-// 				return num == '-' ? acc : num + (i && !(i % 3) ? ',' : '') + acc;
-// 			}, '') +
-// 		(isNil(p[1]) ? '' : '.' + p[1])
-// 	);
-// }
+export function downloadImage(url, path){
+	const { config, fs } = RNFetchBlob
+	let options = {
+		fileCache: true,
+		addAndroidDownloads: {
+			useDownloadManager: true,
+			notification: true,
+			path: path,
+			description: 'Image'
+		}
+	}
+	config(options).fetch('GET', url).then((res) => {
+	});
+}
+
+export function fetchPostDataWithToken(URL, data, token){
+	fetch(URL, {
+        method: 'POST',
+        headers: { 
+            // 'Cache-Control': 'no-cache',
+            //  Accept: 'application/json',
+            'Content-Type': 'application/json' ,
+            'Authorization': `Bearer ${token}`
+        },
+       	body: JSON.stringify(data)
+        })
+        .then(function(response){ 
+            return response.json();   
+        })
+        .then(function(data){ 
+			console.log(JSON.str(data))
+            return data
+        })
+        .catch((err) => { return err });
+}
 
 export function kirimImage(URL, Formdata) {
 	fetch(url, {
@@ -130,7 +149,7 @@ export async function getPermission() {
 }
 
 export function getFileFromDirectory(path) {
-	RNFS.readDir(path) // /storage/emulated/0/Sulley
+	RNFS.readDir(path)
 		.then((result) => {
 			console.log('GOT RESULT', result);
 			return Promise.all([RNFS.stat(result[0].path), result[0].path]);
@@ -205,8 +224,6 @@ export function changeFormatDate(value, format) {
 	return result;
 };
 
-
-
 export function convertTimestampToDate(timestamp, format) {
 	var dateString = moment(timestamp).format(format);
 	// const formatted = moment(timestamp).format('L'); //MM/DD/YYYY
@@ -259,49 +276,6 @@ export function toTitleCase(str) {
 		return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
 	});
 }
-
-// export function uploadImage(type, to, data) {
-// 	const api = API.create(type).api
-// 	let urlUpload
-// 	switch (to) {
-// 		case "customer":
-// 			urlUpload = "/customer.photo.post"
-// 			break;
-// 		case "ktp":
-// 			urlUpload = "/customer.photo.ktp.post"
-// 			break;
-// 		case "npwp":
-// 			urlUpload = "/customer.photo.npwp.post"
-// 			break;
-// 		case "kk":
-// 			urlUpload = "/customer.photo.kk.post"
-// 			break;
-// 		case "logdeliv":
-// 			urlUpload = "/deliverymanlog.photo.post.by.orderid.and.batchid"
-// 			break;
-// 		case "signdeliv":
-// 			urlUpload = "/deliverymanlog.sign.post.by.orderid.and.batchid"
-// 			break;
-// 		case "order":
-// 			urlUpload = "/order.photo.post"
-// 			break;
-// 		case "sk":
-// 			urlUpload = "/order.photo.sk.post"
-// 			break;
-
-// 		default:
-// 			break;
-// 	}
-
-// 	return api.post(urlUpload, data, {
-// 		onUploadProgress: (e) => {
-// 			const progress = e.loaded / e.total;
-// 			// state({
-// 			// 	progress: progress
-// 			// });
-// 		}
-// 	})
-// }
 
 export function guid() {
 	function s4() {
