@@ -384,6 +384,33 @@ class HomeScreen extends React.Component {
     }
   }
 
+  getEstateName(werks){
+    try {
+        let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+        return data.EST_NAME;
+    } catch (error) {
+        return '';
+    }    
+  }
+
+  getBlokName(blockCode){
+    try {      
+      let data = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', blockCode);
+      return data.BLOCK_NAME;
+    } catch (error) {
+      return ''
+    }
+  }
+
+  getStatusBlok(werk_afd_blok_code){
+    try {
+        let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+        return data.MATURITY_STATUS;            
+    } catch (error) {
+        return ''
+    }
+}
+
   _renderItem = (item, index) => {
 
     const nav = this.props.navigation

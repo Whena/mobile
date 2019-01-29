@@ -149,6 +149,8 @@ class DetailFindingScreenRedesign extends Component{
             alert('Kamu harus foto bukti kerja dulu')
         }else if(this.state.disabledProgress){
             alert('Kamu tidak bisa memproses temuan ini')
+        }else if(this.state.updatedDueDate == 'Select Calendar'){
+            alert('Kamu harus tentukan batas waktu temuan dulu')
         }else{
             this._updateFinding()
         }
@@ -177,7 +179,7 @@ class DetailFindingScreenRedesign extends Component{
             REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,    
         }
 
-        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, save.DUE_DATE], indexData);
+        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, 'N', save.DUE_DATE], indexData);
         if(this.state.progress == 100){
             this._saveImageUpdate();
         }
@@ -209,7 +211,7 @@ class DetailFindingScreenRedesign extends Component{
     render(){        
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
         moment.locale();
-        let dtInsertTime = moment(this.state.data.INSERT_TIME).format('LL');
+        let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LL');
 
         let batasWaktu = '';
         if(this.state.updatedDueDate == 'Select Calendar'){
@@ -313,7 +315,7 @@ class DetailFindingScreenRedesign extends Component{
                                 {isEmpty(this.state.data.DUE_DATE) && (
                                     <Text style={styles.item} onPress={this._showDateTimePicker} style={{ fontSize: 13, color: 'red' }}>: {batasWaktu} </Text>)}
                                 {!isEmpty(this.state.data.DUE_DATE) && (
-                                    <Text style={styles.item}>: {this.state.data.DUE_DATE} </Text>)}
+                                    <Text style={styles.item}>: {moment(this.state.data.DUE_DATE).format('LL')} </Text>)}
                             </View>
 
                             <DateTimePicker
@@ -335,20 +337,18 @@ class DetailFindingScreenRedesign extends Component{
 
                     <View style={{ flex: 1, paddingLeft: 15, paddingRight: 15 }}>
                         <Text style={[styles.title, { marginBottom: 5 }]}>Progress:</Text>
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                             <Slider
                                 ref='sliderProgress'
                                 step={25}
                                 style={{ flex:1 }}
-                                // thumbTouchSize={{ width: 40, height: 40 }}
-                                // disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
                                 maximumValue={100}
                                 thumbStyle={styles.thumb}
                                 trackStyle={styles.track}
                                 value={this.state.progress}
                                 disabled={this.state.disabledProgress}
-                                minimumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brandSecondary }
-                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.brand : Colors.abuabu}
+                                minimumTrackTintColor={Colors.brandSecondary }
+                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brand}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -475,16 +475,16 @@ const styles = StyleSheet.create({
     },
 
     track: {
-        height: 14,
-        borderRadius: 2,
+        height: 12,
+        borderRadius: 100,
         backgroundColor: 'white',
         borderColor: '#9a9a9a',
         borderWidth: 1
       },
       thumb: {
-        width: 25,
-        height: 25,
-        borderRadius: 2,
+        width: 28,
+        height: 28,
+        borderRadius: 100,
         backgroundColor: '#eaeaea',
         borderColor: '#9a9a9a',
         borderWidth: 1

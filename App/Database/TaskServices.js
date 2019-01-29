@@ -316,8 +316,8 @@ const TaskServices = {
     RealmSchemas.write(() => {
       data.STATUS = param[0];
       data.PROGRESS = param[1];
-      data.STATUS_SYNC = 'N';
-      data.DUE_DATE = param[2]
+      data.STATUS_SYNC = param[2];
+      data.DUE_DATE = param[3];
     });
   },
 
