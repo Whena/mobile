@@ -96,7 +96,7 @@ class HomeScreen extends React.Component {
 
     if (ref_role == 'REGION_CODE') {
       findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${region_code}"`);
-      var estate = TaskServices.getAllData('TM_ESTATE');
+      var estate = TaskServices.getAllData('TM_EST');
       var estateFilter = estate.filtered(`REGION_CODE = "${loc_code}"`);
 
       console.log("Estate Filter : " + estateFilter);
