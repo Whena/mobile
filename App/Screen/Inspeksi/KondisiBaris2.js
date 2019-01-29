@@ -34,7 +34,7 @@ class KondisiBaris2 extends Component {
                 </View>
             </TouchableOpacity>
         ),
-    };
+    });
 
     constructor(props) {
         super(props);

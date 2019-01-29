@@ -95,11 +95,30 @@ class HomeScreen extends React.Component {
     var findingFilter;
 
     if (ref_role == 'REGION_CODE') {
-      findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${region_code}"`);
+      // findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${region_code}"`);
       var estate = TaskServices.getAllData('TM_EST');
       var estateFilter = estate.filtered(`REGION_CODE = "${loc_code}"`);
 
-      console.log("Estate Filter : " + estateFilter);
+      let wersArr = [];
+      estateFilter.map(item => {
+        const werksEst = item.WERKS
+        console.log("Estate Filter : " + JSON.stringify(werksEst));
+        wersArr.push(werksEst);
+      });
+
+      console.log("Estate Filter Array : " + wersArr);
+
+      var query = 'WERKS == ';
+      for (var i = 0; i < wersArr.length; i++) {
+        query += `"${wersArr[i]}"`;
+        if (i + 1 < wersArr.length) {
+          query += ` OR WERKS == `
+        }
+      }
+      console.log("QUERY : " + query)
+      console.log("REGION CODE : " + JSON.stringify(findingSorted.filtered(query)));
+      findingFilter = findingSorted.filtered(`${query} AND ASSIGN_TO != "${user_auth}"`);
+
     } else if (ref_role == 'COMP_CODE') {
       findingFilter = findingSorted.filtered(`WERKS CONTAINS[c] "${loc_code}" AND ASSIGN_TO != "${user_auth}"`);
     } else if (ref_role == 'WERKS') {
@@ -356,12 +375,12 @@ class HomeScreen extends React.Component {
     }
   }
 
-  getContactName = (userAuth) =>{
+  getContactName = (userAuth) => {
     try {
-        let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
-        return data.FULLNAME;            
+      let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
+      return data.FULLNAME;
     } catch (error) {
-        return ''
+      return ''
     }
   }
 
@@ -375,16 +394,6 @@ class HomeScreen extends React.Component {
       user = 'User belum terdaftar. Hubungi Admin.';
     } else {
       user = INSERT_USER.FULLNAME;
-    }
-
-    const ASSIGN_TO = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.ASSIGN_TO);
-    console.log("ASSIGN_TO : " + ASSIGN_TO.FULLNAME)
-
-    let assign_to;
-    if (ASSIGN_TO == undefined) {
-      assign_to = 'User tidak ada. Hubungi Admin.';
-    } else {
-      assign_to = ASSIGN_TO.FULLNAME;
     }
 
     const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
@@ -416,7 +425,7 @@ class HomeScreen extends React.Component {
             <CardItem>
               <Left>
                 <Thumbnail style={{ borderColor: 'grey', borderWidth: 0.5, height: 48, width: 48 }} source={require('../../Images/img_no_photo.jpg')} />
-                <Body><Text style={{fontSize: 14}}>{user}</Text></Body>
+                <Body><Text style={{ fontSize: 14 }}>{user}</Text></Body>
               </Left>
             </CardItem>
             <CardItem cardBody>
@@ -429,7 +438,7 @@ class HomeScreen extends React.Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Text style={{fontSize: 14}}>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
+                <Text style={{ fontSize: 14 }}>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
                 <Text style={{ marginTop: 6, fontSize: 14 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
                 <Text style={{ marginTop: 6, fontSize: 14 }}>Ditugaskan kepada : {this.getContactName(item.ASSIGN_TO)}</Text>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
