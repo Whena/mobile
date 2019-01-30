@@ -27,7 +27,7 @@ import { utils } from 'redux-saga';
 var uuid = require('react-native-uuid');
 import Geojson from 'react-native-geojson';
 
-// const indonesia = require('../../Data/indonesia-province-simple.json')
+const indonesia = require('../../Data/indonesia-province-simple.json')
 // const kaltim = require('../../Data/kalimantantimur.json')
 const kaltim = require('../../Data/skm.json')
 const alcatraz = {
@@ -464,7 +464,13 @@ class BuatInspeksiRedesign extends Component {
                 <View style={styles.containerMap}>
                     {!!this.state.latitude && !!this.state.longitude &&
                         <MapView
-                            style={styles.map}>
+                            style={styles.map}
+                            initialRegion={{
+                                latitude:this.state.latitude,
+                                longitude:this.state.longitude,
+                                latitudeDelta:0.015,
+                                longitudeDelta:0.0121
+                            }}>
                             <Geojson geojson={alcatraz} />
                             <Marker
                                 coordinate={{
@@ -490,49 +496,6 @@ class BuatInspeksiRedesign extends Component {
                         </TouchableOpacity>                        
                     </View>}
                 </View>
-                
-
-
-                {/* {!!this.state.latitude && !!this.state.longitude &&
-                    <View style={styles.containerMap}>
-                        <MapView 
-                            style={styles.map}
-                            initialRegion={{
-                                latitude:this.state.latitude,
-                                longitude:this.state.longitude,
-                                latitudeDelta:0.015,
-                                longitudeDelta:0.0121
-                            }}
-                            // initialRegion={this.state.initialPosition}
-                            >
-                            
-                            <Marker
-                                coordinate={{
-                                latitude: this.state.latitude,
-                                longitude: this.state.longitude,
-                                }}
-                                centerOffset={{ x: -42, y: -60 }}
-                                anchor={{ x: 0.84, y: 1 }}
-                            >
-                            </Marker>
-                            
-                            <IconLoc
-                                onPress={()=>{this.setState({fetchLocation: true}); this.getLocation()}}
-                                name="location-arrow"
-                                size={24}
-                                style={{margin: 15, alignSelf:'flex-end'}}/>
-                        </MapView>
-
-                        {!this.state.keyboardOpen &&
-                            <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.bubble, styles.button] } onPress={()=>{this.setState({showConfirm:true})}}>
-                                    <Text style={styles.buttonText}>Mulain Inspeksi</Text>
-                                </TouchableOpacity>                        
-                            </View>
-                        }
-                    
-                    </View>
-                }*/}
 
                 {<ProgressDialog
                         visible={this.state.fetchLocation}

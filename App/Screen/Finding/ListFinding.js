@@ -1,3 +1,4 @@
+'use strict';
 import React, { Component } from 'react'
 import { AppState, View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
 import R, { isEmpty } from 'ramda'
@@ -99,8 +100,12 @@ export default class ListFinding extends Component {
     data.map(item => {
       if (isEmpty(item.DUE_DATE)) {
         dataNoDate.push(item)
-      } else {
-        var diff = moment(new Date(item.DUE_DATE)).diff(now, 'day');
+      } else {        
+        let dueDate = item.DUE_DATE;
+        if(dueDate.includes(' ')){
+          dueDate = dueDate.substring(0, dueDate.indexOf(' '))
+        }
+        var diff = moment(new Date(dueDate)).diff(now, 'day');
         if (diff < 0) {
           dataLewat.push(item)
         } else if (diff < 7) {

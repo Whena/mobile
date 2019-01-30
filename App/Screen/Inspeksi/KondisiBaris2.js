@@ -604,8 +604,8 @@ class KondisiBaris2 extends Component {
                                 <Text style={{ color: 'grey' }}>TPH</Text>
 
                                 <Switch
-                                    thumbTintColor={this.state.switchTPH ? "#66ff66" : 'red'}                                    
-                                    onTintColor={'#b2ffb2'}
+                                    thumbTintColor={this.state.switchTPH ? Colors.brand: 'red'}                                    
+                                    onTintColor={'#5bc236'}
                                     tintColor={'#ff8080'}
                                     onValueChange={(value) => this.setState({ switchTPH: value })}
                                     style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginBottom: 10, position: 'absolute', right: 0 }}
@@ -693,8 +693,8 @@ class KondisiBaris2 extends Component {
                             <View style={{ flex: 1, flexDirection: 'row' }}>
                                 <Text style={{ color: 'grey' }}>Titi Panen</Text>
                                 <Switch
-                                    thumbTintColor={this.state.switchTIPA ? "#66ff66" : 'red'}                                    
-                                    onTintColor={'#b2ffb2'}
+                                    thumbTintColor={this.state.switchTIPA ? Colors.brand : 'red'}                                    
+                                    onTintColor={'#5bc236'}
                                     tintColor={'#ff8080'}
                                     onValueChange={(value) => this.setState({ switchTIPA: value })}
                                     style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], marginBottom: 10, position: 'absolute', right: 0 }}

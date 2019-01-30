@@ -565,7 +565,13 @@ class KondisiBarisAkhir extends Component{
                     <View style={styles.containerMap}>
                         {!!this.state.latitude && !!this.state.longitude &&
                         <MapView
-                            style={styles.map}>
+                            style={styles.map}
+                            initialRegion={{
+                                latitude:this.state.latitude,
+                                longitude:this.state.longitude,
+                                latitudeDelta:0.015,
+                                longitudeDelta:0.0121
+                            }}>
                             <Geojson geojson={alcatraz} />
                             <Marker
                                 coordinate={{
@@ -577,25 +583,6 @@ class KondisiBarisAkhir extends Component{
                             >
                             </Marker>
                         </MapView>
-                        // <MapView 
-                        //     style={styles.map}
-                        //     initialRegion={{
-                        //         latitude:this.state.latitude,
-                        //         longitude:this.state.longitude,
-                        //         latitudeDelta:0.015,
-                        //         longitudeDelta:0.0121
-                        //     }}
-                        //     >
-                        //     <Marker
-                        //         coordinate={{
-                        //         latitude: this.state.latitude,
-                        //         longitude: this.state.longitude,
-                        //         }}
-                        //         centerOffset={{ x: -42, y: -60 }}
-                        //         anchor={{ x: 0.84, y: 1 }}
-                        //     >
-                        //     </Marker>
-                        // </MapView>
                         }
 
                         <IconLoc

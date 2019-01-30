@@ -582,5 +582,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         justifyContent:'center'
     },
+    textNilai: {
+        fontSize: 35,
+        fontWeight: '400',
+        alignContent: 'center',
+        textAlign: 'center',
+    },
 
 });

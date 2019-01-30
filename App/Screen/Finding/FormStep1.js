@@ -23,19 +23,6 @@ const FILE_PREFIX = Platform.OS === "ios" ? "" : "file://";
 
 class FormStep1 extends Component {
 
-    // static navigationOptions = {
-    //     headerStyle: {
-    //         backgroundColor: Colors.tintColor
-    //     },
-    //     title: 'Buat Laporan Temuan',
-    //     headerTintColor: '#fff',
-    //     headerTitleStyle: {
-    //         flex: 1,
-    //         fontSize: 18,
-    //         fontWeight: '400'
-    //     },
-    // };
-
     static navigationOptions = ({ navigation }) => {
         const { params = {} } = navigation.state;
         return {

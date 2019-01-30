@@ -39,8 +39,6 @@ class DetailFindingScreenRedesign extends Component {
             images: [],
             totalImages: TaskServices.query('TR_IMAGE', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
             totalImagesSesudah: TaskServices.query('TR_IMAGE', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
-            // totalImages: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SEBELUM'`),
-            // totalImagesSesudah: TaskServices.query('TR_IMAGE_FINDING', `TR_CODE='${ID}' AND STATUS_IMAGE='SESUDAH'`),
             data,
             progress: parseInt(data.PROGRESS),
             isDateTimePickerVisible: false,
@@ -184,7 +182,7 @@ class DetailFindingScreenRedesign extends Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
-        this.setState({ updatedDueDate: moment(date).format("YYYY-MM-DD") })
+        this.setState({ updatedDueDate: moment(date).format("YYYY-MM-DD HH:mm:ss") })
         this._hideDateTimePicker();
     };
 
@@ -228,7 +226,7 @@ class DetailFindingScreenRedesign extends Component {
             WERKS: this.state.data.WERKS,
             AFD_CODE: this.state.data.AFD_CODE,
             BLOCK_CODE: this.state.data.BLOCK_CODE,
-            INSERT_TIME: this.state.data.INSERT_TIME, //getTodayDate('YYYY-MM-DD HH:mm:ss'),
+            INSERT_TIME: this.state.data.INSERT_TIME,
             FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
             FINDING_DESC: this.state.data.FINDING_DESC,
             FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
@@ -241,8 +239,8 @@ class DetailFindingScreenRedesign extends Component {
             REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,
         }
 
-        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, save.DUE_DATE], indexData);
-        if (this.state.progress == 100) {
+        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, 'N', save.DUE_DATE], indexData);
+        if(this.state.progress == 100){
             this._saveImageUpdate();
         }
 
@@ -256,7 +254,7 @@ class DetailFindingScreenRedesign extends Component {
     }
 
     _saveImageUpdate() {
-        this.state.imgBukti.map(item => {
+        this.state.imgBukti.map(item=>{
             TaskServices.saveData('TR_IMAGE', item);
         })
     }
@@ -284,8 +282,8 @@ class DetailFindingScreenRedesign extends Component {
         let batasWaktu = '';
         if (this.state.updatedDueDate == 'Select Calendar') {
             batasWaktu = 'Batas waktu belum ditentukan'
-        } else {
-            batasWaktu = this.state.updatedDueDate
+        }else{
+            batasWaktu =  moment(this.state.updatedDueDate).format('LL')
         }
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
@@ -411,17 +409,14 @@ class DetailFindingScreenRedesign extends Component {
                             <Slider
                                 ref='sliderProgress'
                                 step={25}
-                                style={{ flex: 1 }}
-                                style={{ flex: 1 }}
-                                // thumbTouchSize={{ width: 40, height: 40 }}
-                                // disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
+                                style={{ flex:1 }}
                                 maximumValue={100}
                                 thumbStyle={styles.thumb}
                                 trackStyle={styles.track}
                                 value={this.state.progress}
                                 disabled={this.state.disabledProgress}
-                                minimumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brandSecondary}
-                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.brand : Colors.abuabu}
+                                minimumTrackTintColor={Colors.brandSecondary }
+                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brand}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -553,11 +548,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: '#9a9a9a',
         borderWidth: 1
-    },
-    thumb: {
-        width: 25,
-        height: 25,
-        borderRadius: 2,
+      },
+      thumb: {
+        width: 28,
+        height: 28,
+        borderRadius: 100,
         backgroundColor: '#eaeaea',
         borderColor: '#9a9a9a',
         borderWidth: 1
