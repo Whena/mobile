@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-    View, Image, TouchableOpacity, TouchableHighlight,StyleSheet, Text,
+    View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Text,
     Alert
 } from 'react-native'
 import Colors from '../../Constant/Colors'
@@ -25,12 +25,12 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import ImageSlider from 'react-native-image-slider';
 import { getTodayDate, changeFormatDate } from '../../Lib/Utils';
 
-class DetailFindingScreenRedesign extends Component{
+class DetailFindingScreenRedesign extends Component {
 
-    
-    constructor(props){
+
+    constructor(props) {
         super(props)
-        
+
         var ID = this.props.navigation.state.params.ID
         var data = TaskServices.findBy2('TR_FINDING', 'FINDING_CODE', ID);
         this.state = {
@@ -64,53 +64,115 @@ class DetailFindingScreenRedesign extends Component{
         headerTintColor: '#fff'
     };
 
-    componentWillMount(){
+    componentWillMount() {
 
-        this.state.totalImages.map(item=>{
+        this.state.totalImages.map(item => {
             this.state.images.push(item);
         });
 
-        this.state.totalImagesSesudah.map(item=>{
+        this.state.totalImagesSesudah.map(item => {
             this.state.images.push(item);
         })
 
     }
 
-    componentDidMount(){
-        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true: false
+    componentDidMount() {
+
+        if (this.state.totalImages.length == 0 && this.state.totalImagesSesudah == 0) {
+            this.getImageBaseOnFindingCode();
+        }
+        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true : false
         // alert(this.state.user.USER_AUTH_CODE)
-        if(!isSameUser){
-            this.setState({disabledProgress:true});
-        }else if(this.state.progress == 100){
-            this.setState({disabledProgress:true});
-        }else if(this.state.disabledProgress < 100 && isSameUser){
-            this.setState({disabledProgress:false});
+        if (!isSameUser) {
+            this.setState({ disabledProgress: true });
+        } else if (this.state.progress == 100) {
+            this.setState({ disabledProgress: true });
+        } else if (this.state.disabledProgress < 100 && isSameUser) {
+            this.setState({ disabledProgress: false });
+        }
+    }
+
+    getImageBaseOnFindingCode() {
+        console.log("FINDING CODE : " + this.state.data.FINDING_CODE);
+        const user = TaskServices.getAllData('TR_LOGIN')[0];
+        const url = "http://149.129.245.230:3012/images/" + this.state.data.FINDING_CODE;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache',
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.ACCESS_TOKEN}`,
+            }
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson)
+                if (responseJson.status) {
+                    console.log("Data Image : " + responseJson.data.length)
+                    if (responseJson.data > 0) {
+                        responseJson.data.map(item => {
+                            if (item.STATUS_IMAGE == 'SEBELUM') {
+                                this.state.images.push(item);
+                            }
+
+                            if (item.STATUS_IMAGE == 'SESUDAH') {
+                                this.state.images.push(item);
+                            }
+                        });
+                    } else {
+
+                    }
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+    }
+
+    //download image
+    async _downloadImageFinding(data) {
+        let isExist = await RNFS.exists(`${dirPhotoTemuan}/${data.IMAGE_NAME}`)
+        if (!isExist) {
+            var url = data.IMAGE_URL;
+            const { config, fs } = RNFetchBlob
+            let options = {
+                fileCache: true,
+                addAndroidDownloads: {
+                    useDownloadManager: true,
+                    notification: true,
+                    path: `${dirPhotoTemuan}/${data.IMAGE_NAME}`,
+                    description: 'Image'
+                }
+            }
+            config(options).fetch('GET', url).then((res) => {
+                //   alert("Success Downloaded " + res);
+            });
         }
     }
 
     getStatusImage(status) {
-        if (status == 'SEBELUM'){ 
+        if (status == 'SEBELUM') {
             return "Before"
         } else if ('SESUDAH') {
             return "After"
         }
     }
 
-    getColor(param){
-        switch(param){
-          case 'SELESAI':
-            return 'rgba(35, 144, 35, 0.7)';
-          case 'SEDANG DIPROSES':
-            return 'rgba(254, 178, 54, 0.7)';
-          case 'BARU':
-            return 'rgba(255, 77, 77, 0.7)';
-          default:
-            return '#ff7b25';
+    getColor(param) {
+        switch (param) {
+            case 'SELESAI':
+                return 'rgba(35, 144, 35, 0.7)';
+            case 'SEDANG DIPROSES':
+                return 'rgba(254, 178, 54, 0.7)';
+            case 'BARU':
+                return 'rgba(255, 77, 77, 0.7)';
+            default:
+                return '#ff7b25';
         }
     }
 
     onLoadImage = data => {
-        data.map(item=>{
+        data.map(item => {
             this.state.images.push(item);
             this.state.imgBukti.push(item);
         })
@@ -126,41 +188,41 @@ class DetailFindingScreenRedesign extends Component{
         this._hideDateTimePicker();
     };
 
-    _takePicture() { 
-        if(this.state.progress == 100){
-            this.props.navigation.navigate('BuktiKerja', {onLoadImage: this.onLoadImage, findingCode : this.state.id});
-        }else{
+    _takePicture() {
+        if (this.state.progress == 100) {
+            this.props.navigation.navigate('BuktiKerja', { onLoadImage: this.onLoadImage, findingCode: this.state.id });
+        } else {
             alert('Selesaikan Progress temuan kamu dulu')
         }
     }
 
-    getStatusTemuan(param){
-        if(param == 0){
+    getStatusTemuan(param) {
+        if (param == 0) {
             return 'BARU'
-        }else if(param == 100){
+        } else if (param == 100) {
             return 'SELESAI'
-        }else{
+        } else {
             return 'SEDANG DIPROSES'
         }
     }
 
-    validation(){
-        if(this.state.imgBukti.length < 1 && this.state.progress == 100){
+    validation() {
+        if (this.state.imgBukti.length < 1 && this.state.progress == 100) {
             alert('Kamu harus foto bukti kerja dulu')
-        }else if(this.state.disabledProgress){
+        } else if (this.state.disabledProgress) {
             alert('Kamu tidak bisa memproses temuan ini')
-        }else if(this.state.updatedDueDate == 'Select Calendar'){
+        } else if (this.state.updatedDueDate == 'Select Calendar') {
             alert('Kamu harus tentukan batas waktu temuan dulu')
-        }else{
+        } else {
             this._updateFinding()
         }
     }
 
-    _updateFinding() { 
-        let data = TaskServices.getAllData('TR_FINDING')     
+    _updateFinding() {
+        let data = TaskServices.getAllData('TR_FINDING')
         let indexData = R.findIndex(R.propEq('FINDING_CODE', this.state.data.FINDING_CODE))(data);
         let status = this.getStatusTemuan(this.state.progress);
-        
+
         var save = {
             FINDING_CODE: this.state.data.FINDING_CODE,
             WERKS: this.state.data.WERKS,
@@ -170,17 +232,17 @@ class DetailFindingScreenRedesign extends Component{
             FINDING_CATEGORY: this.state.data.FINDING_CATEGORY,
             FINDING_DESC: this.state.data.FINDING_DESC,
             FINDING_PRIORITY: this.state.data.FINDING_PRIORITY,
-            DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,        
+            DUE_DATE: this.state.updatedDueDate == "Select Calendar" ? this.state.data.DUE_DATE : this.state.updatedDueDate,
             STATUS: status,
             ASSIGN_TO: this.state.data.ASSIGN_TO,
             PROGRESS: this.state.progress,
             LAT_FINDING: this.state.data.LAT_FINDING,
             LONG_FINDING: this.state.data.LONG_FINDING,
-            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,    
+            REFFERENCE_INS_CODE: this.state.data.REFFERENCE_INS_CODE,
         }
 
-        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, 'N', save.DUE_DATE], indexData);
-        if(this.state.progress == 100){
+        TaskServices.updateFinding('TR_FINDING', [status, save.PROGRESS, save.DUE_DATE], indexData);
+        if (this.state.progress == 100) {
             this._saveImageUpdate();
         }
 
@@ -194,69 +256,75 @@ class DetailFindingScreenRedesign extends Component{
     }
 
     _saveImageUpdate() {
-        this.state.imgBukti.map(item=>{
+        this.state.imgBukti.map(item => {
             TaskServices.saveData('TR_IMAGE', item);
         })
     }
 
-    getContactName = (userAuth) =>{
+    getContactName = (userAuth) => {
         try {
             let data = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', userAuth);
-            return data.FULLNAME;            
+            return data.FULLNAME;
         } catch (error) {
             return ''
         }
     }
 
-    render(){        
+    render() {
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
         moment.locale();
-        let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LL');
+        // let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LL');
+        let dtInsertTime = moment(this.state.data.INSERT_TIME).format('LLL');
+
+        const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', this.state.data.INSERT_USER);
+        const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', this.state.data.BLOCK_CODE)
+        const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', this.state.data.BLOCK_CODE)
+        const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', this.state.data.WERKS)
 
         let batasWaktu = '';
-        if(this.state.updatedDueDate == 'Select Calendar'){
+        if (this.state.updatedDueDate == 'Select Calendar') {
             batasWaktu = 'Batas waktu belum ditentukan'
-        }else{
+        } else {
             batasWaktu = this.state.updatedDueDate
         }
-        return(
+        return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1 }}>
 
-                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, paddingLeft: 15, paddingRight: 15}}>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 15, paddingLeft: 15, paddingRight: 15 }}>
                         <Image style={{ marginRight: 16, width: 40, height: 40, borderRadius: 10 }}
                             source={require('../../Images/icon/ic_games_menu.png')}></Image>
                         <View style={{ flex: 1 }} >
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>Detail Temuan</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>{INSERT_USER.FULLNAME}</Text>
                             <Text style={{ fontSize: 12, color: 'grey', marginTop: 3 }}>
                                 {dtInsertTime}
                             </Text>
                         </View>
                     </View>
 
-                    <View style = {{flex:1}}>
+                    <View style={{ flex: 1 }}>
                         <View style={{
                             flex: 1,
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginTop: 16
                         }}>
-                            <View style={{height:200}}>
-                                <ImageSlider 
+                            <View style={{ height: 200 }}>
+                                <ImageSlider
                                     images={this.state.images}
                                     customSlide={({ index, item, style, width }) => (
                                         // It's important to put style here because it's got offset inside
-                                        <View key={index} style={[style, {backgroundColor:'yellow'}]}>                                      
+                                        <View key={index} style={[style, { backgroundColor: 'yellow' }]}>
                                             <View style={{
                                                 backgroundColor: '#5b5a5a', width: 80,
-                                                padding: 5, position: 'absolute', top:0 , right:10, zIndex: 1, justifyContent: 'center', alignItems: 'center', 
-                                                margin:10, borderRadius: 25,
+                                                padding: 5, position: 'absolute', top: 0, right: 10, zIndex: 1, justifyContent: 'center', alignItems: 'center',
+                                                margin: 10, borderRadius: 25,
                                             }}>
                                                 <Text style={{ fontSize: 10, color: 'white' }}>{this.getStatusImage(item.STATUS_IMAGE)}</Text>
                                             </View>
                                             <FastImage style={{ alignItems: 'center', width: '100%', height: '100%' }}
                                                 source={{
-                                                    uri: 'file://'+item.IMAGE_PATH_LOCAL,
+                                                    uri: 'file://' + item.IMAGE_PATH_LOCAL,
                                                     priority: FastImage.priority.normal,
                                                 }} />
                                             <View style={{
@@ -268,37 +336,39 @@ class DetailFindingScreenRedesign extends Component{
                                         </View>
                                     )}
                                     customButtons={(position, move) => (
-                                        <View style={{flex:1, flexDirection:'row',}}>
-                                        {this.state.images.map((image, index) => {
-                                            // return (
-                                            //   <TouchableHighlight
-                                            //     key={index}
-                                            //     underlayColor="#ccc"
-                                            //     onPress={() => move(index)}
-                                            //     style={{
-                                            //         alignItems: 'center',
-                                            //         justifyContent: 'center',
-                                            //         width: 6,
-                                            //         height: 6,
-                                            //         backgroundColor: 'white',
-                                            //         borderRadius: 100,}}
-                                            //   >
-                                            //   </TouchableHighlight>
-                                            // );
-                                        })}
+                                        <View style={{ flex: 1, flexDirection: 'row', }}>
+                                            {this.state.images.map((image, index) => {
+                                                // return (
+                                                //   <TouchableHighlight
+                                                //     key={index}
+                                                //     underlayColor="#ccc"
+                                                //     onPress={() => move(index)}
+                                                //     style={{
+                                                //         alignItems: 'center',
+                                                //         justifyContent: 'center',
+                                                //         width: 6,
+                                                //         height: 6,
+                                                //         backgroundColor: 'white',
+                                                //         borderRadius: 100,}}
+                                                //   >
+                                                //   </TouchableHighlight>
+                                                // );
+                                            })}
                                         </View>
                                     )}
                                 />
-                            </View>                            
-                        </View>                         
+                            </View>
+                        </View>
                     </View>
 
 
                     <View style={{ flex: 1, flexDirection: 'row', marginTop: 16, paddingLeft: 15, paddingRight: 15 }}>
                         <Image style={{ alignItems: 'stretch', width: 28, height: 40 }}
-                            source={require('../../Images/icon/ic_map_point_green.png')}></Image>
+                            source={require('../../Images/icon/ic_map_point_green.png')}>
+                        </Image>
+
                         <View style={{ flex: 2, marginLeft: 16 }}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{this.state.data.BLOCK_FULL_NAME}</Text>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Kategori </Text>
@@ -332,7 +402,7 @@ class DetailFindingScreenRedesign extends Component{
                         </View>
                     </View>
 
-                    <Text style={[styles.title,{paddingLeft: 15, paddingRight: 15}]}>Deskripsi:</Text>
+                    <Text style={[styles.title, { paddingLeft: 15, paddingRight: 15 }]}>Deskripsi:</Text>
                     <Text style={{ fontSize: 14, paddingLeft: 15, paddingRight: 15 }}> {this.state.data.FINDING_DESC}</Text>
 
                     <View style={{ flex: 1, paddingLeft: 15, paddingRight: 15 }}>
@@ -341,14 +411,17 @@ class DetailFindingScreenRedesign extends Component{
                             <Slider
                                 ref='sliderProgress'
                                 step={25}
-                                style={{ flex:1 }}
+                                style={{ flex: 1 }}
+                                style={{ flex: 1 }}
+                                // thumbTouchSize={{ width: 40, height: 40 }}
+                                // disabled={parseInt(this.state.PROGRESS) == 100 ? true : false}
                                 maximumValue={100}
                                 thumbStyle={styles.thumb}
                                 trackStyle={styles.track}
                                 value={this.state.progress}
                                 disabled={this.state.disabledProgress}
-                                minimumTrackTintColor={Colors.brandSecondary }
-                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brand}
+                                minimumTrackTintColor={this.state.disabledProgress ? Colors.abuabu : Colors.brandSecondary}
+                                // maximumTrackTintColor={this.state.disabledProgress ? Colors.brand : Colors.abuabu}
                                 onSlidingComplete={(value) => {
                                     if (parseInt(value) < parseInt(this.state.PROGRESS)) {
                                         var progress = R.clone(parseInt(this.state.PROGRESS))
@@ -375,9 +448,9 @@ class DetailFindingScreenRedesign extends Component{
                         </View>
                     </View>
 
-                    <View style={{flexDirection:'row', marginTop: 20, paddingLeft: 15, paddingRight: 15}}>
+                    <View style={{ flexDirection: 'row', marginTop: 20, paddingLeft: 15, paddingRight: 15 }}>
                         <Text style={styles.title}>Bukti Kerja:</Text>
-                        <Card style={[styles.cardContainer, {marginLeft: 15}]}>
+                        <Card style={[styles.cardContainer, { marginLeft: 15 }]}>
                             <TouchableOpacity style={{ padding: 40 }}
                                 onPress={() => { this._takePicture() }}
                                 disabled={this.state.disabledView}
@@ -428,7 +501,7 @@ const styles = StyleSheet.create({
         width: '60%',
         color: "#999",
         fontSize: 14
-    }, 
+    },
     title: {
         fontWeight: 'bold',
         fontSize: 15,
@@ -439,11 +512,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: '#eee',
         borderColor: '#ddd'
-    }, 
-    statusImg: {        
+    },
+    statusImg: {
         position: 'absolute',
         top: 10,
-        right: 15, 
+        right: 15,
         backgroundColor: Colors.brand,
         borderRadius: 25,
         padding: 15,
@@ -480,13 +553,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: '#9a9a9a',
         borderWidth: 1
-      },
-      thumb: {
-        width: 28,
-        height: 28,
-        borderRadius: 100,
+    },
+    thumb: {
+        width: 25,
+        height: 25,
+        borderRadius: 2,
         backgroundColor: '#eaeaea',
         borderColor: '#9a9a9a',
         borderWidth: 1
-      }
+    }
 })

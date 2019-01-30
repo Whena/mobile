@@ -190,7 +190,7 @@ const TR_FINDING = {
     properties: {
         FINDING_CODE: { type: 'string', optional: true },
         WERKS: { type: 'string', optional: true },
-        AFD_CODE: 'string',
+        AFD_CODE: { type: 'string', optional: true },
         BLOCK_CODE: 'string',
         FINDING_CATEGORY: 'string',
         FINDING_DESC: 'string',
@@ -202,7 +202,7 @@ const TR_FINDING = {
         LAT_FINDING: 'string',
         LONG_FINDING: 'string',
         REFFERENCE_INS_CODE: 'string',
-        INSERT_USER: 'string',
+        INSERT_USER: { type: 'string', optional: true },
         INSERT_TIME: { type: 'int', default: 0 },
         STATUS_SYNC: 'string'
     }

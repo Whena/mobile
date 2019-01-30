@@ -61,18 +61,22 @@ class HomeScreen extends React.Component {
     }
   }
 
-  willFocus = this.props.navigation.addListener(
-    'willFocus',
-    () => {
-      this._changeFilterList();
-    }
-  )
+  // willFocus = this.props.navigation.addListener(
+  //   'willFocus',
+  //   () => {
+  //     this._changeFilterList();
+  //   }
+  // )
 
-  componentWillUnmount() {
-    this.willFocus.remove()
-  }
+  // componentWillUnmount() {
+  //   this.willFocus.remove()
+  // }
 
   componentDidMount() {
+    RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+
+    // alert(TaskServices.getAllData('TM_INSPECTION_TRACK'));
+    console.log(JSON.stringify(TaskServices.getAllData('TM_INSPECTION_TRACK')))
     this._changeFilterList();
     this._deleteFinding();
     this._deleteInspeksiHeader();
@@ -84,7 +88,6 @@ class HomeScreen extends React.Component {
     const user_auth = login[0].USER_AUTH_CODE;
     const ref_role = login[0].REFFERENCE_ROLE;
     const loc_code = login[0].LOCATION_CODE;
-    const region_code = loc_code.substring(1, 2);
 
     console.log("USER AUTH CODE : " + user_auth);
     console.log("REFFERENCE ROLE : " + ref_role);
@@ -305,7 +308,7 @@ class HomeScreen extends React.Component {
       let valBatasWaktu = item.valBatasWaktu;
       let valAssignto = item.valAssignto;
 
-      let varBa = 'WERKS = ' + `"${ba}"`
+      let varBa = ' AND WERKS = ' + `"${ba}"`
       let varUserAuth = ' AND INSERT_USER = ' + `"${userAuth}"`
       let varStatus = ' AND STATUS = ' + `"${status}"`
       let varInsertTime = ' AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
@@ -313,35 +316,38 @@ class HomeScreen extends React.Component {
 
       let stBa;
       if (ba == 'Pilih Lokasi') {
-        stBa = 'WERKS CONTAINS[c] ' + `"${""}"`
+        stBa = ' AND WERKS CONTAINS ' + `"${""}"`
       } else {
         stBa = varBa
       }
 
       let stUserAuth;
       if (valAssignto == 'Pilih Pemberi Tugas') {
-        stUserAuth = ' AND INSERT_USER CONTAINS[c] ' + `"${""}"`
+        stUserAuth = ' AND INSERT_USER CONTAINS ' + `"${""}"`
       } else {
         stUserAuth = varUserAuth
       }
 
       let stStatus;
       if (status == 'Pilih Status') {
-        stStatus = ' AND STATUS CONTAINS[c] ' + `"${""}"`
+        stStatus = ' AND STATUS CONTAINS ' + `"${""}"`
       } else {
         stStatus = varStatus
       }
 
       let stInsertTime;
       if (valBatasWaktu == 'Pilih Batas Waktu') {
-        stInsertTime = ' AND INSERT_TIME CONTAINS[c] ' + `"${"0"}"`
+        stInsertTime = ' AND STATUS CONTAINS ' + `"${""}"`
       } else {
         stInsertTime = varInsertTime
       }
 
       // let data = query.filtered(`${varInsertTime} ${varStatus} ${varBa}`);
-      let data = query.filtered(`${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`);
-      console.log('Data Console Log : ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`)
+
+      let data = query.filtered(`AFD_CODE CONTAINS ""${stBa}${stUserAuth}${stStatus}${stInsertTime}`);
+      // let data = query.filtered('AFD_CODE CONTAINS[c] "" AND ' + `${stStatus}${stInsertTime}`);
+      // let data = query.filtered('AFD_CODE = "true" ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`);
+      // console.log('Data Console Log : ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`)
       console.log("Data Query : " + JSON.stringify(data));
       this.setState({ data });
     })
@@ -427,8 +433,9 @@ class HomeScreen extends React.Component {
     const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
     const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
 
-    const dt = item.DUE_DATE
     Moment.locale();
+    const dt = item.DUE_DATE
+    let dtInsertTime = Moment(this.state.data.INSERT_TIME).format('LLL');
     let batasWaktu;
     if (dt == '') {
       batasWaktu = 'Batas waktu belum ditentukan';
@@ -452,7 +459,10 @@ class HomeScreen extends React.Component {
             <CardItem>
               <Left>
                 <Thumbnail style={{ borderColor: 'grey', borderWidth: 0.5, height: 48, width: 48 }} source={require('../../Images/img_no_photo.jpg')} />
-                <Body><Text style={{ fontSize: 14 }}>{user}</Text></Body>
+                <Body>
+                  <Text style={{ fontSize: 14 }}>{user}</Text>
+                  <Text style={{ fontSize: 12 }}>{dtInsertTime}</Text>
+                </Body>
               </Left>
             </CardItem>
             <CardItem cardBody>
@@ -514,7 +524,7 @@ class HomeScreen extends React.Component {
         <Content>
           <StatusBar hidden={false} backgroundColor={Colors.tintColor} barStyle="light-content" />
           <View style={styles.sectionTimeline}>
-            <Text style={styles.textTimeline}>Timeline</Text>
+            <Text style={styles.textTimeline}>Temuan di Wilayahmu</Text>
             <View style={styles.rightSection}>
               <Text style={styles.textFilter}>Filter</Text>
               <TouchableOpacity onPress={() => this.props.navigation.navigate('Filter', { _changeFilterList: this._changeFilterList })} >
@@ -545,8 +555,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   textTimeline: {
-    width: 120,
-    fontSize: 20,
+    width: 250,
+    fontSize: 14,
     color: 'black'
   },
   textFilter: {
