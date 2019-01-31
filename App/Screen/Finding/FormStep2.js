@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavigationActions, StackActions, AsyncStorage } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 import {
     ScrollView, Text, FlatList, TextInput, TouchableOpacity, View, Image, Modal,
     BackHandler, Alert
@@ -133,11 +133,6 @@ class FormStep2 extends Component {
         this.getLocation();
         // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         // this.handleAndroidBackButton(this.exitAlert);
-        AsyncStorage.getItem('inspeksi', (error, result) => {
-            if (result) {
-                console.log(result);
-            }
-        });
     }
 
     componentWillUnmount() {

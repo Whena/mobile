@@ -28,7 +28,7 @@ class KondisiBaris2 extends Component {
             fontWeight: '400'
         },
         headerRight: (
-            <TouchableOpacity onPress={() => navigation.navigate('FormStep1')}>
+            <TouchableOpacity onPress={() => navigation.navigate('FindingFormNavigator')}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingRight: 16 }}>
                     <Entypo name='flashlight' size={24} color='white' />
                 </View>

@@ -4,7 +4,6 @@ import { Container, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left
 import { connect } from 'react-redux'
 import Icons from 'react-native-vector-icons/MaterialIcons'
 import Colors from '../../Constant/Colors'
-import homeData from '../../Data/home'
 import TaskServices from '../../Database/TaskServices'
 import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
@@ -64,13 +63,12 @@ class HomeScreen extends React.Component {
   willFocus = this.props.navigation.addListener(
     'willFocus',
     () => {
-      // this._changeFilterList();
-      this._initData();
+      this._initData();// this._changeFilterList();
     }
   )
 
   componentWillUnmount() {
-    this.willFocus.remove()
+    this.willFocus.remove();
   }
 
   componentDidMount() {
@@ -112,11 +110,8 @@ class HomeScreen extends React.Component {
       let wersArr = [];
       estateFilter.map(item => {
         const werksEst = item.WERKS
-        console.log("Estate Filter : " + JSON.stringify(werksEst));
         wersArr.push(werksEst);
       });
-
-      console.log("Estate Filter Array : " + wersArr);
 
       var query = 'WERKS == ';
       for (var i = 0; i < wersArr.length; i++) {
@@ -125,8 +120,6 @@ class HomeScreen extends React.Component {
           query += ` OR WERKS == `
         }
       }
-      console.log("QUERY : " + query)
-      console.log("REGION CODE : " + JSON.stringify(findingSorted.filtered(query)));
       findingFilter = findingSorted.filtered(`${query} AND ASSIGN_TO != "${user_auth}"`);
 
     } else if (ref_role == 'COMP_CODE') {
@@ -135,16 +128,14 @@ class HomeScreen extends React.Component {
       findingFilter = findingSorted.filtered(`WERKS = "${loc_code}" AND ASSIGN_TO != "${user_auth}"`);
     } else if (ref_role == 'AFD_CODE') {
       const werks = loc_code.substring(0, 4);
-      console.log("WERKS : " + werks);
       const afd_code = loc_code.substring(4, 5);
-      console.log("AFD CODE : " + afd_code);
 
       findingFilter = findingSorted.filtered(`WERKS = "${werks}" AND AFD_CODE = "${afd_code}" AND ASSIGN_TO != "${user_auth}"`);
     } else {
       findingFilter = finding.sorted('INSERT_TIME', true);
     }
 
-    return findingFilter;
+    this.setState({ data: findingFilter })
   }
 
   _getStatus() {
@@ -172,7 +163,7 @@ class HomeScreen extends React.Component {
       }
     })
 
-    console.log("Data Query Splash : " + JSON.stringify(this.state.dataMore7Hari));
+    // console.log("Data Query Splash : " + JSON.stringify(this.state.dataMore7Hari));
     let allData = this.state.dataMore7Hari;
     if (this.state.dataMore7Hari.length > 0) {
       this.state.dataMore7Hari.map(item => {
@@ -185,13 +176,13 @@ class HomeScreen extends React.Component {
 
   _deleteInspeksiHeader() {
     var data = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
-    console.log("TR_BLOCK_INSPECTION_H : " + JSON.stringify(data));
+    // console.log("TR_BLOCK_INSPECTION_H : " + JSON.stringify(data));
     var dataMore7Hari = [];
     var dataNoDate = [];
     var now = Moment(new Date());
 
     data.map(item => {
-      console.log("INSERT_TIME : " + item.INSERT_TIME);
+      // console.log("INSERT_TIME : " + item.INSERT_TIME);
       if (isEmpty(item.INSERT_TIME)) {
         dataNoDate.push(item)
       } else {
@@ -202,7 +193,7 @@ class HomeScreen extends React.Component {
       }
     })
 
-    console.log("Data Query Inspection Header : " + JSON.stringify(this.state.dataMore7HariHeader));
+    // console.log("Data Query Inspection Header : " + JSON.stringify(this.state.dataMore7HariHeader));
     let allData = this.state.dataMore7HariHeader;
     if (this.state.dataMore7HariHeader.length > 0) {
       this.state.dataMore7HariHeader.map(item => {
@@ -282,8 +273,7 @@ class HomeScreen extends React.Component {
   }
 
   _changeFilterList = data => {
-    console.log("Data Filter Home : " + JSON.stringify(data));
-    // this._initData();
+    // console.log("Data Filter Home : " + JSON.stringify(data));
     if (data == undefined) {
       this._initData();
       console.log("Masuk Default")
@@ -294,16 +284,17 @@ class HomeScreen extends React.Component {
   }
 
   _initFilterData(dataFilter) {
-    console.log("Array Data Filter : " + JSON.stringify(dataFilter));
+    // console.log("Array Data Filter : " + JSON.stringify(dataFilter));
     dataFilter.map(item => {
 
-      console.log("Data Filter Ba : " + item.ba);
-      console.log("Data Filter User Auth : " + item.userAuth);
-      console.log("Data Filter Status : " + item.status);
-      console.log("Data Filter Start Batas Waktu : " + item.stBatasWaktu);
-      console.log("Data Filter End Batas Waktu : " + item.endBatasWaktu);
-      console.log("Data Filter Val Batas Waktu : " + item.valBatasWaktu);
-      console.log("Data Filter Val Assignto : " + item.valAssignto);
+      // console.log("Data Filter Ba : " + item.ba);
+      // console.log("Data Filter User Auth : " + item.userAuth);
+      // console.log("Data Filter Status : " + item.status);
+      // console.log("Data Filter Start Batas Waktu : " + item.stBatasWaktu);
+      // console.log("Data Filter End Batas Waktu : " + item.endBatasWaktu);
+      // console.log("Data Filter Val Batas Waktu : " + item.valBatasWaktu);
+      // console.log("Data Filter Val Assignto : " + item.valAssignto);
+
 
       // let oldContacts = realm.objects('Contact').filtered('age > 2');
       let ba = item.ba;
@@ -318,7 +309,7 @@ class HomeScreen extends React.Component {
       let varUserAuth = ' AND INSERT_USER = ' + `"${userAuth}"`
       let varStatus = ' AND STATUS = ' + `"${status}"`
       let varInsertTime = ' AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
-      console.log("Query All : " + (varBa + varUserAuth + varStatus + varInsertTime));
+      // console.log("Query All : " + (varBa + varUserAuth + varStatus + varInsertTime));
 
       let stBa;
       if (ba == 'Pilih Lokasi') {
