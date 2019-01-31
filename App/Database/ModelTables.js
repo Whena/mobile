@@ -316,7 +316,7 @@ const TM_INSPECTION_TRACK = {
 const TM_TIME_TRACK = {
     name: 'TM_TIME_TRACK',
     properties: {
-        PARAMATER_GROUP: 'string',
+        PARAMETER_GROUP: 'string',
         PARAMETER_NAME: 'string',
         DESC: 'string',
         NO_URUT: { type: 'int', default: 0 }

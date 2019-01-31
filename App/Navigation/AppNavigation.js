@@ -29,13 +29,10 @@ import DetailBaris from '../Screen/Inspeksi/DetailBaris';
 
 import SyncScreen from '../Screen/Sync';
 import InboxScreen from '../Screen/Inbox';
-import test from '../Screen/Inspeksi/test';
 import FilterScreen from '../Screen/FilterScreen';
 import BisnisAreaScreen from '../Screen/BisnisArea';
 import CalendarsScreen from '../Screen/Calendar';
 import PemberiTugas from '../Screen/PemberiTugas';
-
-// import TestUpload from '../Screen/TestUpload'
 
 
 const main = createStackNavigator({
@@ -93,8 +90,9 @@ const main = createStackNavigator({
     KondisiBarisAkhir: { screen: KondisiBarisAkhir },
     SelesaiInspeksi: { screen: SelesaiInspeksi },
     DetailBaris: { screen: DetailBaris },
-    test: { screen: test },
+    // test: { screen: test },
     // TestUpload: {screen:TestUpload}
+    // slider: { screen: slider },
 
 }, {
         headerMode: 'screen',

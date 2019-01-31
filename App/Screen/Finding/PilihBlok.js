@@ -37,21 +37,6 @@ const alcatraz = {
 };
 
 class PilihBlok extends Component {
-
-    // static navigationOptions = {
-    //     headerStyle: {
-    //         backgroundColor: Colors.tintColor
-    //     },
-    //     title: 'Buat Inspeksi',
-    //     headerTintColor: '#fff',
-    //     headerTitleStyle: {
-    //         textAlign: "left",
-    //         flex: 1,
-    //         fontSize: 18,
-    //         fontWeight: '400',
-    //         marginHorizontal: 12
-    //     },
-    // }; 
     
     static navigationOptions = {
         header: null

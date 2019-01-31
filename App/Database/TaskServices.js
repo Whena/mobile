@@ -12,7 +12,7 @@ const TaskServices = {
     console.log('Save Data : ' + table + ' ' + JSON.stringify(obj));
 
     await RealmSchemas.write(() => {
-      saved = RealmSchemas.create(table, obj, true);
+      saved = RealmSchemas.create(table, obj);
     })
     return saved;
   },

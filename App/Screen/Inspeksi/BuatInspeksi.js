@@ -28,8 +28,8 @@ var uuid = require('react-native-uuid');
 import Geojson from 'react-native-geojson';
 
 const indonesia = require('../../Data/indonesia-province-simple.json')
-// const kaltim = require('../../Data/kalimantantimur.json')
-const kaltim = require('../../Data/skm.json')
+const kaltim = require('../../Data/kalimantantimur.json')
+// const kaltim = require('../../Data/skm.json')
 const alcatraz = {
     type: 'FeatureCollection',
     features: [
@@ -331,9 +331,9 @@ class BuatInspeksiRedesign extends Component {
             INSPECTION_SCORE: ''
         }        
 
-        let time = TaskService.getAllData('TM_TIME_TRACK')[0]
 
         //for track
+        let time = TaskService.getAllData('TM_TIME_TRACK')[0]
         let id = setInterval(()=> this.getLocation2(this.state.blokInspeksiCode), 10000);
         this.setState({intervalId:id})
 

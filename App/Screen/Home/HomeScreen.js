@@ -10,8 +10,8 @@ import ContactAction from '../../Redux/ContactRedux'
 import RegionAction from '../../Redux/RegionRedux'
 import Moment from 'moment';
 import R, { isEmpty } from 'ramda';
-import { changeFormatDate } from '../../Lib/Utils';
 var RNFS = require('react-native-fs');
+import { dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoTemuan, dirPhotoKategori } from '../../Lib/dirStorage';
 
 class HomeScreen extends React.Component {
 
@@ -60,22 +60,28 @@ class HomeScreen extends React.Component {
     }
   }
 
-  // willFocus = this.props.navigation.addListener(
-  //   'willFocus',
-  //   () => {
-  //     this._changeFilterList();
-  //   }
-  // )
+  willFocus = this.props.navigation.addListener(
+    'willFocus',
+    () => {
+      this._initData();// this._changeFilterList();
+    }
+  )
 
-  // componentWillUnmount() {
-  //   this.willFocus.remove()
-  // }
+  componentWillUnmount() {
+    this.willFocus.remove();
+  }
 
   componentDidMount() {
     this._changeFilterList();
     this._deleteFinding();
     this._deleteInspeksiHeader();
     RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+
+    
+    RNFS.mkdir(dirPhotoInspeksiBaris);
+    RNFS.mkdir(dirPhotoInspeksiSelfie);
+    RNFS.mkdir(dirPhotoTemuan);
+    RNFS.mkdir(dirPhotoKategori);
   }
 
   _initData() {
@@ -407,36 +413,14 @@ class HomeScreen extends React.Component {
 
     const nav = this.props.navigation
     const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', item.INSERT_USER);
-
-    let user;
-    if (INSERT_USER == undefined) {
-      user = 'User belum terdaftar. Hubungi Admin.';
-    } else {
-      user = INSERT_USER.FULLNAME;
-    }
-
-    const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', item.BLOCK_CODE)
-    const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', item.BLOCK_CODE)
-    const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', item.WERKS)
+    let user = INSERT_USER == undefined ? 'User belum terdaftar. Hubungi Admin.' : INSERT_USER.FULLNAME
 
     Moment.locale();
-    const dt = item.DUE_DATE
     let dtInsertTime = Moment(this.state.data.INSERT_TIME).format('LLL');
-    let batasWaktu;
-    if (dt == '') {
-      batasWaktu = 'Batas waktu belum ditentukan';
-    } else {
-      batasWaktu = Moment(dt).format('LL');
-    }
-
-
+    let batasWaktu = item.DUE_DATE == '' ? 'Batas waktu belum ditentukan' : Moment(item.DUE_DATE).format('LL');
+    
     const image = TaskServices.findBy2('TR_IMAGE', 'TR_CODE', item.FINDING_CODE);
-    let sources;
-    if (image == undefined) {
-      sources = require('../../Images/background.png')
-    } else {
-      sources = { uri: "file://" + image.IMAGE_PATH_LOCAL }
-    }
+    let sources = image == undefined ? require('../../Images/background.png') : { uri: "file://" + image.IMAGE_PATH_LOCAL }
 
     return (
       <View key={index}>
@@ -461,7 +445,7 @@ class HomeScreen extends React.Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Text style={{ fontSize: 14 }}>Lokasi : {BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
+                <Text style={{fontSize: 14}}>Lokasi : {this.getBlokName(item.BLOCK_CODE)}/{this.getEstateName(`${item.WERKS}${item.AFD_CODE}${item.BLOCK_CODE}`)}/{this.getEstateName(item.WERKS)}</Text>
                 <Text style={{ marginTop: 6, fontSize: 14 }}>Kategori : {this.getCategoryName(item.FINDING_CATEGORY)}</Text>
                 <Text style={{ marginTop: 6, fontSize: 14 }}>Ditugaskan kepada : {this.getContactName(item.ASSIGN_TO)}</Text>
                 <View style={{ flex: 1, flexDirection: 'row' }}>

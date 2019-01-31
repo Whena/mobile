@@ -90,6 +90,15 @@ class DetailFindingScreenRedesign extends Component {
         }
     }
 
+    showDate(){
+        let isSameUser = this.state.data.ASSIGN_TO == this.state.user.USER_AUTH_CODE ? true : false
+        if(isSameUser){
+            this._showDateTimePicker()
+        }else{
+            alert('Kami tidak bisa memproses temuan ini')
+        }
+    }
+
     getImageBaseOnFindingCode() {
         console.log("FINDING CODE : " + this.state.data.FINDING_CODE);
         const user = TaskServices.getAllData('TR_LOGIN')[0];
@@ -268,23 +277,46 @@ class DetailFindingScreenRedesign extends Component {
         }
     }
 
+    getEstateName(werks){
+        try {
+            let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+            return data.EST_NAME;
+        } catch (error) {
+            return '';
+        }    
+    }
+    
+    getBlokName(blockCode){
+        try {      
+          let data = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', blockCode);
+          return data.BLOCK_NAME;
+        } catch (error) {
+          return ''
+        }
+    }
+    
+    getStatusBlok(werk_afd_blok_code){
+        try {
+            // let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+            let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+            return data.MATURITY_STATUS;            
+        } catch (error) {
+            return ''
+        }
+    }
+
     render() {
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
         moment.locale();
-        // let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LL');
-        let dtInsertTime = moment(this.state.data.INSERT_TIME).format('LLL');
-
+        let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LLL');
         const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', this.state.data.INSERT_USER);
-        const BLOCK_NAME = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', this.state.data.BLOCK_CODE)
-        const MATURITY_STATUS = TaskServices.findBy2('TM_LAND_USE', 'BLOCK_CODE', this.state.data.BLOCK_CODE)
-        const EST_NAME = TaskServices.findBy2('TM_EST', 'WERKS', this.state.data.WERKS)
-
         let batasWaktu = '';
         if (this.state.updatedDueDate == 'Select Calendar') {
             batasWaktu = 'Batas waktu belum ditentukan'
         }else{
             batasWaktu =  moment(this.state.updatedDueDate).format('LL')
         }
+        let lokasiBlok = `${this.getBlokName(this.state.data.BLOCK_CODE)}/${this.getStatusBlok(this.state.data.BLOCK_CODE)}/${this.getEstateName(this.state.data.WERKS)}`
         return (
             <Container style={{ flex: 1, backgroundColor: 'white' }}>
                 <Content style={{ flex: 1 }}>
@@ -366,7 +398,7 @@ class DetailFindingScreenRedesign extends Component {
                         </Image>
 
                         <View style={{ flex: 2, marginLeft: 16 }}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{BLOCK_NAME.BLOCK_NAME}/{MATURITY_STATUS.MATURITY_STATUS}/{EST_NAME.EST_NAME}</Text>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{lokasiBlok}</Text>
 
                             <View style={styles.column}>
                                 <Text style={styles.label}>Kategori </Text>
@@ -381,7 +413,7 @@ class DetailFindingScreenRedesign extends Component {
                             <View style={styles.column}>
                                 <Text style={styles.label}>Batas Waktu </Text>
                                 {isEmpty(this.state.data.DUE_DATE) && (
-                                    <Text style={styles.item} onPress={this._showDateTimePicker} style={{ fontSize: 13, color: 'red' }}>: {batasWaktu} </Text>)}
+                                    <Text style={styles.item} onPress={this.showDate()} style={{ fontSize: 13, color: 'red' }}>: {batasWaktu} </Text>)}
                                 {!isEmpty(this.state.data.DUE_DATE) && (
                                     <Text style={styles.item}>: {moment(this.state.data.DUE_DATE).format('LL')} </Text>)}
                             </View>

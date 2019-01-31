@@ -108,7 +108,7 @@ class FormStep2 extends Component {
                 { step: '1', title: 'Ambil Photo' },
                 { step: '2', title: 'Tulis Keterangan' }
             ],
-            TRANS_CODE: `F${user.USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}`,//'F' + user.USER_AUTH_CODE + random({ length: 3 }).toUpperCase(),
+            TRANS_CODE: `F${user.USER_AUTH_CODE}${getTodayDate('YYMMDDHHmmss')}`,
             colorPriority: '#ddd',
             query: '',
             person: [],
@@ -293,11 +293,11 @@ class FormStep2 extends Component {
 
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
-    _handleDatePicked = (date) => {
+    _handleDatePicked = (date) => {        
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYY-MM-DD")})
         // this.setState({ batasWaktu: moment(date).format("LL"), batasWaktuSave: moment(date).format("YYYYMMDD")})
-
+        
         this.setState({ batasWaktu: moment(date).format("YYYY-MM-DD") })
         this._hideDateTimePicker();
     };
@@ -346,19 +346,18 @@ class FormStep2 extends Component {
     }
 
     changeBlok = data => {
-        if (data !== null) {
+        if(data !== null){
             this.setState({ blok: data.allShow, blockCode: data.blokCode, werks: data.werks, afdCode: data.afdCode });
         }
-
+        
     }
 
-    pilihKontak() {
-        if (isEmpty(this.state.blok)) {
+    pilihKontak(){
+        if(isEmpty(this.state.blok)){
             alert('kamu harus pilih lokasi dulu')
-        } else {
-            // Add Paramater by Aminju 30/01/2019 09:50
+        }else{
             this.props.navigation.navigate('PilihKontak', { changeContact: this.changeContact, afdCode: this.state.afdCode, werks: this.state.werks })
-        }
+        }        
     }
 
     render() {
@@ -497,7 +496,7 @@ class FormStep2 extends Component {
                             <View style={[style.item, { flex: 1, flexDirection: 'row' }]}>
                                 <Image style={{ alignItems: 'stretch', width: 20, height: 20, marginRight: 5 }}
                                     source={require('../../Images/icon/ic_calendar.png')} />
-                                <TouchableOpacity onPress={this._showDateTimePicker} disabled={this.state.disableCalendar}>
+                                <TouchableOpacity onPress={this._showDateTimePicker} disabled ={this.state.disableCalendar}>
                                     {isEmpty(this.state.batasWaktu) && (
                                         <Text style={{ fontSize: 14, color: '#999' }}> Select Calendar </Text>)}
                                     {!isEmpty(this.state.batasWaktu) && (
@@ -514,7 +513,7 @@ class FormStep2 extends Component {
                         />
                     </View>}
 
-                    {this.state.assignto == this.state.user.USER_AUTH_CODE && <View style={[style.line]} />}
+                    {this.state.assignto == this.state.user.USER_AUTH_CODE &&<View style={[style.line]} />}
 
                     <TouchableOpacity style={[style.button, { margin: 16 }]}
                         onPress={() => { this.validation() }}>

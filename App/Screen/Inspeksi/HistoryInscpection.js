@@ -16,6 +16,7 @@ export default class HistoryInspection extends Component {
     super(props);
     this.state = {      
       dataLogin: TaskServices.getAllData('TR_LOGIN'),
+      data: []
     }
   }
 
@@ -40,14 +41,8 @@ export default class HistoryInspection extends Component {
   
   renderAll =()=>{    
     var dataSorted = TaskServices.getAllData('TR_BARIS_INSPECTION');
-    let data = dataSorted.sorted('INSPECTION_DATE', true); //Taskservice.getAllData('TR_BLOCK_INSPECTION_H');
-    if (data !== null){
-      let arr = [];
-      data.map((item,index) => {
-        arr.push(this.renderList(item, index));
-      })
-      return <View>{arr}</View>;
-    }
+    let data = dataSorted.sorted('INSPECTION_DATE', true);
+    this.setState({ data })
   }
 
   getEstateName(werks){
@@ -70,7 +65,12 @@ export default class HistoryInspection extends Component {
     }
     let color = this.getColor(data.INSPECTION_RESULT);    
     let imgBaris = Taskservice.findByWithList('TR_IMAGE', ['TR_CODE', 'STATUS_IMAGE'], [data.BLOCK_INSPECTION_CODE, 'BARIS']);
-    let path = `file://${imgBaris[0].IMAGE_PATH_LOCAL}`;
+    let path = '';
+    try {
+      path = `file://${imgBaris[0].IMAGE_PATH_LOCAL}`;
+    } catch (error) {
+      path = '';
+    }
 
     
     let dataBlock = Taskservice.findBy2('TM_BLOCK', 'BLOCK_CODE', data.BLOCK_CODE);
@@ -249,7 +249,9 @@ export default class HistoryInspection extends Component {
   render() {
     return (  
       <ScrollView style={styles.container}>
-        {this.renderAll()}     
+        <View>
+            {this.state.data.map((data, idx) => this.renderList(data, idx))}
+        </View>
       </ScrollView >
     )
   }

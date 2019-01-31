@@ -161,17 +161,22 @@ class TakePhotoBaris extends Component {
     );
   }
 
-  insertDB() {
+  async insertDB() {
     RNFS.unlink(this.state.pathCache);
-    this.props.navigation.navigate('KondisiBaris1',
-    { 
-        fotoBaris: this.state.dataModel, 
-        inspeksiHeader: this.state.inspeksiHeader, 
-        dataUsual: this.state.dataUsual, 
-        statusBlok: this.state.statusBlok,
-        intervalId: this.state.intervalId,
-        dataInspeksi: this.state.dataInspeksi
-    });    
+    let isImageContain = await RNFS.exists(`file://${dirPhotoInspeksiBaris}/${this.state.dataModel.IMAGE_NAME}`);
+    if(isImageContain){
+      this.props.navigation.navigate('KondisiBaris1',
+      { 
+          fotoBaris: this.state.dataModel, 
+          inspeksiHeader: this.state.inspeksiHeader, 
+          dataUsual: this.state.dataUsual, 
+          statusBlok: this.state.statusBlok,
+          intervalId: this.state.intervalId,
+          dataInspeksi: this.state.dataInspeksi
+      }); 
+    }else{
+      alert('Ada kesalahan, Ulangi ambil gambar baris')
+    }   
   }
 
   renderImage() {

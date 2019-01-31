@@ -106,6 +106,11 @@ const create = () => {
         return api.post('/inspection-tracking', body);
     }
 
+    const postReset = body => {
+        api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`);
+        return api.post('/mobile-sync/reset', body);
+    }
+
     //GET
     const getCategory = () => {
         api.setHeader('Authorization', `Bearer ${user[0].ACCESS_TOKEN}`)
@@ -218,6 +223,7 @@ const create = () => {
         postContentLabel,
         postFinding,
         postInspeksiTrackingPath,
+        postReset,
 
         //Get
         getBlock,

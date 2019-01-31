@@ -497,10 +497,37 @@ class KondisiBarisAkhir extends Component{
                 INSPECTION_RESULT: '',
                 INSPECTION_SCORE: ''
             }
-            this.navigateScreen('TakeFotoBaris', params, modelInspeksi, model);
-        }
+            
+            if(this.state.from !== 'history'){
+                //for track
+                clearInterval(this.state.intervalId)
+                let time = TaskService.getAllData('TM_TIME_TRACK')[0]
+                let id = setInterval(()=> this.getLocation2(blokInspectionCode), 10000);
+                this.setState({intervalId: id})
+                this.navigateScreen('TakeFotoBaris', params, modelInspeksi, model);
+            }
+            
+        }        
         
-        
+    }
+
+    getLocation2(blokInsCode) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var lat = parseFloat(position.coords.latitude);
+                var lon = parseFloat(position.coords.longitude);
+                this.insertTrackLokasi(blokInsCode, lat, lon)               
+            },
+            (error) => {
+                // this.setState({ error: error.message, fetchingLocation: false })
+                let message = error && error.message ? error.message : 'Terjadi kesalahan ketika mencari lokasi anda !';
+                if (error && error.message == "No location provider available.") {
+                    message = "Mohon nyalakan GPS anda terlebih dahulu.";
+                }
+                // console.log(message);
+            }, // go here if error while fetch location
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
+        );
     }
 
     navigateScreen(screenName, params, inspeksiH, dataInspeksi) {

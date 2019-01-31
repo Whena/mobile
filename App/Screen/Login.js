@@ -12,9 +12,6 @@ import {
 } from 'react-native';
 
 import HandleBack from '../Component/Back'
-
-// import {Container, Content, Header} from 'native-base'
-// import Logo from '../Component/Logo';
 import Form from '../Component/Form';
 import { connect } from 'react-redux';
 import AuthAction from '../Redux/AuthRedux';
@@ -23,7 +20,6 @@ import { NavigationActions, StackActions } from 'react-navigation';
 import { isNil } from 'ramda';
 import TaskServices from '../Database/TaskServices';
 const IMEI = require('react-native-imei');
-var RNFS = require('react-native-fs');
 import RNFetchBlob from 'rn-fetch-blob'
 import { dirPhotoTemuan, dirPhotoInspeksiBaris, dirPhotoInspeksiSelfie, dirPhotoKategori } from '../Lib/dirStorage';
 
@@ -72,47 +68,81 @@ class Login extends Component {
         this.state.logOut = itemId
     }
 
-    checkUser(USER_AUTH_CODE){
-
-        let data = TaskServices.getAllData('TR_LOGIN')[0]
-        if(data !== undefined && USER_AUTH_CODE !== data.USER_AUTH_CODE){
-            TaskServices.deleteAllData('TR_LOGIN');
-            TaskServices.deleteAllData('TR_BLOCK_INSPECTION_H');
-            TaskServices.deleteAllData('TR_BLOCK_INSPECTION_D');
-            TaskServices.deleteAllData('TR_BARIS_INSPECTION');
-            TaskServices.deleteAllData('TR_IMAGE');
-            TaskServices.deleteAllData('TM_REGION');
-            TaskServices.deleteAllData('TM_COMP');
-            TaskServices.deleteAllData('TM_EST');
-            TaskServices.deleteAllData('TM_AFD');
-            TaskServices.deleteAllData('TM_BLOCK');
-            TaskServices.deleteAllData('TR_CATEGORY');
-            TaskServices.deleteAllData('TR_CONTACT');
-            TaskServices.deleteAllData('TR_FINDING');
-            TaskServices.deleteAllData('TM_KRITERIA');
-            TaskServices.deleteAllData('TM_LAND_USE');
-            TaskServices.deleteAllData('TM_CONTENT');
-            TaskServices.deleteAllData('TM_CONTENT_LABEL');
-            TaskServices.deleteAllData('TM_INSPECTION_TRACK');
-            TaskServices.deleteAllData('TM_TIME_TRACK');
-
-            RNFetchBlob.fs.unlink(`file://${dirPhotoTemuan}`)
-            RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiBaris}`)
-            RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiSelfie}`)
-            RNFetchBlob.fs.unlink(`file://${dirPhotoKategori}`)
-        }
-    }
-
     componentWillReceiveProps(newProps) {
         if (!isNil(newProps.auth)) {
             this.setState({ fetching: newProps.auth.fetching });
         }
         if (!isNil(newProps.auth.user)) {
-            this.checkUser(newProps.auth.user.USER_AUTH_CODE)
-            this.insertUser(newProps.auth.user);
-            this.navigateScreen('MainMenu');
+            this.checkUser(newProps.auth.user)
 
         }
+    }
+
+    checkUser(param){
+        if(TaskServices.getTotalData('TR_LOGIN') > 0){
+            let data = TaskServices.getAllData('TR_LOGIN')[0]
+            if(param.USER_AUTH_CODE !== data.USER_AUTH_CODE){
+                this.resetMobileSync(param, data.ACCESS_TOKEN)
+            }else{
+                TaskServices.deleteAllData('TR_LOGIN');         
+                this.insertUser(param);
+                this.navigateScreen('MainMenu');
+            }
+        }else{
+            this.resetMobileSync(param, param.ACCESS_TOKEN)
+        }
+    }
+
+    resetMobileSync(param, token){  
+        fetch('http://149.129.245.230:3008/api/mobile-sync/reset', {
+        method: 'POST',
+        headers: { 
+            'Cache-Control': 'no-cache',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' ,
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({RESET_SYNC: 1})
+        })
+        .then((response) => { 
+            return response.json();   
+        })
+        .then((data) => { 
+            // alert(data)
+            this.deleteAllTableAndFolder(param)   
+        });
+    }
+
+    deleteAllTableAndFolder(param){
+
+        TaskServices.deleteAllData('TR_LOGIN');
+        TaskServices.deleteAllData('TR_BLOCK_INSPECTION_H');
+        TaskServices.deleteAllData('TR_BLOCK_INSPECTION_D');
+        TaskServices.deleteAllData('TR_BARIS_INSPECTION');
+        TaskServices.deleteAllData('TR_IMAGE');
+        TaskServices.deleteAllData('TM_REGION');
+        TaskServices.deleteAllData('TM_COMP');
+        TaskServices.deleteAllData('TM_EST');
+        TaskServices.deleteAllData('TM_AFD');
+        TaskServices.deleteAllData('TM_BLOCK');
+        TaskServices.deleteAllData('TR_CATEGORY');
+        TaskServices.deleteAllData('TR_CONTACT');
+        TaskServices.deleteAllData('TR_FINDING');
+        TaskServices.deleteAllData('TM_KRITERIA');
+        TaskServices.deleteAllData('TM_LAND_USE');
+        TaskServices.deleteAllData('TM_CONTENT');
+        TaskServices.deleteAllData('TM_CONTENT_LABEL');
+        TaskServices.deleteAllData('TM_INSPECTION_TRACK');
+        TaskServices.deleteAllData('TM_TIME_TRACK');
+
+        RNFetchBlob.fs.unlink(`file://${dirPhotoTemuan}`)
+        RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiBaris}`)
+        RNFetchBlob.fs.unlink(`file://${dirPhotoInspeksiSelfie}`)
+        RNFetchBlob.fs.unlink(`file://${dirPhotoKategori}`)
+
+        
+        this.insertUser(param);
+        this.navigateScreen('MainMenu');
     }
 
     navigateScreen(screenName) {
@@ -126,37 +156,12 @@ class Login extends Component {
 
     onLogin(username, password) {
         Keyboard.dismiss();
-        var Imei = this.get_IMEI_Number();
-        //let data = {
-        //    username: username,
-        //    password: password,
-        //    imei: Imei
-        //}
-        // this.postLogin(data)
+        var Imei = this.get_IMEI_Number();     
+        // this.resetMobileSync('')
         this.props.authRequest({
             username: username,
             password: password,
             imei: Imei
-        });
-    }
-
-    postLogin(param){
-        fetch('http://149.129.245.230:3008/api/login', {
-        method: 'POST',
-        headers: { 
-            'Cache-Control': 'no-cache',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json' ,
-            // 'Authorization': `Bearer ${user.ACCESS_TOKEN}`
-        },
-        body:  JSON.stringify(param)
-        })
-        .then(function(response){ 
-            return response.json();   
-        })
-        .then(function(data){ 
-            alert(JSON.stringify(data))
-            console.log(data)
         });
     }
 

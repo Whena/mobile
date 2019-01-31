@@ -23,8 +23,9 @@ import { ContentLabelTypes } from '../Redux/ContentLabelRedux';
 import { FindingTypes } from '../Redux/FindingRedux';
 import { FindingImageTypes } from '../Redux/FindingImageRedux';
 import { FindingUploadTypes } from '../Redux/FindingUploadRedux';
-import { TMobileTypes} from '../Redux/TMobileRedux';
-import { ParamTrackTypes} from '../Redux/ParamTrackRedux'
+import { TMobileTypes } from '../Redux/TMobileRedux';
+import { ParamTrackTypes } from '../Redux/ParamTrackRedux';
+import { ResetTypes } from '../Redux/ResetRedux';
 
 /* ------------- Sagas ------------- */
 import { startup } from './StartupSagas';
@@ -46,6 +47,7 @@ import { getFindingImage } from './FindingImageSagas';
 import { postFindingData } from './FindingUploadSagas';
 import {postTMobileSync } from './TMobileSagas';
 import {getInspeksiParamTrackingPath } from './ParamTrackSagas';
+import {postReset } from './ResetSagas';
 
 //Add by Aminju
 import { getBlock, postBlock } from './BlockSagas'
@@ -95,6 +97,7 @@ export default function* root() {
 		takeLatest(FindingUploadTypes.FINDING_POST_DATA, postFindingData, miApi),		
 		takeLatest(TMobileTypes.TM_POST, postTMobileSync, miApi),
 		takeLatest(ParamTrackTypes.PARAM_TRACK_REQUEST, getInspeksiParamTrackingPath, miApi),
+		takeLatest(ResetTypes.RESET_POST, postReset, miApi),
 
 		fork(networkEventsListenerSaga, { timeout: 2000, checkConnectionInterval: 20000 })
 	]);

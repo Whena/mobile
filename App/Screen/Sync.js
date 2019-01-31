@@ -155,21 +155,6 @@ class SyncScreen extends React.Component {
     }
 
     //upload
-    loadDataFinding() {
-        let countData = TaskServices.getAllData('TR_FINDING');
-        var query = countData.filtered('STATUS_SYNC = "N"');
-        countData = query;
-
-        this.setState({ progressFindingData: 1, valueFindingDataUpload: countData.length, totalFindingDataUpload: countData.length});
-        if (countData.length > 0) {
-            for(var i=0; i < countData.length; i++){
-                this.kirimFinding(countData[i]);
-            }
-        } else {
-            this.setState({ progressFindingData: 1, valueFindingDataUpload: 0, totalFindingDataUpload: 0  });
-        }
-    }
-
     loadData() {
         try {
             let dataHeader = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
@@ -180,8 +165,7 @@ class SyncScreen extends React.Component {
                 progressInspeksiHeader: 1, 
                 valueInspeksiHeaderUpload: countData.length, 
                 totalInspeksiHeaderUpload: countData.length,
-            });
-            
+            });      
             
             if (countData.length > 0) {
                 for(var i=0; i < countData.length; i++){
@@ -214,26 +198,55 @@ class SyncScreen extends React.Component {
                     }
                 })
             }
-        } catch (error) {
-            console.log(error)
+        } catch (error) {            
         }
+        
+        this.loadDataFinding();
+        // this.loadDataInspectionTrack();
+        
+    }
+
+    loadDataFinding() {
+        try {
+            let countData = TaskServices.getAllData('TR_FINDING');
+            var query = countData.filtered('STATUS_SYNC = "N"');
+            countData = query;
+
+            this.setState({ progressFindingData: 1, valueFindingDataUpload: countData.length, totalFindingDataUpload: countData.length});
+            if (countData.length > 0) {
+                for(var i=0; i < countData.length; i++){
+                    this.kirimFinding(countData[i]);
+                }
+            } else {
+                this.setState({ progressFindingData: 1, valueFindingDataUpload: 0, totalFindingDataUpload: 0  });
+            }
+        } catch (error) {            
+        }        
+        // this.props.findingRequest();        
+        this.loadDataInspectionTrack();
     }
 
     loadDataInspectionTrack() {
-        let dataHeader = TaskServices.getAllData('TM_INSPECTION_TRACK');
-        var query = dataHeader.filtered('STATUS_SYNC = "N"');
-        let countData = query;
-        this.setState({ progressInspectionTrack: 1, valueInspectionTrack: countData.length, totalInspectionTrack: countData.length });
-        if (countData.length > 0) {
-            for(var i=0; i < countData.length; i++){
-                this.kirimInspectionTrack(countData[i]);
+        try {            
+            let dataHeader = TaskServices.getAllData('TM_INSPECTION_TRACK');
+            var query = dataHeader.filtered('STATUS_SYNC = "N"');
+            let countData = query;
+            this.setState({ progressInspectionTrack: 1, valueInspectionTrack: countData.length, totalInspectionTrack: countData.length });
+            if (countData.length > 0) {
+                for(var i=0; i < countData.length; i++){
+                    this.kirimInspectionTrack(countData[i]);
+                }
+            } else {
+                this.setState({ progressInspectionTrack: 1, valueInspectionTrack: 0, totalInspectionTrack: 0  });
             }
-        } else {
-            this.setState({ progressInspectionTrack: 1, valueInspectionTrack: 0, totalInspectionTrack: 0  });
+        } catch (error) {
+            
         }
+        this.props.blockRequest();
     }
 
     fetchingData(URL, dataPost, table, idInspection){
+        const user = TaskServices.getAllData('TR_LOGIN')[0];
         fetch(URL, {
             method: 'POST',
             headers: { 
@@ -300,7 +313,6 @@ class SyncScreen extends React.Component {
             let allData = TaskServices.getAllData('TR_FINDING')
             let indexData = R.findIndex(R.propEq('FINDING_CODE', param.FINDING_CODE))(allData);
             TaskServices.updateInspeksiSync('TR_FINDING', 'Y', indexData);
-            // TaskServices.updateFindingSync('TR_FINDING', [param.PROGRESS, 'Y', param.DUE_DATE], indexData);
         }
     }
 
@@ -339,7 +351,7 @@ class SyncScreen extends React.Component {
             STATUS_SYNC: 'Y',
             SYNC_TIME: getTodayDate('YYYYMMDDHHmmss'),
             INSERT_USER: user.USER_AUTH_CODE,
-            INSERT_TIME: convertTimestampToDate(result, 'YYYYMMDDHHmmss')
+            INSERT_TIME: convertTimestampToDate(result.INSERT_TIME, 'YYYYMMDDHHmmss')
         }
         this.fetchingData('http://149.129.245.230:3008/api/inspection-detail', data, 'detailHeader', '');
     }
@@ -384,7 +396,7 @@ class SyncScreen extends React.Component {
     }    
 
     async kirimImage() {
-        try {
+        try {            
             const user = TaskServices.getAllData('TR_LOGIN')[0];
             let all = TaskServices.getAllData('TR_IMAGE')
             var dataImage = TaskServices.query('TR_IMAGE', `STATUS_SYNC = 'N'`);
@@ -440,14 +452,18 @@ class SyncScreen extends React.Component {
                             let indexData = R.findIndex(R.propEq('IMAGE_CODE', model.IMAGE_CODE))(data);
                             TaskServices.deleteRecord('TR_IMAGE', indexData)
                         } 
-                                       
+                                        
                     })
                 }         
             }
+            this.setState({ progressUploadImage: 1, valueImageUpload: 0, totalImagelUpload: 0  });
         } catch (error) {
             
         }
-        this.setState({ progressUploadImage: 1, valueImageUpload: 0, totalImagelUpload: 0  });
+
+        this.loadData();
+        // this.loadDataFinding();
+        // this.loadDataInspectionTrack();
 
     }
 
@@ -491,7 +507,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_BLOCK', 'WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE);
             }); 
         }
-        // this._postMobileSync("block");
+        this._postMobileSync("block");
     }
 
     _crudTM_Afd(data) {   
@@ -523,7 +539,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_AFD', 'WERKS_AFD_CODE', item.WERKS_AFD_CODE);
             });  
         }        
-        // this._postMobileSync("afdeling");
+        this._postMobileSync("afdeling");
     }
 
     _crudTM_Region(data) {
@@ -553,7 +569,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_REGION', 'REGION_CODE', item.REGION_CODE);
             });  
         }   
-        // this._postMobileSync("region");
+        this._postMobileSync("region");
     }
 
     _crudTM_Est(data) {
@@ -582,7 +598,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_EST', 'WERKS', item.WERKS);
             });  
         }   
-        // this._postMobileSync("est");
+        this._postMobileSync("est");
     }
 
     _crudTM_LandUse(data) {
@@ -612,6 +628,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', item.WERKS_AFD_BLOCK_CODE);
             });  
         }
+        this._postMobileSync("land-use");
     }
 
     _crudTM_Comp(data) {
@@ -641,7 +658,7 @@ class SyncScreen extends React.Component {
                 this.deleteData('TM_COMP', 'COMP_CODE', item.COMP_CODE);
             });  
         }        
-        // this._postMobileSync("comp");
+        this._postMobileSync("comp");
     }
 
     _crudTM_Content(data) {
@@ -658,7 +675,7 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TM_CONTENT');
             this.setState({ progressContent: 1, valueContentDownload: countDataInsert, totalContentDownload: 0 })
         }
-        // this._postMobileSync("content");
+        this._postMobileSync("content");
     }
 
     _crudTM_ContentLabel(data) {
@@ -675,7 +692,7 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TM_CONTENT_LABEL');
             this.setState({ progressContentLabel: 1, valueContentLabelDownload: countDataInsert, totalContentLabelDownload: 0 })
         }
-        // this._postMobileSync("content-label");
+        this._postMobileSync("content-label");
     }
 
     _crudTM_Kriteria(data) {
@@ -692,7 +709,7 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TM_KRITERIA');
             this.setState({ progressKriteria: 1, valueKriteriaDownload: countDataInsert, totalKriteriaDownload: 0  })
         }
-        // this._postMobileSync("kriteria");
+        this._postMobileSync("kriteria");
     }
 
     _crudTM_Finding(data) {
@@ -710,19 +727,18 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TR_FINDING');
             this.setState({ progressFinding: 1, valueFindingDownload: countDataInsert, totalFindingDownload: 0 })
         }
-        //if (data.ubah.length > 0 && allData.length > 0) {alert('masuk')}
-        // if (data.ubah.length > 0 && allData.length > 0) {
-        //     data.ubah.map(item => {
-        //         let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
-        //         TaskServices.updateFindingDownload(item, indexData)
-        //     })
-        // }
-        // if(data.hapus.length > 0 && allData.length > 0){
-        //     data.hapus.map(item =>{
-        //         this.deleteData('TR_FINDING', 'FINDING_CODE', item.FINDING_CODE);
-        //     });  
-        // }   
-        // this._postMobileSync("finding");
+        if (data.ubah.length > 0 && allData.length > 0) {
+            data.ubah.map(item => {
+                let indexData = R.findIndex(R.propEq('FINDING_CODE', item.FINDING_CODE))(allData);
+                TaskServices.updateFindingDownload(item, indexData)
+            })
+        }
+        if(data.hapus.length > 0 && allData.length > 0){
+            data.hapus.map(item =>{
+                this.deleteData('TR_FINDING', 'FINDING_CODE', item.FINDING_CODE);
+            });  
+        }   
+        this._postMobileSync("finding");
     }
 
     _crudTM_Category(data) {
@@ -740,7 +756,7 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TR_CATEGORY');
             this.setState({ progressCategory: 1, valueCategoryDownload: countDataInsert, totalCategoryDownload: 0 })
         }
-        // this._postMobileSync("category");
+        this._postMobileSync("category");
     }
 
 
@@ -759,7 +775,7 @@ class SyncScreen extends React.Component {
             let countDataInsert = TaskServices.getTotalData('TR_CONTACT');
             this.setState({ progressContact: 1,valueContactDownload: countDataInsert, totalContactDownload: 0 })
         }
-        // this._postMobileSync("contact");
+        this._postMobileSync("contact");
     }
 
     _crudTM_Finding_Image(data) {
@@ -792,34 +808,10 @@ class SyncScreen extends React.Component {
     }
 
     _crudTM_Inspeksi_Param(data) {
-        // alert(JSON.stringify(data))
-        // let datas = {
-        //     PARAMATER_GROUP: data.PARAMATER_GROUP,
-        //     PARAMETER_NAME: data.PARAMETER_NAME,
-        //     DESC: data.DESC,
-        //     NO_URUT: parseInt(data.NO_URUT)
-        // }
-        // TaskServices.saveData('TM_TIME_TRACK', datas)
-        // // TaskServices.saveData('TM_PARAM', data);
-        // let countDataInsert = TaskServices.getTotalData('TM_PARAM');
-        // this.setState({ progressParamInspection: 1, valueParamInspection: countDataInsert, totalParamInspection: 1 })
-        // if (data.length > 0) {
-        //     for (var i = 1; i <= data.length; i++) {
-        //         this.setState({ progressParamInspection: i / data.length, totalParamInspection: data.length });
-        //     }
-        //     data.map(item => {
-        //         TaskServices.saveData('TM_TIME_TRACK', item);
-        //         let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-        //         this.setState({ valueFindingImageDownload: countDataInsert });
-        //     });
-        // } else {
-        //     let countDataInsert = TaskServices.getTotalData('TM_TIME_TRACK');
-        //     this.setState({ progressParamInspection: 1, valueParamInspection: countDataInsert, totalParamInspection: 0 })
-        // }
-        
-        this.setState({ progressParamInspection: 1, valueParamInspection: 1, totalParamInspection: 1 })
-
+        TaskServices.saveData('TM_TIME_TRACK', data);       
+        this.setState({ progressParamInspection: 1, valueParamInspection: 1, totalParamInspection: 1 });
         this.setState({ showButton: true });
+        RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
         alert('Sync Data Selesai')
     }
 
@@ -868,11 +860,6 @@ class SyncScreen extends React.Component {
 
     _onSync() {
 
-        this.kirimImage();
-        this.loadData();
-        this.loadDataFinding();
-        this.loadDataInspectionTrack();
-
         this.setState({
             downloadBlok: false,
             downloadAfd: false,
@@ -913,8 +900,12 @@ class SyncScreen extends React.Component {
 
         });
 
+        //POST TRANSAKSI
+        this.kirimImage();
+        // this.loadDataFinding();
+
         // GET DATA MASTER
-        this.props.blockRequest();
+        // this.props.blockRequest();
         // this.props.afdRequest();
         // this.props.regionRequest();
         // this.props.estRequest();
@@ -1057,8 +1048,6 @@ class SyncScreen extends React.Component {
                 this._crudTM_Inspeksi_Param(dataJSON);
             }
         } 
-
-        RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
     }
 

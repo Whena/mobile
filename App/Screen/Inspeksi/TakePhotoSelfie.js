@@ -148,19 +148,24 @@ class TakePhotoSelfie extends Component{
       });
     }
 
-    insertDB(){      
+    async insertDB(){      
       RNFS.unlink(this.state.pathCache);
-      this.props.navigation.navigate('KondisiBarisAkhir',{
-        fotoSelfie: this.state.dataModel,
-        inspeksiHeader: this.state.inspeksiHeader, 
-        fotoBaris: this.state.fotoBaris,
-        kondisiBaris1: this.state.kondisiBaris1, 
-        kondisiBaris2: this.state.kondisiBaris2, 
-        dataUsual: this.state.dataUsual,
-        statusBlok:this.state.statusBlok,
-        intervalId: this.state.intervalId,
-        dataInspeksi: this.state.dataInspeksi
-      });    
+      let isImageContain = await RNFS.exists(`file://${dirPhotoInspeksiSelfie}/${this.state.dataModel.IMAGE_NAME}`);
+      if(isImageContain){
+        this.props.navigation.navigate('KondisiBarisAkhir',{
+          fotoSelfie: this.state.dataModel,
+          inspeksiHeader: this.state.inspeksiHeader, 
+          fotoBaris: this.state.fotoBaris,
+          kondisiBaris1: this.state.kondisiBaris1, 
+          kondisiBaris2: this.state.kondisiBaris2, 
+          dataUsual: this.state.dataUsual,
+          statusBlok:this.state.statusBlok,
+          intervalId: this.state.intervalId,
+          dataInspeksi: this.state.dataInspeksi
+        }); 
+      }else{
+        alert('Ada kesalahan, Ulangi ambil gambar selfie')
+      }        
 
     }
   
