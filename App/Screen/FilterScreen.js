@@ -122,7 +122,7 @@ class FilterScreen extends React.Component {
             case 'key3':
                 return 'SELESAI';
             default:
-                return 'BARU';
+                return 'Pilih Status';
         }
     }
 

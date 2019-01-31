@@ -119,13 +119,15 @@ class DetailFindingScreenRedesign extends Component {
                     console.log("Data Image : " + responseJson.data.length)
                     if (responseJson.data > 0) {
                         responseJson.data.map(item => {
-                            if (item.STATUS_IMAGE == 'SEBELUM') {
-                                this.state.images.push(item);
-                            }
+                            this._downloadImageFinding(item);
+                            // if (item.STATUS_IMAGE == 'SEBELUM') {
 
-                            if (item.STATUS_IMAGE == 'SESUDAH') {
-                                this.state.images.push(item);
-                            }
+                            //     this.state.images.push(item);
+                            // }
+
+                            // if (item.STATUS_IMAGE == 'SESUDAH') {
+                            //     this.state.images.push(item);
+                            // }
                         });
                     } else {
 
@@ -309,6 +311,8 @@ class DetailFindingScreenRedesign extends Component {
         const category = TaskServices.findBy2('TR_CATEGORY', 'CATEGORY_CODE', this.state.data.FINDING_CATEGORY);
         moment.locale();
         let dtInsertTime = moment(changeFormatDate("" + this.state.data.INSERT_TIME, "YYYY-MM-DD hh-mm-ss")).format('LLL');
+        // let dtInsertTime = moment(this.state.data.INSERT_TIME).format('LLL');
+
         const INSERT_USER = TaskServices.findBy2('TR_CONTACT', 'USER_AUTH_CODE', this.state.data.INSERT_USER);
         let batasWaktu = '';
         if (this.state.updatedDueDate == 'Select Calendar') {

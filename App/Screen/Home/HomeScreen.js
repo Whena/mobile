@@ -4,6 +4,7 @@ import { Container, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left
 import { connect } from 'react-redux'
 import Icons from 'react-native-vector-icons/MaterialIcons'
 import Colors from '../../Constant/Colors'
+import homeData from '../../Data/home'
 import TaskServices from '../../Database/TaskServices'
 import CategoryAction from '../../Redux/CategoryRedux'
 import ContactAction from '../../Redux/ContactRedux'
@@ -63,19 +64,20 @@ class HomeScreen extends React.Component {
   willFocus = this.props.navigation.addListener(
     'willFocus',
     () => {
-      this._initData();// this._changeFilterList();
+      // this._changeFilterList();
+      this._initData();
     }
   )
 
   componentWillUnmount() {
-    this.willFocus.remove();
+    this.willFocus.remove()
   }
 
   componentDidMount() {
-    this._changeFilterList();
+    RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
+    // this._changeFilterList();
     this._deleteFinding();
     this._deleteInspeksiHeader();
-    RNFS.copyFile(TaskServices.getPath(), 'file:///storage/emulated/0/MobileInspection/data.realm');
 
     
     RNFS.mkdir(dirPhotoInspeksiBaris);
@@ -85,12 +87,18 @@ class HomeScreen extends React.Component {
   }
 
   _initData() {
+    this.setState({ data: this._filterHome() })
+  }
 
+  _filterHome() {
     const login = TaskServices.getAllData('TR_LOGIN');
     const user_auth = login[0].USER_AUTH_CODE;
     const ref_role = login[0].REFFERENCE_ROLE;
     const loc_code = login[0].LOCATION_CODE;
-    const region_code = loc_code.substring(1, 2);
+
+    console.log("USER AUTH CODE : " + user_auth);
+    console.log("REFFERENCE ROLE : " + ref_role);
+    console.log("LOCATION CODE : " + loc_code);
 
     var finding = TaskServices.getAllData('TR_FINDING');
     var findingSorted = finding.sorted('INSERT_TIME', true);
@@ -104,8 +112,11 @@ class HomeScreen extends React.Component {
       let wersArr = [];
       estateFilter.map(item => {
         const werksEst = item.WERKS
+        console.log("Estate Filter : " + JSON.stringify(werksEst));
         wersArr.push(werksEst);
       });
+
+      console.log("Estate Filter Array : " + wersArr);
 
       var query = 'WERKS == ';
       for (var i = 0; i < wersArr.length; i++) {
@@ -114,6 +125,8 @@ class HomeScreen extends React.Component {
           query += ` OR WERKS == `
         }
       }
+      console.log("QUERY : " + query)
+      console.log("REGION CODE : " + JSON.stringify(findingSorted.filtered(query)));
       findingFilter = findingSorted.filtered(`${query} AND ASSIGN_TO != "${user_auth}"`);
 
     } else if (ref_role == 'COMP_CODE') {
@@ -122,14 +135,16 @@ class HomeScreen extends React.Component {
       findingFilter = findingSorted.filtered(`WERKS = "${loc_code}" AND ASSIGN_TO != "${user_auth}"`);
     } else if (ref_role == 'AFD_CODE') {
       const werks = loc_code.substring(0, 4);
+      console.log("WERKS : " + werks);
       const afd_code = loc_code.substring(4, 5);
+      console.log("AFD CODE : " + afd_code);
 
       findingFilter = findingSorted.filtered(`WERKS = "${werks}" AND AFD_CODE = "${afd_code}" AND ASSIGN_TO != "${user_auth}"`);
     } else {
       findingFilter = finding.sorted('INSERT_TIME', true);
     }
 
-    this.setState({ data: findingFilter })
+    return findingFilter;
   }
 
   _getStatus() {
@@ -157,7 +172,7 @@ class HomeScreen extends React.Component {
       }
     })
 
-    // console.log("Data Query Splash : " + JSON.stringify(this.state.dataMore7Hari));
+    console.log("Data Query Splash : " + JSON.stringify(this.state.dataMore7Hari));
     let allData = this.state.dataMore7Hari;
     if (this.state.dataMore7Hari.length > 0) {
       this.state.dataMore7Hari.map(item => {
@@ -170,13 +185,13 @@ class HomeScreen extends React.Component {
 
   _deleteInspeksiHeader() {
     var data = TaskServices.getAllData('TR_BLOCK_INSPECTION_H');
-    // console.log("TR_BLOCK_INSPECTION_H : " + JSON.stringify(data));
+    console.log("TR_BLOCK_INSPECTION_H : " + JSON.stringify(data));
     var dataMore7Hari = [];
     var dataNoDate = [];
     var now = Moment(new Date());
 
     data.map(item => {
-      // console.log("INSERT_TIME : " + item.INSERT_TIME);
+      console.log("INSERT_TIME : " + item.INSERT_TIME);
       if (isEmpty(item.INSERT_TIME)) {
         dataNoDate.push(item)
       } else {
@@ -187,7 +202,7 @@ class HomeScreen extends React.Component {
       }
     })
 
-    // console.log("Data Query Inspection Header : " + JSON.stringify(this.state.dataMore7HariHeader));
+    console.log("Data Query Inspection Header : " + JSON.stringify(this.state.dataMore7HariHeader));
     let allData = this.state.dataMore7HariHeader;
     if (this.state.dataMore7HariHeader.length > 0) {
       this.state.dataMore7HariHeader.map(item => {
@@ -267,7 +282,8 @@ class HomeScreen extends React.Component {
   }
 
   _changeFilterList = data => {
-    // console.log("Data Filter Home : " + JSON.stringify(data));
+    console.log("Data Filter Home : " + JSON.stringify(data));
+    // this._initData();
     if (data == undefined) {
       this._initData();
       console.log("Masuk Default")
@@ -278,18 +294,16 @@ class HomeScreen extends React.Component {
   }
 
   _initFilterData(dataFilter) {
-    // console.log("Array Data Filter : " + JSON.stringify(dataFilter));
+    console.log("Array Data Filter : " + JSON.stringify(dataFilter));
     dataFilter.map(item => {
-      var query = TaskServices.getAllData('TR_FINDING');
 
-      // console.log("Data Filter Ba : " + item.ba);
-      // console.log("Data Filter User Auth : " + item.userAuth);
-      // console.log("Data Filter Status : " + item.status);
-      // console.log("Data Filter Start Batas Waktu : " + item.stBatasWaktu);
-      // console.log("Data Filter End Batas Waktu : " + item.endBatasWaktu);
-      // console.log("Data Filter Val Batas Waktu : " + item.valBatasWaktu);
-      // console.log("Data Filter Val Assignto : " + item.valAssignto);
-
+      console.log("Data Filter Ba : " + item.ba);
+      console.log("Data Filter User Auth : " + item.userAuth);
+      console.log("Data Filter Status : " + item.status);
+      console.log("Data Filter Start Batas Waktu : " + item.stBatasWaktu);
+      console.log("Data Filter End Batas Waktu : " + item.endBatasWaktu);
+      console.log("Data Filter Val Batas Waktu : " + item.valBatasWaktu);
+      console.log("Data Filter Val Assignto : " + item.valAssignto);
 
       // let oldContacts = realm.objects('Contact').filtered('age > 2');
       let ba = item.ba;
@@ -304,7 +318,7 @@ class HomeScreen extends React.Component {
       let varUserAuth = ' AND INSERT_USER = ' + `"${userAuth}"`
       let varStatus = ' AND STATUS = ' + `"${status}"`
       let varInsertTime = ' AND INSERT_TIME >= ' + `"${stBatasWaktu}"` + ' AND INSERT_TIME <= ' + `"${endBatasWaktu}"`
-      // console.log("Query All : " + (varBa + varUserAuth + varStatus + varInsertTime));
+      console.log("Query All : " + (varBa + varUserAuth + varStatus + varInsertTime));
 
       let stBa;
       if (ba == 'Pilih Lokasi') {
@@ -334,13 +348,12 @@ class HomeScreen extends React.Component {
         stInsertTime = varInsertTime
       }
 
-      // let data = query.filtered(`${varInsertTime} ${varStatus} ${varBa}`);
-
-      let data = query.filtered(`AFD_CODE CONTAINS ""${stBa}${stUserAuth}${stStatus}${stInsertTime}`);
-      // let data = query.filtered('AFD_CODE CONTAINS[c] "" AND ' + `${stStatus}${stInsertTime}`);
-      // let data = query.filtered('AFD_CODE = "true" ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`);
-      // console.log('Data Console Log : ' + `${stBa} ${stUserAuth} ${stStatus} ${stInsertTime}`)
-      console.log("Data Query : " + JSON.stringify(data));
+      let data;
+      if (ba == 'Pilih Lokasi' && valAssignto == 'Pilih Pemberi Tugas' && status == 'Pilih Status' && valBatasWaktu == 'Pilih Batas Waktu') {
+        data = this._filterHome();
+      } else {
+        data = this._filterHome().filtered(`AFD_CODE CONTAINS ""${stBa}${stUserAuth}${stStatus}${stInsertTime}`);
+      }
       this.setState({ data });
     })
   }
@@ -382,17 +395,17 @@ class HomeScreen extends React.Component {
     }
   }
 
-  getEstateName(werks){
+  getEstateName(werks) {
     try {
-        let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
-        return data.EST_NAME;
+      let data = TaskServices.findBy2('TM_EST', 'WERKS', werks);
+      return data.EST_NAME;
     } catch (error) {
-        return '';
-    }    
+      return '';
+    }
   }
 
-  getBlokName(blockCode){
-    try {      
+  getBlokName(blockCode) {
+    try {
       let data = TaskServices.findBy2('TM_BLOCK', 'BLOCK_CODE', blockCode);
       return data.BLOCK_NAME;
     } catch (error) {
@@ -400,14 +413,14 @@ class HomeScreen extends React.Component {
     }
   }
 
-  getStatusBlok(werk_afd_blok_code){
+  getStatusBlok(werk_afd_blok_code) {
     try {
-        let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
-        return data.MATURITY_STATUS;            
+      let data = TaskService.findBy2('TM_LAND_USE', 'WERKS_AFD_BLOCK_CODE', werk_afd_blok_code);
+      return data.MATURITY_STATUS;
     } catch (error) {
-        return ''
+      return ''
     }
-}
+  }
 
   _renderItem = (item, index) => {
 

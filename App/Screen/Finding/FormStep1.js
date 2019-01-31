@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavigationActions, StackActions } from 'react-navigation';
+import { NavigationActions, StackActions, AsyncStorage } from 'react-navigation';
 import {
     BackHandler, Text, FlatList, ScrollView, TouchableOpacity, View, Image, Alert, Platform
 } from 'react-native';
@@ -26,27 +26,27 @@ class FormStep1 extends Component {
     static navigationOptions = ({ navigation }) => {
         const { params = {} } = navigation.state;
         return {
-          headerStyle: {
-            backgroundColor: Colors.tintColor
-          },
-          title: 'Buat Laporan Temuan',
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            flex: 1,
-            fontSize: 18,
-            fontWeight: '400'
-          },
-          headerLeft: (
-              <TouchableOpacity onPress={() => {navigation.goBack(null)}}>
-                  <Icon2 style={{marginLeft: 12}} name={'ios-arrow-round-back'} size={45} color={'white'} />
-              </TouchableOpacity>
-          )
+            headerStyle: {
+                backgroundColor: Colors.tintColor
+            },
+            title: 'Buat Laporan Temuan',
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                flex: 1,
+                fontSize: 18,
+                fontWeight: '400'
+            },
+            headerLeft: (
+                <TouchableOpacity onPress={() => { navigation.goBack(null) }}>
+                    <Icon2 style={{ marginLeft: 12 }} name={'ios-arrow-round-back'} size={45} color={'white'} />
+                </TouchableOpacity>
+            )
         };
     }
 
     constructor(props) {
         super(props);
-        
+
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.clearFoto = this.clearFoto.bind(this);
 
@@ -61,30 +61,46 @@ class FormStep1 extends Component {
             latitude: 0.0,
             longitude: 0.0,
             fetchLocation: false,
-            isMounted: false,
+            isMounted: false
         }
     }
 
-    clearFoto(){
-        if(this.state.photos.length > 0){
-            this.state.photos.map(item =>{                
+    clearFoto() {
+        if (this.state.photos.length > 0) {
+            this.state.photos.map(item => {
                 RNFS.unlink(item.uri)
             })
         }
-        this.props.navigation.goBack(null); 
+        this.props.navigation.goBack(null);
+    }
+
+    getUserId = async () => {
+        let InspeksiHeader = '';
+        try {
+            InspeksiHeader = await AsyncStorage.getItem('InspeksiHeader') || 'none';
+            console.log("InspeksiHeader : " + InspeksiHeader)
+        } catch (error) {
+            // Error retrieving data
+            console.log(error.message);
+        }
+        return InspeksiHeader;
     }
 
     componentDidMount() {
-       this.getLocation();
-       this.props.navigation.setParams({ clearFoto: this.clearFoto })
-       BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+        this.getLocation();
+        this.props.navigation.setParams({ clearFoto: this.clearFoto })
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+
+        alert(this.props.navigation.getParam('inspeksi'));
+        console.log('Masuk Sini')
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
-    handleBackButtonClick() { 
+
+    handleBackButtonClick() {
         this.clearFoto()
         return false;
     }
@@ -96,7 +112,7 @@ class FormStep1 extends Component {
                 var lon = parseFloat(position.coords.longitude);
                 // const timestamp = convertTimestampToDate(position.timestamp, 'DD/MM/YYYY HH:mm:ss')//moment(position.timestamp).format('DD/MM/YYYY HH:mm:ss');
                 // console.log(timestamp);
-                this.setState({latitude:lat, longitude:lon, fetchLocation: false});
+                this.setState({ latitude: lat, longitude: lon, fetchLocation: false });
 
             },
             (error) => {
@@ -104,14 +120,14 @@ class FormStep1 extends Component {
                 if (error && error.message == "No location provider available.") {
                     message = "Mohon nyalakan GPS anda terlebih dahulu.";
                 }
-                this.setState({fetchLocation:false})
+                this.setState({ fetchLocation: false })
                 alert('Informasi', message);
                 // console.log(message);
             }, // go here if error while fetch location
             { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }, //enableHighAccuracy : aktif highaccuration , timeout : max time to getCurrentLocation, maximumAge : using last cache if not get real position
         );
     }
-    
+
     // exitAlert = () => {
     //     if (this.state.photos.length == 0) {
     //         this.props.navigation.goBack(null)
@@ -154,12 +170,12 @@ class FormStep1 extends Component {
             let images = [];
             this.state.selectedPhotos.map((item) => {
                 let da = item.split('/')
-                let imgName = da[da.length-1];
+                let imgName = da[da.length - 1];
                 images.push(imgName);
                 const navigation = this.props.navigation;
                 const resetAction = StackActions.reset({
                     index: 0,
-                    actions: [NavigationActions.navigate({ routeName: 'Step2', params:{image: images, lat: this.state.latitude, lon:this.state.longitude} })],
+                    actions: [NavigationActions.navigate({ routeName: 'Step2', params: { image: images, lat: this.state.latitude, lon: this.state.longitude } })],
                 });
                 navigation.dispatch(resetAction);
 
@@ -167,9 +183,9 @@ class FormStep1 extends Component {
         }
     }
 
-    onRefresh = image =>{
+    onRefresh = image => {
         const photos = R.clone(this.state.photos)
-        photos.push({ uri: FILE_PREFIX+image, index: photos.length })
+        photos.push({ uri: FILE_PREFIX + image, index: photos.length })
         this.setState({
             photos,
         });
@@ -177,7 +193,9 @@ class FormStep1 extends Component {
     }
 
     takePicture() {
-        this.props.navigation.navigate('TakeFoto', {onRefresh: this.onRefresh, authCode: this.state.user.USER_AUTH_CODE})
+        this.props.navigation.navigate('TakeFoto', { onRefresh: this.onRefresh, authCode: this.state.user.USER_AUTH_CODE });
+
+        this.getUserId();
     }
 
     _onSelectedPhoto = foto => {
@@ -313,7 +331,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        
+
     };
 };
 

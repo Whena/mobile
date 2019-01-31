@@ -58,8 +58,8 @@ const main = createStackNavigator({
     },
 
     //finding
-    // FormStep1: {screen: FormStep1},
-    // FormStep2: {screen: FormStep2},
+    FormStep1: {screen: FormStep1},
+    FormStep2: {screen: FormStep2},
     DetailFinding: { screen: DetailFindingScreen },
     BuktiKerja: { screen: BuktiKerja },
     TakeFotoBukti: { screen: TakeFotoBukti },
